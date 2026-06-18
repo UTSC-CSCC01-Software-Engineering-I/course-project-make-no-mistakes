@@ -35,17 +35,17 @@ Class Diagram:
 Please correct any inaccuracies below:
 
 With VS Code: (Inside a folder for this project)
-> git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
+- git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
 (For a new branch)
-> git switch -c feature/branchName
+- git switch -c feature/branchName
 
 Checking Preview:
-> npm run build
-> npm run preview
+- npm run build
+- npm run preview
 
 Committing Changes:
-> git add .
-> git commit -m "message"
-> git push
+- git add .
+- git commit -m "message"
+- git push
 If it's a new branch, need to do:
-> git push -u origin branchName
+- git push -u origin branchName
