@@ -1,24 +1,26 @@
-import { useState } from 'react'
+import { Link, Route, Routes } from 'react-router'
+
 import BrowsePage from './pages/BrowsePage'
+import SignInPage from './pages/SignInPage'
+import ProfilePage from './pages/ProfilePage'
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <nav>
-        <Link to="/">Home</Link>
+        <Link to="/">Browse</Link>
+        {' | '}
+        <Link to="/signin">Sign In</Link>
         {' | '}
         <Link to="/profile">Profile</Link>
-        {' | '}
-        <Link to="/about">About</Link>
       </nav>
 
       <Routes>
-        <Route path="/" element={<HomeScreen />} />
-        <Route path="/profile" element={<ProfileScreen />} />
-        <Route path="/about" element={<AboutScreen />} />
+        <Route path="/" element={<BrowsePage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </>
   )
