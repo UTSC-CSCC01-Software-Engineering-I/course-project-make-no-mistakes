@@ -1,0 +1,38 @@
+[
+    {
+      "id": 1,
+      "postUser": "user1",
+      "postDate": "June 19, 2026",
+      "previewURL": "https://redecoupage-redistribution-2022.ca/com/on/rprt/imgs/map-03-final.jpg",
+      "postRating": 85,
+      "postVotes": 120,
+      "postComments": 14
+    },
+    {
+      "id": 2,
+      "postUser": "user2",
+      "postDate": "August 18, 2025",
+      "previewURL": "https://geology.com/canada/ontario-map.gif",
+      "postRating": 72,
+      "postVotes": 84,
+      "postComments": 9
+    },
+    {
+      "id": 3,
+      "postUser": "user0",
+      "postDate": "May 17, 2026",
+      "previewURL": "https://www.onestopmap.com/wp-content/uploads/2018/08/711-ontario-vm-caon-j-yben-1-web.jpg",
+      "postRating": 91,
+      "postVotes": 203,
+      "postComments": 31
+    },
+    {
+      "id": 4,
+      "postUser": "user8",
+      "postDate": "December 16, 2025",
+      "previewURL": "https://geographicguide.com/america-maps/images/map-ontario.jpg",
+      "postRating": 64,
+      "postVotes": 52,
+      "postComments": 6
+    }
+  ]

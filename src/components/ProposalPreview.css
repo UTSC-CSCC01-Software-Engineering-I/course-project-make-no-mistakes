@@ -1,18 +1,44 @@
 .proposalPreview{
     width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    border: 3px solid #317a51;
+    overflow: hidden;
+    background-color: #88b19a;
+    margin: 0;
 }
 .proposalPreviewHeader{
-    width: 100%;
+    padding: 12px;
+    background-color: #87bd93;
 }
 .distEvenHorizontalBox{
-    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.evenHorizontalBox{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
 }
 .proposalPreviewHeaderText{
-    width: 100%;
+    font-family: Verdana;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 12px;
 }
 .proposalPreviewImage{
+    display: block;
     width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-top: 3px solid #317a51;
+    border-bottom: 3px solid #317a51;
 }
 .proposalPreviewIcon{
-    width: 100%;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }

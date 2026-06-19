@@ -1,16 +1,25 @@
 import ProposalPreview from '../components/ProposalPreview'
 import './BrowsePage.css'
+import proposals from '../data/proposals.json'
 function BrowsePage() {
     return (
         <main className="browsePage">
-            <ProposalPreview
-                postUser="userName"
-                postDate="June 19, 2026"
-                previewURL="/catSquish1.png"
-                postRating={85}
-                postVotes={120}
-                postComments={14}
-            />
+            <header className="browsePageHeader">
+                <h1>Browse Proposals:</h1>
+            </header>
+            <section className="proposalBrowseGrid">
+                {proposals.map((proposal) =>(
+                    <ProposalPreview
+                        key={proposal.id}
+                        postUser={proposal.postUser}
+                        postDate={proposal.postDate}
+                        previewURL={proposal.previewURL}
+                        postRating={proposal.postRating}
+                        postVotes={proposal.postVotes}
+                        postComments={proposal.postComments}
+                    />
+                ))}
+            </section>
         </main>
     );
   }

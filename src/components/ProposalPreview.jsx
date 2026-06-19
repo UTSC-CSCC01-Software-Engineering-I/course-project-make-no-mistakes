@@ -1,4 +1,6 @@
 import './ProposalPreview.css'
+import thumbsUpIcon from '../assets/thumbsUp.png'
+import commentIcon from '../assets/commentC01.png'
 
 function ProposalPreview({
     postUser,
@@ -35,24 +37,26 @@ function ProposalPreview({
 
         <footer className="proposalPreviewHeader">
             <div className="distEvenHorizontalBox">
-                <img
-                    className="proposalPreviewIcon"
-                    src="/thumbsUp.png"
-                    alt="Thumbs up Icon"
-                />
-                <span className="proposalPreviewHeaderText">
-                    {postRating}%, {postVotes} votes
-                </span>
-            </div>
-            <div className="distEvenHorizontalBox">
-                <img
-                    className="proposalPreviewIcon"
-                    src="/commentC01.png"
-                    alt="Comment Icon"
-                />
-                <span className="proposalPreviewHeaderText">
-                    {postComments} comments
-                </span>
+                <div className="evenHorizontalBox">
+                    <img
+                        className="proposalPreviewIcon"
+                        src={thumbsUpIcon}
+                        alt="Thumbs up Icon"
+                    />
+                    <span className="proposalPreviewHeaderText">
+                        {postRating}%, {postVotes} votes
+                    </span>
+                </div>
+                <div className="evenHorizontalBox">
+                    <img
+                        className="proposalPreviewIcon"
+                        src={commentIcon}
+                        alt="Comment Icon"
+                    />
+                    <span className="proposalPreviewHeaderText">
+                        {postComments}
+                    </span>
+                </div>
             </div>
         </footer>
     </article>
