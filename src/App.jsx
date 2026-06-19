@@ -1,21 +1,16 @@
-import { Link, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import BrowsePage from './pages/BrowsePage'
 import SignInPage from './pages/SignInPage'
 import ProfilePage from './pages/ProfilePage'
+import NavBar from './components/NavBar'
 
 import './App.css'
 
 function App() {
   return (
     <>
-      <nav>
-        <Link to="/">Browse</Link>
-        {' | '}
-        <Link to="/signin">Sign In</Link>
-        {' | '}
-        <Link to="/profile">Profile</Link>
-      </nav>
+      <NavBar />
 
       <Routes>
         <Route path="/" element={<BrowsePage />} />
