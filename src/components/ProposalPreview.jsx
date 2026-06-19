@@ -2,7 +2,7 @@ import './ProposalPreview.css'
 
 import { NavLink } from 'react-router'
 import thumbsUpIcon from '../assets/thumbsUp.png'
-import commentIcon from '../assets/commentC01.png'
+import commentIcon from '../assets/greencomment.png'
 
 function ProposalPreview({
     proposalId,
