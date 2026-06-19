@@ -1,8 +1,11 @@
 import './ProposalPreview.css'
+
+import { NavLink } from 'react-router'
 import thumbsUpIcon from '../assets/thumbsUp.png'
 import commentIcon from '../assets/commentC01.png'
 
 function ProposalPreview({
+    proposalId,
     postUser,
     postDate,
     previewURL,
@@ -29,11 +32,13 @@ function ProposalPreview({
             </div>
         </header>
 
-        <img
-            className="proposalPreviewImage"
-            src={previewURL}
-            alt="Preview thumbnail of the proposal"
-        />
+        <NavLink to={`/view/${proposalId}`} className="proposalPreviewLink">
+            <img
+                className="proposalPreviewImage"
+                src={previewURL}
+                alt="Preview thumbnail of the proposal"
+            />
+        </NavLink>
 
         <footer className="proposalPreviewHeader">
             <div className="distEvenHorizontalBox">

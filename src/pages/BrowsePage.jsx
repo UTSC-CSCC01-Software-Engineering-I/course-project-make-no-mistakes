@@ -1,6 +1,7 @@
 import ProposalPreview from '../components/ProposalPreview'
-import './BrowsePage.css'
 import proposals from '../data/proposals.json'
+import './BrowsePage.css'
+
 function BrowsePage() {
     return (
         <main className="browsePage">
@@ -11,6 +12,7 @@ function BrowsePage() {
                 {proposals.map((proposal) =>(
                     <ProposalPreview
                         key={proposal.id}
+                        proposalId={proposal.id}
                         postUser={proposal.postUser}
                         postDate={proposal.postDate}
                         previewURL={proposal.previewURL}
