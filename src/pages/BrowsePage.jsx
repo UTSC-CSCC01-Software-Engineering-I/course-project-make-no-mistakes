@@ -1,5 +1,6 @@
 import ProposalPreview from '../components/ProposalPreview'
 import proposals from '../data/proposals.json'
+import SearchBar from '../components/SearchBar'
 import './BrowsePage.css'
 
 function BrowsePage() {
@@ -8,6 +9,7 @@ function BrowsePage() {
             <header className="browsePageHeader">
                 <h1>Browse Proposals:</h1>
             </header>
+            <SearchBar />
             <section className="proposalBrowseGrid">
                 {proposals.map((proposal) =>(
                     <ProposalPreview
