@@ -1,0 +1,68 @@
+.loginPage {
+	width: 100%;
+	min-height: 100vh;
+	background-color: #d8f3ef;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+.loginPageHeader {
+	margin: 0 auto 30px auto;
+	text-align: center;
+}
+
+.loginPageHeader h1 {
+	font-family: Verdana;
+	color: #3a6d5a;
+	font-weight: 600;
+	font-size: 30px;
+}
+
+.loginForm {
+	width: 30%;
+	max-width: 500px;
+	border-radius: 12px;
+	border: 3px solid #317a51;
+	background-color: #87bd93;
+	margin: auto;
+	padding: 20px;
+}
+
+.credentialField {
+	margin: 15px 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.credentialField label {
+	width: 100px;
+	float: left;
+}
+
+.credentialField label::after {
+	content: ": "
+}
+
+.loginButtonWrapper {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;	
+}
+
+.loginButton {
+	font-size: medium;
+	border-radius: 10px;
+	margin: 0;
+	padding: 5px;
+}
+
+.registrationRedirectWrapper {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.registrationRedirect {
+	margin-top: 20px;
+}

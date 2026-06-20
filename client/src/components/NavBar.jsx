@@ -8,8 +8,8 @@ function NavBar() {
         Browse
       </NavLink>
 
-      <NavLink to="/signin" className="navBarLink">
-        Sign In
+      <NavLink to="/login" className="navBarLink">
+        Login
       </NavLink>
 
       <NavLink to="/profile" className="navBarLink">
