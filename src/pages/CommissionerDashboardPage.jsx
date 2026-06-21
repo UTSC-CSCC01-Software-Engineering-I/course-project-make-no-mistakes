@@ -1,17 +1,35 @@
 import './CommissionerDashboardPage.css'
 
-const dashboardStatistics = {
-  totalSubmissions: 128,
-  writtenComments: 72,
-  boundaryObjections: 38,
-  counterProposals: 18,
-}
-
-const statusBreakdown = {
-  received: 45,
-  underReview: 30,
-  addressed: 12,
-}
+const overviewItems = [
+  {
+    label: 'Total Submissions',
+    value: 128,
+  },
+  {
+    label: 'Written Comments',
+    value: 72,
+  },
+  {
+    label: 'Boundary Objections',
+    value: 38,
+  },
+  {
+    label: 'Counter Proposals',
+    value: 18,
+  },
+  {
+    label: 'Received',
+    value: 45,
+  },
+  {
+    label: 'Under Review',
+    value: 30,
+  },
+  {
+    label: 'Addressed',
+    value: 12,
+  },
+]
 
 const recentSubmissions = [
   {
@@ -92,51 +110,56 @@ function CommissionerDashboardPage() {
     <main className="commissionerDashboardPage">
       <header className="commissionerDashboardHeader">
         <h1>Commissioner Dashboard</h1>
-        <h2>Consultation Overview</h2>
       </header>
 
-      <section className="dashboardPlaceholderSection">
-        <h2>Statistics Section</h2>
-        <div className="dashboardStatisticsGrid">
-          <StatisticCard
-            label="Total Submissions"
-            value={dashboardStatistics.totalSubmissions}
-          />
-          <StatisticCard
-            label="Written Comments"
-            value={dashboardStatistics.writtenComments}
-          />
-          <StatisticCard
-            label="Boundary Objections"
-            value={dashboardStatistics.boundaryObjections}
-          />
-          <StatisticCard
-            label="Counter Proposals"
-            value={dashboardStatistics.counterProposals}
-          />
+      <nav className="dashboardInternalNav" aria-label="Dashboard sections">
+        <a href="#overview">Overview</a>
+        <a href="#activity">Activity</a>
+        <a href="#submissions">Submissions</a>
+        <a href="#actions">Actions</a>
+      </nav>
+
+      <section className="dashboardSection" id="overview">
+        <h2>Overview</h2>
+        <div className="dashboardOverviewGrid">
+          {overviewItems.map((item) => (
+            <StatisticCard
+              key={item.label}
+              label={item.label}
+              value={item.value}
+            />
+          ))}
         </div>
       </section>
 
-      <section className="dashboardPlaceholderSection">
-        <h2>Status Section</h2>
-        <div className="dashboardStatusGrid">
-          <StatisticCard
-            label="Received"
-            value={statusBreakdown.received}
-          />
-          <StatisticCard
-            label="Under Review"
-            value={statusBreakdown.underReview}
-          />
-          <StatisticCard
-            label="Addressed"
-            value={statusBreakdown.addressed}
-          />
+      <section className="dashboardSection" id="activity">
+        <h2>Riding Activity</h2>
+        <div className="dashboardTableContainer">
+          <table className="dashboardSubmissionsTable">
+            <thead>
+              <tr>
+                <th>Riding Name</th>
+                <th>Submission Count</th>
+                <th>Support Ratio</th>
+                <th>Oppose Ratio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ridingActivity.map((riding) => (
+                <tr key={riding.ridingName}>
+                  <td>{riding.ridingName}</td>
+                  <td>{riding.submissionCount}</td>
+                  <td>{riding.supportRatio}</td>
+                  <td>{riding.opposeRatio}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section className="dashboardPlaceholderSection">
-        <h2>Recent Submissions Section</h2>
+      <section className="dashboardSection" id="submissions">
+        <h2>Recent Submissions</h2>
         <div className="dashboardTableContainer">
           <table className="dashboardSubmissionsTable">
             <thead>
@@ -163,34 +186,8 @@ function CommissionerDashboardPage() {
         </div>
       </section>
 
-      <section className="dashboardPlaceholderSection">
-        <h2>Riding Activity Section</h2>
-        <div className="dashboardTableContainer">
-          <table className="dashboardSubmissionsTable">
-            <thead>
-              <tr>
-                <th>Riding Name</th>
-                <th>Submission Count</th>
-                <th>Support Ratio</th>
-                <th>Oppose Ratio</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ridingActivity.map((riding) => (
-                <tr key={riding.ridingName}>
-                  <td>{riding.ridingName}</td>
-                  <td>{riding.submissionCount}</td>
-                  <td>{riding.supportRatio}</td>
-                  <td>{riding.opposeRatio}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="dashboardPlaceholderSection">
-        <h2>Quick Actions Section</h2>
+      <section className="dashboardSection" id="actions">
+        <h2>Quick Actions</h2>
         <div className="dashboardQuickActions">
           <button className="dashboardActionButton" type="button">
             Export CSV
