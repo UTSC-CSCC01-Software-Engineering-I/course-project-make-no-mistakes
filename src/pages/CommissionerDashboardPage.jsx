@@ -159,30 +159,36 @@ function CommissionerDashboardPage() {
       </section>
 
       <section className="dashboardSection" id="submissions">
-        <h2>Recent Submissions</h2>
-        <div className="dashboardTableContainer">
-          <table className="dashboardSubmissionsTable">
-            <thead>
-              <tr>
-                <th>Reference Number</th>
-                <th>Submission Type</th>
-                <th>Riding</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentSubmissions.map((submission) => (
-                <tr key={submission.referenceNumber}>
-                  <td>{submission.referenceNumber}</td>
-                  <td>{submission.submissionType}</td>
-                  <td>{submission.riding}</td>
-                  <td>{submission.status}</td>
-                  <td>{submission.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="dashboardSectionHeader">
+          <h2>Recent Submissions</h2>
+          <button className="dashboardTextAction" type="button">
+            View All →
+          </button>
+        </div>
+        <div className="dashboardSubmissionCards">
+          {recentSubmissions.map((submission) => (
+            <article className="dashboardSubmissionCard" key={submission.referenceNumber}>
+              <div className="dashboardSubmissionInfo">
+                <span className="dashboardSubmissionReference">
+                  {submission.referenceNumber}
+                </span>
+                <span className="dashboardSubmissionMeta">
+                  {submission.submissionType}
+                </span>
+              </div>
+              <div className="dashboardSubmissionInfo">
+                <span className="dashboardSubmissionMeta">
+                  {submission.riding}
+                </span>
+                <span className="dashboardSubmissionMeta">
+                  {submission.status} - {submission.date}
+                </span>
+              </div>
+              <button className="dashboardActionButton" type="button">
+                View Details
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
