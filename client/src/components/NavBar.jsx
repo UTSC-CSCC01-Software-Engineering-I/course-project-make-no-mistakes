@@ -20,23 +20,20 @@ function NavBar() {
         Browse
       </NavLink>
 
-      <NavLink to="/login" className="navBarLink">
-        Login
-      </NavLink>
+	{isLoggedIn ? (
+			<button onClick={handleLogout} className='logoutButton'>
+				Logout
+			</button>
+		) : (
+			<NavLink to="/login" className="navBarLink">
+			  Login
+			</NavLink>
+		)
+	}
 
       <NavLink to="/profile" className="navBarLink">
         Profile
       </NavLink>
-
-	{isLoggedIn ? 
-		(
-			<>
-			<button onClick={handleLogout} className='logoutButton'>
-				Log Out
-			</button>
-			</>
-		) : (<></>)
-	}
 
     </nav>
   )
