@@ -1,0 +1,252 @@
+.commissionerDashboardPage {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #d8f3ef;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.commissionerDashboardHeader {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.commissionerDashboardHeader h1 {
+    font-family: Verdana;
+    color: #3a6d5a;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0 0 12px;
+}
+
+.commissionerDashboardHeader h2 {
+    font-family: Verdana;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+}
+
+.dashboardInternalNav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.dashboardInternalNav a {
+    border: 3px solid #b3a5d8;
+    border-radius: 20px;
+    background-color: #faf1ff;
+    color: #332445;
+    font-family: Verdana;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 16px;
+    text-decoration: none;
+}
+
+.dashboardInternalNav a:hover {
+    background-color: #e2d1ff;
+}
+
+.dashboardSection {
+    width: 100%;
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #87bd93;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.dashboardSection h2 {
+    font-family: Verdana;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+}
+
+.dashboardSectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.dashboardOverviewGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.dashboardStatisticCard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #d8f3ef;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.dashboardStatisticValue {
+    font-family: Verdana;
+    color: #3a6d5a;
+    font-weight: 600;
+    font-size: 30px;
+}
+
+.dashboardStatisticLabel {
+    font-family: Verdana;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.dashboardTableContainer {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 18px;
+}
+
+.dashboardSubmissionsTable {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    border: 3px solid #317a51;
+    background-color: #d8f3ef;
+}
+
+.dashboardSubmissionsTable th,
+.dashboardSubmissionsTable td {
+    padding: 14px;
+    border-bottom: 2px solid #317a51;
+    font-family: Verdana;
+    color: #1e5d2d;
+    font-size: 12px;
+    text-align: left;
+}
+
+.dashboardSubmissionsTable th {
+    background-color: #faf1ff;
+    color: #332445;
+    font-weight: 600;
+}
+
+.dashboardSubmissionsTable td {
+    font-weight: 500;
+}
+
+.dashboardSubmissionsTable tr:last-child td {
+    border-bottom: none;
+}
+
+.dashboardSubmissionCards {
+    display: grid;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.dashboardSubmissionCard {
+    display: grid;
+    grid-template-columns: 1.2fr 1.4fr auto;
+    align-items: center;
+    gap: 16px;
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #d8f3ef;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.dashboardSubmissionInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dashboardSubmissionReference,
+.dashboardSubmissionMeta {
+    font-family: Verdana;
+    color: #1e5d2d;
+}
+
+.dashboardSubmissionReference {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dashboardSubmissionMeta {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dashboardQuickActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.dashboardTextAction {
+    border: none;
+    background: none;
+    color: #1e5d2d;
+    cursor: pointer;
+    font-family: Verdana;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0;
+}
+
+.dashboardTextAction:hover {
+    color: #332445;
+}
+
+.dashboardActionButton {
+    border: 3px solid #b3a5d8;
+    border-radius: 20px;
+    background-color: #faf1ff;
+    color: #332445;
+    cursor: pointer;
+    font-family: Verdana;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 12px 18px;
+}
+
+.dashboardActionButton:hover {
+    background-color: #e2d1ff;
+}
+
+@media (max-width: 900px) {
+    .dashboardOverviewGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboardSubmissionCard {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboardOverviewGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboardInternalNav a,
+    .dashboardActionButton {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .dashboardSectionHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
