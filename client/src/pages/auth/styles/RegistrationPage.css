@@ -1,0 +1,68 @@
+.registrationPage {
+	width: 100%;
+	min-height: 100vh;
+	background-color: #d8f3ef;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+.registrationPageHeader {
+	margin: 0 auto 30px auto;
+	text-align: center;
+}
+
+.registrationPageHeader h1 {
+	font-family: Verdana;
+	color: #3a6d5a;
+	font-weight: 600;
+	font-size: 30px;
+}
+
+.registrationForm {
+	width: 30%;
+	max-width: 500px;
+	border-radius: 12px;
+	border: 3px solid #317a51;
+	background-color: #87bd93;
+	margin: auto;
+	padding: 20px;
+}
+
+.credentialField {
+	margin: 15px 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.credentialField label {
+	width: 100px;
+	float: left;
+}
+
+.credentialField label::after {
+	content: ": "
+}
+
+.registrationButtonWrapper {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;	
+}
+
+.registrationButton {
+	font-size: medium;
+	border-radius: 10px;
+	margin: 0;
+	padding: 5px;
+}
+
+.loginRedirectWrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+}
+
+.loginRedirect {
+      margin-top: 20px;
+}

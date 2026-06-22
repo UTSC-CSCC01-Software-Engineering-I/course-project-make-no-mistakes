@@ -13,5 +13,19 @@
     color: #1e5d2d;
     font-family: Verdana, sans-serif;
     font-weight: 600;
+    font-size: 16px;
     text-decoration: none;
   }
+
+.logoutButton {
+	color: #1e5d2d;
+	font-family: Verdana, sans-serif;
+	font-weight: 600;
+	font-size: 16px;
+	text-decoration: none;
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	margin: 0;
+	padding: 0;
+}
