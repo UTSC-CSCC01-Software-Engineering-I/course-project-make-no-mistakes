@@ -55,6 +55,7 @@ Please correct any inaccuracies below:
 		* note that if the backend refreshes, the frontend must be restarted (run 'build + preview' or 'dev' again)
 
 NOTE: backend must be started first, in a separate terminal session, before starting the frontend
+
 NOTE: pnpm (aliased by 'pn') can be used in place of npm for the above commands
 
 e.g.
