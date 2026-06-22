@@ -15,3 +15,12 @@
     font-weight: 600;
     text-decoration: none;
   }
+
+.logoutButton {
+	color: #1e5d2d;
+	background-color: #87bd93;
+	border: 3px solid #317a51;
+	border-radius: 10px;
+	font-family: Verdana, sans-serif;
+	font-weight: 600;
+}
