@@ -1,10 +1,12 @@
 import './styles/LoginPage.css'
 import { useState } from 'react';
-import { NavLink } from 'react-router'
+import { NavLink, useNavigate } from 'react-router'
 import CredentialInput from '/src/components/auth/CredentialInput.jsx'
 import axios from "axios";
 
 export default function LoginPage() {
+
+	const navigate = useNavigate();
 
 	// collect credentials
 	const [credentialEntry, setCredentialEntry] = useState({
@@ -24,10 +26,26 @@ export default function LoginPage() {
 	}
 
 	// login handler
-	function handleLoginSubmit(e) {
+	async function handleLoginSubmit(e) {
 
 		e.preventDefault();
-		alert(`Logging in with: ${credentialEntry.emailEntry}`);
+
+		try {
+
+			const response = await axios.post('http://localhost:8080/auth/login', credentialEntry);
+
+			const { token, user } = response.data;
+
+			localStorage.setItem('sb_token', token);
+
+			alert(response.data.message);
+
+			navigate('/', { replace: true });
+
+		} catch (err) {
+			alert(err.response?.data?.error || 'Login Failed');
+		}
+
 	}
 
 	return(

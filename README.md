@@ -34,20 +34,46 @@ Class Diagram:
 ## (Delete Later, For Reference) Set Up Guide(?):
 Please correct any inaccuracies below:
 
-With VS Code: (Inside a folder for this project)
+### With VS Code: (Inside a folder for this project)
 - git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
 
-(For a new branch)
+### (For a new branch)
 - git switch -c feature/branchName
 
-Checking Preview:
+- git switch remote/branch (use after fetching, git will automatically create local branch with same name and track the remote branch)
+
+### Checking Frontend Preview (must navigate to 'client/' directory first):
 - npm run build
 - npm run preview
+- npm dev
+	* can use this during development; changes to files will automatically refresh frontend
 
-Committing Changes:
+### Running the backend (must navigate to 'server/' directory first):
+- npm start
+- npm dev
+	* can use this during development; changes to files will automatically refresh backend
+		* note that if the backend refreshes, the frontend must be restarted (run 'build + preview' or 'dev' again)
+
+NOTE: backend must be started first, in a separate terminal session, before starting the frontend
+
+NOTE: pnpm (aliased by 'pn') can be used in place of npm for the above commands
+
+e.g.
+```bash
+# Session 1
+.../course-project-make-no-mistakes/server> npm dev
+
+
+# Session 2
+.../course-project-make-no-mistakes/client> npm dev
+```
+
+### Committing Changes:
 - git add .
 - git commit -m "message"
 - git push
 
-If it's a new branch, need to do:
+### If it's a new branch, need to do:
 - git push -u origin branchName
+
+- git push -u origin HEAD (if pushing the branch that you're currently on, for the first time)

@@ -1,35 +1,23 @@
 const express = require("express"); 
 const app = express();
 const cors = require("cors");
+
+// cross origin resource sharing (lets server accept requests from different port than itself)
 const corsOptions = {
 	origin: ["http://localhost:5173"],
 }
-const { createClient } = require("@supabase/supabase-js")
 
+// parse JSON into req.body
+app.use(express.json());
+
+// applies CORS option above
 app.use(cors(corsOptions));
 
-app.get("/auth/confirm", async function (req, res) {
-        const token_hash = req.query.token_hash
-        const type = req.query.type
-        const next = req.query.next ?? "/"
-        if (token_hash && type) {
-                const supabase = createClient({ req, res })
-                const { error } = await supabase.auth.verifyOtp({
-                        type,
-                        token_hash,
-                })
-                if (!error) {
-                        res.redirect(303, `/${next.slice(1)}`)
-                }
-        }
-        // return the user to an error page with some instructions
-        res.redirect(303, '/auth/auth-code-error')
-})
+// auth router //////////////////////////////////////////////////
+const authRouter = require('./routes/auth.js');
+app.use("/auth", authRouter);
 
-app.listen(8080, () => {
-        console.log("Server has started listening on port 8080");
-});
-
+// page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");
 });
@@ -37,4 +25,9 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
+});
+
+// listen to incoming traffic to port 8080 //////////////////////
+app.listen(8080, () => {
+        console.log("Server has started listening on port 8080");
 });

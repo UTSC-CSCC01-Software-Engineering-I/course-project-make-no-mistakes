@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import CredentialInput from '/src/components/auth/CredentialInput.jsx'
 import axios from 'axios'
 import './styles/RegistrationPage.css'
 
 export default function RegisterPage() {
+
+	const navigate = useNavigate();
 	
 	// collect credentials user will be registered with
 	const [credentialEntry, setCredentialEntry] = useState ({
@@ -25,32 +27,44 @@ export default function RegisterPage() {
 	}
 	
 	// registration request handler
-	function handleRegisterSubmit(e) {
+	async function handleRegisterSubmit(e) {
 	
 		e.preventDefault();
-		alert(`Registering: ${credentialEntry.emailEntry}`);
+		
+		try {
+
+			const response = await axios.post('http://localhost:8080/auth/register', credentialEntry);
+
+			alert(response.data.message);
+
+			navigate('/login', { replace: true });
+
+		} catch (err) {
+			console.error(err.response?.data?.error || 'Registration Failed');
+		}
+
 	}
 
 	return (
-		<main className="registrationPage">
+		<main className='registrationPage'>
 
-			<header className="registrationPageHeader">
+			<header className='registrationPageHeader'>
 				<h1>Account Registration</h1>
 			</header>
 
-			<form onSubmit={handleRegisterSubmit} className="registrationForm">
+			<form onSubmit={handleRegisterSubmit} className='registrationForm'>
 
 				<div>
 				
 					<CredentialInput 
-						label="Email"
-						id="email-input"
-						type="email"
-						name="emailEntry"
+						label='Email'
+						id='email-input'
+						type='email'
+						name='emailEntry'
 						value={credentialEntry.emailEntry}
 						onChange={handleInputChange}
 
-						className="credentialField"
+						className='credentialField'
 					/>
 
 				</div>
@@ -58,25 +72,25 @@ export default function RegisterPage() {
 				<div>
 					
 					<CredentialInput 
-						label="Password"
-						id="pwd-input"
-						type="password"
-						name="pwdEntry"
+						label='Password'
+						id='pwd-input'
+						type='password'
+						name='pwdEntry'
 						value={credentialEntry.pwdEntry}
 						onChange={handleInputChange}
 
-						className="credentialField"
+						className='credentialField'
 					/>
 				</div>
 
-				<div className="registrationButtonWrapper">
-					<button type="submit" className="registrationButton">
+				<div className='registrationButtonWrapper'>
+					<button type='submit' className='registrationButton'>
 						Register
 					</button>
 				</div>
 
-				<div className="loginRedirectWrapper">
-					<NavLink to="/login" className="loginRedirect">
+				<div className='loginRedirectWrapper'>
+					<NavLink to='/login' className='loginRedirect'>
 						Back to Login
 					</NavLink>
 				</div>
