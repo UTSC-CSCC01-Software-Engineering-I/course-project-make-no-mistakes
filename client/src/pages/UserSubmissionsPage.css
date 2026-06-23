@@ -1,0 +1,220 @@
+.subsPage {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #d8f3ef;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.subsPageHeader {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.subsPageHeaderTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.subsPageHeaderTop h1 {
+    font-family: Verdana, sans-serif;
+    color: #3a6d5a;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0;
+}
+
+.subsPageActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.subsActionButton {
+    border: 3px solid #317a51;
+    border-radius: 20px;
+    background-color: #87bd93;
+    color: #1e5d2d;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.subsActionButton:hover {
+    background-color: #a3ccaf;
+}
+
+.subsToggleNav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.subsToggleButton {
+    border: 3px solid #b3a5d8;
+    border-radius: 20px;
+    background-color: #faf1ff;
+    color: #332445;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.subsToggleButton:hover {
+    background-color: #e2d1ff;
+}
+
+.subsToggleButton.active {
+    background-color: #332445;
+    color: #faf1ff;
+    border-color: #332445;
+}
+
+.userSubmissionsContainer {
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #87bd93;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.userSubmissionsList {
+    display: grid;
+    gap: 16px;
+}
+
+.userSubmissionCard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #d8f3ef;
+    padding: 16px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.userSubmissionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #317a51;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.userSubmissionRef {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.userSubmissionBadges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.userSubmissionStatus {
+    font-family: Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+}
+
+.status-Received {
+    background-color: #faf1ff;
+    color: #332445;
+    border-color: #b3a5d8;
+}
+
+.status-UnderReview {
+    background-color: #e2d1ff;
+    color: #332445;
+    border-color: #b3a5d8;
+}
+
+.status-Addressed {
+    background-color: #87bd93;
+    color: #1e5d2d;
+    border-color: #317a51;
+}
+
+.userSubmissionBody {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+}
+
+.userSubmissionRiding {
+    font-size: 14px;
+    margin: 0 0 8px 0;
+}
+
+.userSubmissionContent {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.userSubmissionPreviewWrapper {
+    margin-top: 16px;
+    display: flex;
+}
+
+.userSubmissionFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    border-top: 2px dashed #87bd93;
+    padding-top: 12px;
+}
+
+.userSubmissionDate {
+    font-family: Verdana, sans-serif;
+    font-size: 12px;
+    color: #3a6d5a;
+    font-weight: 600;
+}
+
+.userSubmissionAction {
+    border: 3px solid #b3a5d8;
+    border-radius: 20px;
+    background-color: #faf1ff;
+    color: #332445;
+    cursor: pointer;
+    font-family: Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+}
+
+.userSubmissionAction:hover {
+    background-color: #e2d1ff;
+}
+
+.noSubmissionsMessage {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    padding: 20px;
+}

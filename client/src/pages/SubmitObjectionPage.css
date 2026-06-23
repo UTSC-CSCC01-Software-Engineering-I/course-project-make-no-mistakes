@@ -1,0 +1,165 @@
+.submitPage {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #d8f3ef;
+    padding: 24px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.submitPageHeader {
+    margin-bottom: 24px;
+}
+
+.submitPageHeader h1 {
+    font-family: Verdana, sans-serif;
+    color: #3a6d5a;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0 0 8px 0;
+}
+
+.submitPageSubtitle {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-size: 16px;
+    margin: 0;
+}
+
+.submitContainer {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 24px;
+    width: 100%;
+}
+
+.mapSection {
+    display: flex;
+    flex-direction: column;
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #87bd93;
+    overflow: hidden;
+    min-height: 500px;
+}
+
+.mapPlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    background-color: #a3ccaf;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+}
+
+.mapPlaceholderTitle {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 24px;
+}
+
+.mapPlaceholderText {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-size: 14px;
+}
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.formCard {
+    border: 3px solid #317a51;
+    border-radius: 12px;
+    background-color: #87bd93;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.formCard h2 {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    border-bottom: 2px solid #317a51;
+    padding-bottom: 8px;
+}
+
+.submissionForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-family: Verdana, sans-serif;
+    color: #1e5d2d;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.formGroup input,
+.formGroup textarea {
+    border: 3px solid #b3a5d8;
+    border-radius: 12px;
+    background-color: #faf1ff;
+    padding: 12px;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    color: #332445;
+    resize: vertical;
+    outline: none;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    border-color: #332445;
+}
+
+.formGroup input:disabled {
+    background-color: #e2d1ff;
+    opacity: 0.8;
+    cursor: not-allowed;
+    color: #332445;
+    font-weight: 500;
+}
+
+.submitActionButton {
+    border: 3px solid #b3a5d8;
+    border-radius: 20px;
+    background-color: #faf1ff;
+    color: #332445;
+    cursor: pointer;
+    font-family: Verdana, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 24px;
+    margin-top: 12px;
+    transition: background-color 0.2s;
+}
+
+.submitActionButton:hover {
+    background-color: #e2d1ff;
+}
+
+@media (max-width: 900px) {
+    .submitContainer {
+        grid-template-columns: 1fr;
+    }
+    
+    .mapSection {
+        min-height: 400px;
+    }
+}
