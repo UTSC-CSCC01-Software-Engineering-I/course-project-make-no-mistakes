@@ -39,6 +39,10 @@ function NavBar() {
         Dashboard
       </NavLink>
 
+	  <NavLink to="/user-submissions" className="navBarLink">
+        My Submissions
+      </NavLink>
+
     </nav>
   )
 }
