@@ -30,11 +30,6 @@ function NavBar() {
 			</NavLink>
 		)
 	}
-
-      <NavLink to="/profile" className="navBarLink">
-        Profile
-      </NavLink>
-
       <NavLink to="/commissioner-dashboard" className="navBarLink">
         Dashboard
       </NavLink>
