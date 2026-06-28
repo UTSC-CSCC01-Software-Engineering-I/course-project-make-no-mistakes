@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import Map from '../components/Map';
 import './SubmitObjectionPage.css';
 
 function SubmitObjectionPage() {
     const [objectionText, setObjectionText] = useState('');
+    const [selectedPoint, setSelectedPoint] = useState(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -21,11 +23,7 @@ function SubmitObjectionPage() {
             
             <div className="submitContainer">
                 <section className="mapSection">
-                    {/* placeholder for the interactive mapping component */}
-                    <div className="mapPlaceholder">
-                        <span className="mapPlaceholderTitle">Interactive Map Viewer</span>
-                        <span className="mapPlaceholderText">Select a boundary line on the map to target your objection.</span>
-                    </div>
+                    <Map mode="objection" onMapClick={setSelectedPoint} />
                 </section>
                 
                 <section className="formSection">
@@ -47,7 +45,7 @@ function SubmitObjectionPage() {
                                 <label>Selected Boundary Segment</label>
                                 <input 
                                     type="text" 
-                                    value="Segment 14A (Yonge St. between Dundas & Queen)" 
+                                    value={selectedPoint ? `${selectedPoint.lng}, ${selectedPoint.lat}` : 'No boundary selected'}
                                     disabled 
                                     aria-label="Boundary segment automatically selected from map"
                                 />
