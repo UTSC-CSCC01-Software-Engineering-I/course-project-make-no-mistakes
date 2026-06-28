@@ -141,18 +141,6 @@
     margin-bottom: 12px;
 }
 
-.cpSelectedPoint {
-    background-color: #d8f3ef;
-    border: 2px solid #317a51;
-    border-radius: 8px;
-    color: #1e5d2d;
-    font-family: Verdana, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    padding: 10px 12px;
-}
-
 .cpStatHeader {
     display: flex;
     justify-content: space-between;

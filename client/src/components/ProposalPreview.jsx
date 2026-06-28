@@ -12,7 +12,6 @@ function ProposalPreview({
     postRating,
     postVotes,
     postComments,
-    children,
 }) {
     return(
     // wrapped in a box (the proposalPreview)
@@ -33,19 +32,13 @@ function ProposalPreview({
             </div>
         </header>
 
-        {children ? (
-            <div className="proposalPreviewMap">
-                {children}
-            </div>
-        ) : (
-            <NavLink to={`/view/${proposalId}`} className="proposalPreviewLink">
-                <img
-                    className="proposalPreviewImage"
-                    src={previewURL}
-                    alt="Preview thumbnail of the proposal"
-                />
-            </NavLink>
-        )}
+        <NavLink to={`/view/${proposalId}`} className="proposalPreviewLink">
+            <img
+                className="proposalPreviewImage"
+                src={previewURL}
+                alt="Preview thumbnail of the proposal"
+            />
+        </NavLink>
 
         <footer className="proposalPreviewHeader">
             <div className="distEvenHorizontalBox">

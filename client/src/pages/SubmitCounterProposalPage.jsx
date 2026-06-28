@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import Map from '../components/Map';
 import './SubmitCounterProposalPage.css';
 
 function SubmitCounterProposalPage() {
     const [rationaleText, setRationaleText] = useState('');
-    const [selectedPoint, setSelectedPoint] = useState(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,17 +27,15 @@ function SubmitCounterProposalPage() {
                         <button className="cpToolButton assignB">Assign to Riding B</button>
                         <button className="cpToolButton cpUndo">Undo</button>
                     </div>
-                    <Map mode="counterproposal" onMapClick={setSelectedPoint} />
+                    <div className="cpMapPlaceholder">
+                        <span className="cpMapTitle">Interactive Mapping Tool</span>
+                        <span className="cpMapText">Click blocks on the map to reassign them between ridings.</span>
+                    </div>
                 </section>
                 
                 <section className="cpPanelSection">
                     <div className="cpStatsPanel">
                         <h2>Population Balance</h2>
-                        {selectedPoint && (
-                            <div className="cpSelectedPoint">
-                                Selected point: {selectedPoint.lng}, {selectedPoint.lat}
-                            </div>
-                        )}
                         
                         <div className="cpStatCard">
                             <div className="cpStatHeader">
