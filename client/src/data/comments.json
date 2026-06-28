@@ -1,0 +1,31 @@
+[
+    {
+        "id": 1,
+        "proposalId": 1,
+        "relatedRidings": [],
+        "postUser": "username1",
+        "postDate": "06/19/2026",
+        "postComment": "I think this is a great map!",
+        "postLikes": 2
+    },
+
+    {
+        "id": 2,
+        "proposalId": 1,
+        "relatedRidings": [3, 5, 29],
+        "postUser": "username2",
+        "postDate": "05/15/2026",
+        "postComment": "I think this could have been improved",
+        "postLikes": 7
+    },
+
+    {
+        "id": 1,
+        "proposalId": 2,
+        "relatedRidings": [4, 9, 12],
+        "postUser": "username3",
+        "postDate": "03/29/2026",
+        "postComment": "I would like it if we could combine these...",
+        "postLikes": 21
+    }
+]

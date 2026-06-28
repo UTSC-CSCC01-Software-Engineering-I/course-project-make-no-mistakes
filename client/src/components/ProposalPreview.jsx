@@ -10,7 +10,7 @@ function ProposalPreview({
     postDate,
     previewURL,
     postRating,
-    postVotes,
+    postLikes,
     postComments,
 }) {
     return(
@@ -49,7 +49,7 @@ function ProposalPreview({
                         alt="Thumbs up Icon"
                     />
                     <span className="proposalPreviewHeaderText">
-                        {postRating}%, {postVotes} votes
+                        {postRating}%, {postLikes} votes
                     </span>
                 </div>
                 <div className="evenHorizontalBox">

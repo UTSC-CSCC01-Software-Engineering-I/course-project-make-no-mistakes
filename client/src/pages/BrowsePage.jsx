@@ -10,7 +10,7 @@ function BrowsePage() {
                 <h1>Browse Proposals:</h1>
             </header>
             <SearchBar />
-            <section className="proposalBrowseGrid">
+            <section className="proposalPreviewGrid">
                 {proposals.map((proposal) =>(
                     <ProposalPreview
                         key={proposal.id}
@@ -19,7 +19,7 @@ function BrowsePage() {
                         postDate={proposal.postDate}
                         previewURL={proposal.previewURL}
                         postRating={proposal.postRating}
-                        postVotes={proposal.postVotes}
+                        postLikes={proposal.postLikes}
                         postComments={proposal.postComments}
                     />
                 ))}
