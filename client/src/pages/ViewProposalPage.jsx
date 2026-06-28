@@ -1,5 +1,8 @@
 import { useParams } from 'react-router'
+import { useState } from 'react'
 import proposals from '../data/proposals.json'
+import comments from '../data/comments.json'
+import ProposalComment from '../components/ProposalComment'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -22,6 +25,11 @@ function ViewProposalPage() {
     )
   }
 
+  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+  function incrementLikes() {
+    setLikes(previousLikes => previousLikes + 1)
+  }
+
   return (
     <main>
       <header className="proposalPageHeader">
@@ -31,7 +39,7 @@ function ViewProposalPage() {
           </span>
 
           <div className="ratingBox">
-            <button>
+            <button className="prettierButton" onClick={incrementLikes}>
               <img
                 className="iconBox"
                 src={thumbsUpIcon}
@@ -40,7 +48,7 @@ function ViewProposalPage() {
             </button>
 
             <span className="proposalHeaderText">
-              {proposal.postRating}
+              {likes} likes
             </span>
           </div>
 
@@ -57,15 +65,17 @@ function ViewProposalPage() {
             Comments:
           </span>
 
-          <img
-            className="iconBox"
-            src={commentIcon}
-            alt="comment icon"
-          />
+          <div className="commentCountBox">
+            <img
+              className="iconBox"
+              src={commentIcon}
+              alt="comment icon"
+            />
 
-          <span className="smallerCommentHeaderText">
-            {proposal.postComments}
-          </span>
+            <span className="smallerCommentHeaderText">
+              {proposal.postComments}
+            </span>
+          </div>
         </div>
       </header>
 
@@ -81,7 +91,21 @@ function ViewProposalPage() {
         </div>
 
         <div className="commentBox">
-          {/* user comments will go here */}
+          <section className="proposalCommentList">
+            {comments
+              .filter(comment => String(comment.proposalId) === String(proposal.id))
+              .map(comment => (
+                <ProposalComment
+                  key={comment.id}
+                  proposalId={comment.proposalId}
+                  relatedRidings={comment.relatedRidings}
+                  postUser={comment.postUser}
+                  postDate={comment.postDate}
+                  postComment={comment.postComment}
+                  postLikes={comment.postLikes}
+                />
+              ))}
+          </section>
         </div>
       </div>
     </main>

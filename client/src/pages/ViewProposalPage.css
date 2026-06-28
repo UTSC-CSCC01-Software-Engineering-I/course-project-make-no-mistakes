@@ -6,6 +6,13 @@ body {
     margin: 0;
 }
 
+.prettierButton {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
 .proposalPageHeader {
     display: flex;
     width: 100vw;
@@ -79,24 +86,42 @@ body {
 .proposalHeaderText {
     font-family: Verdana;
     color: #498d72;
-    font-weight: 400;
-    font-size: 12px;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .commentHeaderText {
     font-family: Verdana;
     color: #9773b3;
-    font-weight: 500;
-    font-size: 20px;
+    font-weight: 550;
+    font-size: 16px;
 }
 .smallerCommentHeaderText {
     font-family: Verdana;
     color: #9773b3;
-    font-weight: 400;
-    font-size: 12px;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .ratingBox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.horizontalCommentHeaderBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 30vw;
+    padding: 12px;
+
+    background-color: #d3c3e2;
+    border-bottom: 2px solid #635173;
+}
+
+.commentCountBox {
     display: flex;
     align-items: center;
     gap: 6px;
