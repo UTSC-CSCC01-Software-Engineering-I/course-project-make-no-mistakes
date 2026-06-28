@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import SearchBar from '../components/SearchBar';
 import ProposalPreview from '../components/ProposalPreview';
+import Map from '../components/Map';
 import './UserSubmissionsPage.css';
 
 const fakeSubmissions = [
@@ -132,7 +133,9 @@ function UserSubmissionsPage() {
                                                 postRating={sub.postRating}
                                                 postVotes={sub.postVotes}
                                                 postComments={sub.postComments}
-                                            />
+                                            >
+                                                {sub.type === 'counterproposal' && <Map mode="view" />}
+                                            </ProposalPreview>
                                         </div>
                                     )}
                                 </div>
