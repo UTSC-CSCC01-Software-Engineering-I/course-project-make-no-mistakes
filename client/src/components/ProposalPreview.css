@@ -1,51 +1,60 @@
-.proposalPreview{
+.proposalPreview {
     width: 100%;
-    max-width: 500px;
     border-radius: 12px;
     border: 3px solid #317a51;
     overflow: hidden;
     background-color: #87bd93;
     margin: 0;
 }
-.proposalPreviewHeader{
+
+.proposalPreviewHeader {
     padding: 12px;
     background-color: #87bd93;
 }
-.distEvenHorizontalBox{
+
+.distEvenHorizontalBox {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
 }
-.evenHorizontalBox{
+
+.evenHorizontalBox {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
-.proposalPreviewHeaderText{
-    font-family: Verdana;
+
+.proposalPreviewHeaderText {
+    font-family: Verdana, sans-serif;
     color: #1e5d2d;
     font-weight: 600;
     font-size: 12px;
 }
+
 .proposalPreviewLink {
     display: block;
+    width: 100%;
     line-height: 0;
 }
-.proposalPreviewImage{
+
+.proposalPreviewImage {
     display: block;
     width: 100%;
-    height: 280px;
+    height: 220px;
     object-fit: cover;
+
     border-top: 3px solid #317a51;
     border-bottom: 3px solid #317a51;
 }
+
 .proposalPreviewMap {
     border-top: 3px solid #317a51;
     border-bottom: 3px solid #317a51;
 }
-.proposalPreviewIcon{
+
+.proposalPreviewIcon {
     width: 24px;
     height: 24px;
     object-fit: contain;
