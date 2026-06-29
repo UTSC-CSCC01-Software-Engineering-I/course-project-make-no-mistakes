@@ -134,7 +134,7 @@ function UserSubmissionsPage() {
                                                 postVotes={sub.postVotes}
                                                 postComments={sub.postComments}
                                             >
-                                                {sub.type === 'counterproposal' && <Map mode="view" />}
+                                                <Map mode="view" />
                                             </ProposalPreview>
                                         </div>
                                     )}
