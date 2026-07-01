@@ -63,6 +63,11 @@ body {
     justify-content: center;
 }
 
+.mapBox .mapContainer {
+    height: 100%;
+    width: 100%;
+}
+
 .commentBox {
     width: 30vw;
     height: 100%;

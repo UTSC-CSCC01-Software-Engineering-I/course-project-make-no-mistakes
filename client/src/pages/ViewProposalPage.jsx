@@ -3,6 +3,7 @@ import { useState } from 'react'
 import proposals from '../data/proposals.json'
 import comments from '../data/comments.json'
 import ProposalComment from '../components/ProposalComment'
+import Map from '../components/Map'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -81,13 +82,7 @@ function ViewProposalPage() {
 
       <div className="proposalContentBox">
         <div className="mapBox">
-          {/* this is just a placeholder image until we are able to add
-              the actual map here :) */}
-          <img
-            className="mapImage"
-            src={proposal.previewURL || "https://geology.com/canada/ontario-map.gif"}
-            alt="proposal map"
-          />
+          <Map mode="view" />
         </div>
 
         <div className="commentBox">
