@@ -1,0 +1,2368 @@
+[
+      {
+            "id": "10001",
+            "province": "Newfoundland and Labrador",
+            "riding": "Avalon",
+            "query": "Total population in private households by citizenship",
+            "population": 80155
+      },
+      {
+            "id": "10002",
+            "province": "Newfoundland and Labrador",
+            "riding": "Bonavista--Burin--Trinity",
+            "query": "Total population in private households by citizenship",
+            "population": 75960
+      },
+      {
+            "id": "10003",
+            "province": "Newfoundland and Labrador",
+            "riding": "Coast of Bays--Central--Notre Dame",
+            "query": "Total population in private households by citizenship",
+            "population": 76750
+      },
+      {
+            "id": "10004",
+            "province": "Newfoundland and Labrador",
+            "riding": "Labrador",
+            "query": "Total population in private households by citizenship",
+            "population": 26550
+      },
+      {
+            "id": "10005",
+            "province": "Newfoundland and Labrador",
+            "riding": "Long Range Mountains",
+            "query": "Total population in private households by citizenship",
+            "population": 86510
+      },
+      {
+            "id": "10006",
+            "province": "Newfoundland and Labrador",
+            "riding": "St. John's East",
+            "query": "Total population in private households by citizenship",
+            "population": 80490
+      },
+      {
+            "id": "10007",
+            "province": "Newfoundland and Labrador",
+            "riding": "St. John's South--Mount Pearl",
+            "query": "Total population in private households by citizenship",
+            "population": 80860
+      },
+      {
+            "id": "11001",
+            "province": "Prince Edward Island",
+            "riding": "Cardigan",
+            "query": "Total population in private households by citizenship",
+            "population": 35530
+      },
+      {
+            "id": "11002",
+            "province": "Prince Edward Island",
+            "riding": "Charlottetown",
+            "query": "Total population in private households by citizenship",
+            "population": 33315
+      },
+      {
+            "id": "11003",
+            "province": "Prince Edward Island",
+            "riding": "Egmont",
+            "query": "Total population in private households by citizenship",
+            "population": 33820
+      },
+      {
+            "id": "11004",
+            "province": "Prince Edward Island",
+            "riding": "Malpeque",
+            "query": "Total population in private households by citizenship",
+            "population": 34710
+      },
+      {
+            "id": "12001",
+            "province": "Nova Scotia",
+            "riding": "Cape Breton--Canso",
+            "query": "Total population in private households by citizenship",
+            "population": 74320
+      },
+      {
+            "id": "12002",
+            "province": "Nova Scotia",
+            "riding": "Central Nova",
+            "query": "Total population in private households by citizenship",
+            "population": 73660
+      },
+      {
+            "id": "12003",
+            "province": "Nova Scotia",
+            "riding": "Cumberland--Colchester",
+            "query": "Total population in private households by citizenship",
+            "population": 80265
+      },
+      {
+            "id": "12004",
+            "province": "Nova Scotia",
+            "riding": "Dartmouth--Cole Harbour",
+            "query": "Total population in private households by citizenship",
+            "population": 90100
+      },
+      {
+            "id": "12005",
+            "province": "Nova Scotia",
+            "riding": "Halifax",
+            "query": "Total population in private households by citizenship",
+            "population": 89510
+      },
+      {
+            "id": "12006",
+            "province": "Nova Scotia",
+            "riding": "Halifax West",
+            "query": "Total population in private households by citizenship",
+            "population": 86170
+      },
+      {
+            "id": "12007",
+            "province": "Nova Scotia",
+            "riding": "Kings--Hants",
+            "query": "Total population in private households by citizenship",
+            "population": 82230
+      },
+      {
+            "id": "12008",
+            "province": "Nova Scotia",
+            "riding": "Sackville--Preston--Chezzetcook",
+            "query": "Total population in private households by citizenship",
+            "population": 85040
+      },
+      {
+            "id": "12009",
+            "province": "Nova Scotia",
+            "riding": "South Shore--St. Margarets",
+            "query": "Total population in private households by citizenship",
+            "population": 91330
+      },
+      {
+            "id": "12010",
+            "province": "Nova Scotia",
+            "riding": "Sydney--Victoria",
+            "query": "Total population in private households by citizenship",
+            "population": 71730
+      },
+      {
+            "id": "12011",
+            "province": "Nova Scotia",
+            "riding": "West Nova",
+            "query": "Total population in private households by citizenship",
+            "population": 81820
+      },
+      {
+            "id": "13001",
+            "province": "New Brunswick",
+            "riding": "Acadie--Bathurst",
+            "query": "Total population in private households by citizenship",
+            "population": 77635
+      },
+      {
+            "id": "13002",
+            "province": "New Brunswick",
+            "riding": "Beauséjour",
+            "query": "Total population in private households by citizenship",
+            "population": 77985
+      },
+      {
+            "id": "13003",
+            "province": "New Brunswick",
+            "riding": "Fredericton",
+            "query": "Total population in private households by citizenship",
+            "population": 80195
+      },
+      {
+            "id": "13004",
+            "province": "New Brunswick",
+            "riding": "Fundy Royal",
+            "query": "Total population in private households by citizenship",
+            "population": 78780
+      },
+      {
+            "id": "13005",
+            "province": "New Brunswick",
+            "riding": "Madawaska--Restigouche",
+            "query": "Total population in private households by citizenship",
+            "population": 60630
+      },
+      {
+            "id": "13006",
+            "province": "New Brunswick",
+            "riding": "Miramichi--Grand Lake",
+            "query": "Total population in private households by citizenship",
+            "population": 58620
+      },
+      {
+            "id": "13007",
+            "province": "New Brunswick",
+            "riding": "Moncton--Riverview--Dieppe",
+            "query": "Total population in private households by citizenship",
+            "population": 87480
+      },
+      {
+            "id": "13008",
+            "province": "New Brunswick",
+            "riding": "New Brunswick Southwest",
+            "query": "Total population in private households by citizenship",
+            "population": 65255
+      },
+      {
+            "id": "13009",
+            "province": "New Brunswick",
+            "riding": "Saint John--Rothesay",
+            "query": "Total population in private households by citizenship",
+            "population": 79875
+      },
+      {
+            "id": "13010",
+            "province": "New Brunswick",
+            "riding": "Tobique--Mactaquac",
+            "query": "Total population in private households by citizenship",
+            "population": 69380
+      },
+      {
+            "id": "24001",
+            "province": "Quebec",
+            "riding": "Abitibi--Baie-James--Nunavik--Eeyou",
+            "query": "Total population in private households by citizenship",
+            "population": 84450
+      },
+      {
+            "id": "24002",
+            "province": "Quebec",
+            "riding": "Abitibi--Témiscamingue",
+            "query": "Total population in private households by citizenship",
+            "population": 100520
+      },
+      {
+            "id": "24003",
+            "province": "Quebec",
+            "riding": "Ahuntsic-Cartierville",
+            "query": "Total population in private households by citizenship",
+            "population": 106520
+      },
+      {
+            "id": "24004",
+            "province": "Quebec",
+            "riding": "Alfred-Pellan",
+            "query": "Total population in private households by citizenship",
+            "population": 95425
+      },
+      {
+            "id": "24005",
+            "province": "Quebec",
+            "riding": "Argenteuil--La Petite-Nation",
+            "query": "Total population in private households by citizenship",
+            "population": 92630
+      },
+      {
+            "id": "24006",
+            "province": "Quebec",
+            "riding": "Avignon--La Mitis--Matane--Matapédia",
+            "query": "Total population in private households by citizenship",
+            "population": 72380
+      },
+      {
+            "id": "24007",
+            "province": "Quebec",
+            "riding": "Beauce",
+            "query": "Total population in private households by citizenship",
+            "population": 104085
+      },
+      {
+            "id": "24008",
+            "province": "Quebec",
+            "riding": "Beauport--Limoilou",
+            "query": "Total population in private households by citizenship",
+            "population": 89460
+      },
+      {
+            "id": "24009",
+            "province": "Quebec",
+            "riding": "Bécancour--Nicolet--Saurel",
+            "query": "Total population in private households by citizenship",
+            "population": 91215
+      },
+      {
+            "id": "24010",
+            "province": "Quebec",
+            "riding": "Bellechasse--Les Etchemins--Lévis",
+            "query": "Total population in private households by citizenship",
+            "population": 108395
+      },
+      {
+            "id": "24011",
+            "province": "Quebec",
+            "riding": "Beloeil--Chambly",
+            "query": "Total population in private households by citizenship",
+            "population": 107620
+      },
+      {
+            "id": "24012",
+            "province": "Quebec",
+            "riding": "Berthier--Maskinongé",
+            "query": "Total population in private households by citizenship",
+            "population": 96555
+      },
+      {
+            "id": "24013",
+            "province": "Quebec",
+            "riding": "Thérèse-De Blainville",
+            "query": "Total population in private households by citizenship",
+            "population": 96720
+      },
+      {
+            "id": "24014",
+            "province": "Quebec",
+            "riding": "Pierre-Boucher--Les Patriotes--Verchères",
+            "query": "Total population in private households by citizenship",
+            "population": 94110
+      },
+      {
+            "id": "24015",
+            "province": "Quebec",
+            "riding": "Bourassa",
+            "query": "Total population in private households by citizenship",
+            "population": 97365
+      },
+      {
+            "id": "24016",
+            "province": "Quebec",
+            "riding": "Brome--Missisquoi",
+            "query": "Total population in private households by citizenship",
+            "population": 96885
+      },
+      {
+            "id": "24017",
+            "province": "Quebec",
+            "riding": "Brossard--Saint-Lambert",
+            "query": "Total population in private households by citizenship",
+            "population": 99540
+      },
+      {
+            "id": "24018",
+            "province": "Quebec",
+            "riding": "Rimouski-Neigette--Témiscouata--Les Basques",
+            "query": "Total population in private households by citizenship",
+            "population": 81660
+      },
+      {
+            "id": "24019",
+            "province": "Quebec",
+            "riding": "Charlesbourg--Haute-Saint-Charles",
+            "query": "Total population in private households by citizenship",
+            "population": 101495
+      },
+      {
+            "id": "24020",
+            "province": "Quebec",
+            "riding": "Beauport--Côte-de-Beaupré--Île d'Orléans--Charlevoix",
+            "query": "Total population in private households by citizenship",
+            "population": 90130
+      },
+      {
+            "id": "24021",
+            "province": "Quebec",
+            "riding": "Châteauguay--Lacolle",
+            "query": "Total population in private households by citizenship",
+            "population": 90710
+      },
+      {
+            "id": "24022",
+            "province": "Quebec",
+            "riding": "Chicoutimi--Le Fjord",
+            "query": "Total population in private households by citizenship",
+            "population": 79365
+      },
+      {
+            "id": "24023",
+            "province": "Quebec",
+            "riding": "Compton--Stanstead",
+            "query": "Total population in private households by citizenship",
+            "population": 100705
+      },
+      {
+            "id": "24024",
+            "province": "Quebec",
+            "riding": "Dorval--Lachine--LaSalle",
+            "query": "Total population in private households by citizenship",
+            "population": 104480
+      },
+      {
+            "id": "24025",
+            "province": "Quebec",
+            "riding": "Drummond",
+            "query": "Total population in private households by citizenship",
+            "population": 95870
+      },
+      {
+            "id": "24026",
+            "province": "Quebec",
+            "riding": "Gaspésie--Les Îles-de-la-Madeleine",
+            "query": "Total population in private households by citizenship",
+            "population": 77165
+      },
+      {
+            "id": "24027",
+            "province": "Quebec",
+            "riding": "Gatineau",
+            "query": "Total population in private households by citizenship",
+            "population": 104810
+      },
+      {
+            "id": "24028",
+            "province": "Quebec",
+            "riding": "Hochelaga",
+            "query": "Total population in private households by citizenship",
+            "population": 100085
+      },
+      {
+            "id": "24029",
+            "province": "Quebec",
+            "riding": "Honoré-Mercier",
+            "query": "Total population in private households by citizenship",
+            "population": 101105
+      },
+      {
+            "id": "24030",
+            "province": "Quebec",
+            "riding": "Hull--Aylmer",
+            "query": "Total population in private households by citizenship",
+            "population": 101610
+      },
+      {
+            "id": "24031",
+            "province": "Quebec",
+            "riding": "Joliette",
+            "query": "Total population in private households by citizenship",
+            "population": 98085
+      },
+      {
+            "id": "24032",
+            "province": "Quebec",
+            "riding": "Jonquière",
+            "query": "Total population in private households by citizenship",
+            "population": 86125
+      },
+      {
+            "id": "24033",
+            "province": "Quebec",
+            "riding": "La Pointe-de-l'Île",
+            "query": "Total population in private households by citizenship",
+            "population": 100300
+      },
+      {
+            "id": "24034",
+            "province": "Quebec",
+            "riding": "La Prairie",
+            "query": "Total population in private households by citizenship",
+            "population": 99020
+      },
+      {
+            "id": "24035",
+            "province": "Quebec",
+            "riding": "Lac-Saint-Jean",
+            "query": "Total population in private households by citizenship",
+            "population": 102615
+      },
+      {
+            "id": "24036",
+            "province": "Quebec",
+            "riding": "Lac-Saint-Louis",
+            "query": "Total population in private households by citizenship",
+            "population": 106270
+      },
+      {
+            "id": "24037",
+            "province": "Quebec",
+            "riding": "LaSalle--Émard--Verdun",
+            "query": "Total population in private households by citizenship",
+            "population": 102515
+      },
+      {
+            "id": "24038",
+            "province": "Quebec",
+            "riding": "Laurentides--Labelle",
+            "query": "Total population in private households by citizenship",
+            "population": 108810
+      },
+      {
+            "id": "24039",
+            "province": "Quebec",
+            "riding": "Laurier--Sainte-Marie",
+            "query": "Total population in private households by citizenship",
+            "population": 103590
+      },
+      {
+            "id": "24040",
+            "province": "Quebec",
+            "riding": "Laval--Les Îles",
+            "query": "Total population in private households by citizenship",
+            "population": 101375
+      },
+      {
+            "id": "24041",
+            "province": "Quebec",
+            "riding": "Longueuil--Charles-LeMoyne",
+            "query": "Total population in private households by citizenship",
+            "population": 103595
+      },
+      {
+            "id": "24042",
+            "province": "Quebec",
+            "riding": "Lévis--Lotbinière",
+            "query": "Total population in private households by citizenship",
+            "population": 106390
+      },
+      {
+            "id": "24043",
+            "province": "Quebec",
+            "riding": "Longueuil--Saint-Hubert",
+            "query": "Total population in private households by citizenship",
+            "population": 102520
+      },
+      {
+            "id": "24044",
+            "province": "Quebec",
+            "riding": "Louis-Hébert",
+            "query": "Total population in private households by citizenship",
+            "population": 100610
+      },
+      {
+            "id": "24045",
+            "province": "Quebec",
+            "riding": "Louis-Saint-Laurent",
+            "query": "Total population in private households by citizenship",
+            "population": 105845
+      },
+      {
+            "id": "24046",
+            "province": "Quebec",
+            "riding": "Manicouagan",
+            "query": "Total population in private households by citizenship",
+            "population": 92985
+      },
+      {
+            "id": "24047",
+            "province": "Quebec",
+            "riding": "Mégantic--L'Érable",
+            "query": "Total population in private households by citizenship",
+            "population": 85885
+      },
+      {
+            "id": "24048",
+            "province": "Quebec",
+            "riding": "Mirabel",
+            "query": "Total population in private households by citizenship",
+            "population": 101740
+      },
+      {
+            "id": "24049",
+            "province": "Quebec",
+            "riding": "Montarville",
+            "query": "Total population in private households by citizenship",
+            "population": 93625
+      },
+      {
+            "id": "24050",
+            "province": "Quebec",
+            "riding": "Montcalm",
+            "query": "Total population in private households by citizenship",
+            "population": 98060
+      },
+      {
+            "id": "24051",
+            "province": "Quebec",
+            "riding": "Montmagny--L'Islet--Kamouraska--Rivière-du-Loup",
+            "query": "Total population in private households by citizenship",
+            "population": 93505
+      },
+      {
+            "id": "24052",
+            "province": "Quebec",
+            "riding": "Mount Royal",
+            "query": "Total population in private households by citizenship",
+            "population": 99230
+      },
+      {
+            "id": "24053",
+            "province": "Quebec",
+            "riding": "Notre-Dame-de-Grâce--Westmount",
+            "query": "Total population in private households by citizenship",
+            "population": 102755
+      },
+      {
+            "id": "24054",
+            "province": "Quebec",
+            "riding": "Outremont",
+            "query": "Total population in private households by citizenship",
+            "population": 98740
+      },
+      {
+            "id": "24055",
+            "province": "Quebec",
+            "riding": "Papineau",
+            "query": "Total population in private households by citizenship",
+            "population": 107835
+      },
+      {
+            "id": "24056",
+            "province": "Quebec",
+            "riding": "Pierrefonds--Dollard",
+            "query": "Total population in private households by citizenship",
+            "population": 107395
+      },
+      {
+            "id": "24057",
+            "province": "Quebec",
+            "riding": "Pontiac",
+            "query": "Total population in private households by citizenship",
+            "population": 105725
+      },
+      {
+            "id": "24058",
+            "province": "Quebec",
+            "riding": "Portneuf--Jacques-Cartier",
+            "query": "Total population in private households by citizenship",
+            "population": 102235
+      },
+      {
+            "id": "24059",
+            "province": "Quebec",
+            "riding": "Québec",
+            "query": "Total population in private households by citizenship",
+            "population": 92345
+      },
+      {
+            "id": "24060",
+            "province": "Quebec",
+            "riding": "Repentigny",
+            "query": "Total population in private households by citizenship",
+            "population": 110205
+      },
+      {
+            "id": "24061",
+            "province": "Quebec",
+            "riding": "Richmond--Arthabaska",
+            "query": "Total population in private households by citizenship",
+            "population": 100745
+      },
+      {
+            "id": "24062",
+            "province": "Quebec",
+            "riding": "Rivière-des-Mille-Îles",
+            "query": "Total population in private households by citizenship",
+            "population": 101870
+      },
+      {
+            "id": "24063",
+            "province": "Quebec",
+            "riding": "Rivière-du-Nord",
+            "query": "Total population in private households by citizenship",
+            "population": 99830
+      },
+      {
+            "id": "24064",
+            "province": "Quebec",
+            "riding": "Rosemont--La Petite-Patrie",
+            "query": "Total population in private households by citizenship",
+            "population": 104175
+      },
+      {
+            "id": "24065",
+            "province": "Quebec",
+            "riding": "Marc-Aurèle-Fortin",
+            "query": "Total population in private households by citizenship",
+            "population": 95460
+      },
+      {
+            "id": "24066",
+            "province": "Quebec",
+            "riding": "Saint-Hyacinthe--Bagot",
+            "query": "Total population in private households by citizenship",
+            "population": 96855
+      },
+      {
+            "id": "24067",
+            "province": "Quebec",
+            "riding": "Saint-Jean",
+            "query": "Total population in private households by citizenship",
+            "population": 105825
+      },
+      {
+            "id": "24068",
+            "province": "Quebec",
+            "riding": "Saint-Laurent",
+            "query": "Total population in private households by citizenship",
+            "population": 92120
+      },
+      {
+            "id": "24069",
+            "province": "Quebec",
+            "riding": "Saint-Léonard--Saint-Michel",
+            "query": "Total population in private households by citizenship",
+            "population": 109315
+      },
+      {
+            "id": "24070",
+            "province": "Quebec",
+            "riding": "Saint-Maurice--Champlain",
+            "query": "Total population in private households by citizenship",
+            "population": 107220
+      },
+      {
+            "id": "24071",
+            "province": "Quebec",
+            "riding": "Salaberry--Suroît",
+            "query": "Total population in private households by citizenship",
+            "population": 104785
+      },
+      {
+            "id": "24072",
+            "province": "Quebec",
+            "riding": "Shefford",
+            "query": "Total population in private households by citizenship",
+            "population": 104980
+      },
+      {
+            "id": "24073",
+            "province": "Quebec",
+            "riding": "Sherbrooke",
+            "query": "Total population in private households by citizenship",
+            "population": 104040
+      },
+      {
+            "id": "24074",
+            "province": "Quebec",
+            "riding": "Vaudreuil--Soulanges",
+            "query": "Total population in private households by citizenship",
+            "population": 110785
+      },
+      {
+            "id": "24075",
+            "province": "Quebec",
+            "riding": "Terrebonne",
+            "query": "Total population in private households by citizenship",
+            "population": 105605
+      },
+      {
+            "id": "24076",
+            "province": "Quebec",
+            "riding": "Trois-Rivières",
+            "query": "Total population in private households by citizenship",
+            "population": 104730
+      },
+      {
+            "id": "24077",
+            "province": "Quebec",
+            "riding": "Ville-Marie--Le Sud-Ouest--Île-des-Soeurs",
+            "query": "Total population in private households by citizenship",
+            "population": 100715
+      },
+      {
+            "id": "24078",
+            "province": "Quebec",
+            "riding": "Vimy",
+            "query": "Total population in private households by citizenship",
+            "population": 100455
+      },
+      {
+            "id": "35001",
+            "province": "Ontario",
+            "riding": "Ajax",
+            "query": "Total population in private households by citizenship",
+            "population": 109220
+      },
+      {
+            "id": "35002",
+            "province": "Ontario",
+            "riding": "Algoma--Manitoulin--Kapuskasing",
+            "query": "Total population in private households by citizenship",
+            "population": 78905
+      },
+      {
+            "id": "35003",
+            "province": "Ontario",
+            "riding": "Aurora--Oak Ridges--Richmond Hill",
+            "query": "Total population in private households by citizenship",
+            "population": 104730
+      },
+      {
+            "id": "35004",
+            "province": "Ontario",
+            "riding": "Barrie--Innisfil",
+            "query": "Total population in private households by citizenship",
+            "population": 100540
+      },
+      {
+            "id": "35005",
+            "province": "Ontario",
+            "riding": "Barrie--Springwater--Oro-Medonte",
+            "query": "Total population in private households by citizenship",
+            "population": 96450
+      },
+      {
+            "id": "35006",
+            "province": "Ontario",
+            "riding": "Bay of Quinte",
+            "query": "Total population in private households by citizenship",
+            "population": 107005
+      },
+      {
+            "id": "35007",
+            "province": "Ontario",
+            "riding": "Beaches--East York",
+            "query": "Total population in private households by citizenship",
+            "population": 106030
+      },
+      {
+            "id": "35008",
+            "province": "Ontario",
+            "riding": "Brampton Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 102980
+      },
+      {
+            "id": "35009",
+            "province": "Ontario",
+            "riding": "Brampton East",
+            "query": "Total population in private households by citizenship",
+            "population": 99335
+      },
+      {
+            "id": "35010",
+            "province": "Ontario",
+            "riding": "Brampton North",
+            "query": "Total population in private households by citizenship",
+            "population": 111065
+      },
+      {
+            "id": "35011",
+            "province": "Ontario",
+            "riding": "Brampton South",
+            "query": "Total population in private households by citizenship",
+            "population": 106050
+      },
+      {
+            "id": "35012",
+            "province": "Ontario",
+            "riding": "Brampton West",
+            "query": "Total population in private households by citizenship",
+            "population": 101885
+      },
+      {
+            "id": "35013",
+            "province": "Ontario",
+            "riding": "Brantford--Brant",
+            "query": "Total population in private households by citizenship",
+            "population": 130260
+      },
+      {
+            "id": "35014",
+            "province": "Ontario",
+            "riding": "Bruce--Grey--Owen Sound",
+            "query": "Total population in private households by citizenship",
+            "population": 103815
+      },
+      {
+            "id": "35015",
+            "province": "Ontario",
+            "riding": "Burlington",
+            "query": "Total population in private households by citizenship",
+            "population": 118960
+      },
+      {
+            "id": "35016",
+            "province": "Ontario",
+            "riding": "Cambridge",
+            "query": "Total population in private households by citizenship",
+            "population": 110350
+      },
+      {
+            "id": "35017",
+            "province": "Ontario",
+            "riding": "Chatham-Kent--Leamington",
+            "query": "Total population in private households by citizenship",
+            "population": 108505
+      },
+      {
+            "id": "35018",
+            "province": "Ontario",
+            "riding": "Davenport",
+            "query": "Total population in private households by citizenship",
+            "population": 102040
+      },
+      {
+            "id": "35019",
+            "province": "Ontario",
+            "riding": "Don Valley East",
+            "query": "Total population in private households by citizenship",
+            "population": 92210
+      },
+      {
+            "id": "35020",
+            "province": "Ontario",
+            "riding": "Don Valley North",
+            "query": "Total population in private households by citizenship",
+            "population": 101905
+      },
+      {
+            "id": "35021",
+            "province": "Ontario",
+            "riding": "Don Valley West",
+            "query": "Total population in private households by citizenship",
+            "population": 98935
+      },
+      {
+            "id": "35022",
+            "province": "Ontario",
+            "riding": "Dufferin--Caledon",
+            "query": "Total population in private households by citizenship",
+            "population": 115055
+      },
+      {
+            "id": "35023",
+            "province": "Ontario",
+            "riding": "Durham",
+            "query": "Total population in private households by citizenship",
+            "population": 114365
+      },
+      {
+            "id": "35024",
+            "province": "Ontario",
+            "riding": "Eglinton--Lawrence",
+            "query": "Total population in private households by citizenship",
+            "population": 110995
+      },
+      {
+            "id": "35025",
+            "province": "Ontario",
+            "riding": "Elgin--Middlesex--London",
+            "query": "Total population in private households by citizenship",
+            "population": 108205
+      },
+      {
+            "id": "35026",
+            "province": "Ontario",
+            "riding": "Essex",
+            "query": "Total population in private households by citizenship",
+            "population": 118090
+      },
+      {
+            "id": "35027",
+            "province": "Ontario",
+            "riding": "Etobicoke Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 113310
+      },
+      {
+            "id": "35028",
+            "province": "Ontario",
+            "riding": "Etobicoke--Lakeshore",
+            "query": "Total population in private households by citizenship",
+            "population": 114310
+      },
+      {
+            "id": "35029",
+            "province": "Ontario",
+            "riding": "Etobicoke North",
+            "query": "Total population in private households by citizenship",
+            "population": 116090
+      },
+      {
+            "id": "35030",
+            "province": "Ontario",
+            "riding": "Flamborough--Glanbrook",
+            "query": "Total population in private households by citizenship",
+            "population": 96550
+      },
+      {
+            "id": "35031",
+            "province": "Ontario",
+            "riding": "Glengarry--Prescott--Russell",
+            "query": "Total population in private households by citizenship",
+            "population": 103825
+      },
+      {
+            "id": "35032",
+            "province": "Ontario",
+            "riding": "Guelph",
+            "query": "Total population in private households by citizenship",
+            "population": 120550
+      },
+      {
+            "id": "35033",
+            "province": "Ontario",
+            "riding": "Haldimand--Norfolk",
+            "query": "Total population in private households by citizenship",
+            "population": 105585
+      },
+      {
+            "id": "35034",
+            "province": "Ontario",
+            "riding": "Haliburton--Kawartha Lakes--Brock",
+            "query": "Total population in private households by citizenship",
+            "population": 107745
+      },
+      {
+            "id": "35035",
+            "province": "Ontario",
+            "riding": "Hamilton Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 97860
+      },
+      {
+            "id": "35036",
+            "province": "Ontario",
+            "riding": "Hamilton East--Stoney Creek",
+            "query": "Total population in private households by citizenship",
+            "population": 106970
+      },
+      {
+            "id": "35037",
+            "province": "Ontario",
+            "riding": "Hamilton Mountain",
+            "query": "Total population in private households by citizenship",
+            "population": 102505
+      },
+      {
+            "id": "35038",
+            "province": "Ontario",
+            "riding": "Hamilton West--Ancaster--Dundas",
+            "query": "Total population in private households by citizenship",
+            "population": 105745
+      },
+      {
+            "id": "35039",
+            "province": "Ontario",
+            "riding": "Hastings--Lennox and Addington",
+            "query": "Total population in private households by citizenship",
+            "population": 90105
+      },
+      {
+            "id": "35040",
+            "province": "Ontario",
+            "riding": "Huron--Bruce",
+            "query": "Total population in private households by citizenship",
+            "population": 102790
+      },
+      {
+            "id": "35041",
+            "province": "Ontario",
+            "riding": "Kanata--Carleton",
+            "query": "Total population in private households by citizenship",
+            "population": 99820
+      },
+      {
+            "id": "35042",
+            "province": "Ontario",
+            "riding": "Kenora",
+            "query": "Total population in private households by citizenship",
+            "population": 53260
+      },
+      {
+            "id": "35043",
+            "province": "Ontario",
+            "riding": "King--Vaughan",
+            "query": "Total population in private households by citizenship",
+            "population": 108490
+      },
+      {
+            "id": "35044",
+            "province": "Ontario",
+            "riding": "Kingston and the Islands",
+            "query": "Total population in private households by citizenship",
+            "population": 113325
+      },
+      {
+            "id": "35045",
+            "province": "Ontario",
+            "riding": "Kitchener Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 100755
+      },
+      {
+            "id": "35046",
+            "province": "Ontario",
+            "riding": "Kitchener--Conestoga",
+            "query": "Total population in private households by citizenship",
+            "population": 92270
+      },
+      {
+            "id": "35047",
+            "province": "Ontario",
+            "riding": "Kitchener South--Hespeler",
+            "query": "Total population in private households by citizenship",
+            "population": 96490
+      },
+      {
+            "id": "35048",
+            "province": "Ontario",
+            "riding": "Lambton--Kent--Middlesex",
+            "query": "Total population in private households by citizenship",
+            "population": 103580
+      },
+      {
+            "id": "35049",
+            "province": "Ontario",
+            "riding": "Lanark--Frontenac--Kingston",
+            "query": "Total population in private households by citizenship",
+            "population": 96120
+      },
+      {
+            "id": "35050",
+            "province": "Ontario",
+            "riding": "Leeds--Grenville--Thousand Islands and Rideau Lakes",
+            "query": "Total population in private households by citizenship",
+            "population": 97610
+      },
+      {
+            "id": "35051",
+            "province": "Ontario",
+            "riding": "London--Fanshawe",
+            "query": "Total population in private households by citizenship",
+            "population": 117855
+      },
+      {
+            "id": "35052",
+            "province": "Ontario",
+            "riding": "London North Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 115610
+      },
+      {
+            "id": "35053",
+            "province": "Ontario",
+            "riding": "London West",
+            "query": "Total population in private households by citizenship",
+            "population": 117925
+      },
+      {
+            "id": "35054",
+            "province": "Ontario",
+            "riding": "Markham--Stouffville",
+            "query": "Total population in private households by citizenship",
+            "population": 108340
+      },
+      {
+            "id": "35055",
+            "province": "Ontario",
+            "riding": "Markham--Thornhill",
+            "query": "Total population in private households by citizenship",
+            "population": 102385
+      },
+      {
+            "id": "35056",
+            "province": "Ontario",
+            "riding": "Markham--Unionville",
+            "query": "Total population in private households by citizenship",
+            "population": 104125
+      },
+      {
+            "id": "35057",
+            "province": "Ontario",
+            "riding": "Milton",
+            "query": "Total population in private households by citizenship",
+            "population": 87085
+      },
+      {
+            "id": "35058",
+            "province": "Ontario",
+            "riding": "Mississauga Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 118185
+      },
+      {
+            "id": "35059",
+            "province": "Ontario",
+            "riding": "Mississauga East--Cooksville",
+            "query": "Total population in private households by citizenship",
+            "population": 121055
+      },
+      {
+            "id": "35060",
+            "province": "Ontario",
+            "riding": "Mississauga--Erin Mills",
+            "query": "Total population in private households by citizenship",
+            "population": 116480
+      },
+      {
+            "id": "35061",
+            "province": "Ontario",
+            "riding": "Mississauga--Lakeshore",
+            "query": "Total population in private households by citizenship",
+            "population": 117330
+      },
+      {
+            "id": "35062",
+            "province": "Ontario",
+            "riding": "Mississauga--Malton",
+            "query": "Total population in private households by citizenship",
+            "population": 117125
+      },
+      {
+            "id": "35063",
+            "province": "Ontario",
+            "riding": "Mississauga--Streetsville",
+            "query": "Total population in private households by citizenship",
+            "population": 118545
+      },
+      {
+            "id": "35064",
+            "province": "Ontario",
+            "riding": "Nepean",
+            "query": "Total population in private households by citizenship",
+            "population": 103515
+      },
+      {
+            "id": "35065",
+            "province": "Ontario",
+            "riding": "Newmarket--Aurora",
+            "query": "Total population in private households by citizenship",
+            "population": 108415
+      },
+      {
+            "id": "35066",
+            "province": "Ontario",
+            "riding": "Niagara Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 103875
+      },
+      {
+            "id": "35067",
+            "province": "Ontario",
+            "riding": "Niagara Falls",
+            "query": "Total population in private households by citizenship",
+            "population": 125380
+      },
+      {
+            "id": "35068",
+            "province": "Ontario",
+            "riding": "Niagara West",
+            "query": "Total population in private households by citizenship",
+            "population": 85020
+      },
+      {
+            "id": "35069",
+            "province": "Ontario",
+            "riding": "Nickel Belt",
+            "query": "Total population in private households by citizenship",
+            "population": 89965
+      },
+      {
+            "id": "35070",
+            "province": "Ontario",
+            "riding": "Nipissing--Timiskaming",
+            "query": "Total population in private households by citizenship",
+            "population": 89335
+      },
+      {
+            "id": "35071",
+            "province": "Ontario",
+            "riding": "Northumberland--Peterborough South",
+            "query": "Total population in private households by citizenship",
+            "population": 104785
+      },
+      {
+            "id": "35072",
+            "province": "Ontario",
+            "riding": "Oakville",
+            "query": "Total population in private households by citizenship",
+            "population": 118335
+      },
+      {
+            "id": "35073",
+            "province": "Ontario",
+            "riding": "Oakville North--Burlington",
+            "query": "Total population in private households by citizenship",
+            "population": 113115
+      },
+      {
+            "id": "35074",
+            "province": "Ontario",
+            "riding": "Oshawa",
+            "query": "Total population in private households by citizenship",
+            "population": 124045
+      },
+      {
+            "id": "35075",
+            "province": "Ontario",
+            "riding": "Ottawa Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 109750
+      },
+      {
+            "id": "35076",
+            "province": "Ontario",
+            "riding": "Orléans",
+            "query": "Total population in private households by citizenship",
+            "population": 117980
+      },
+      {
+            "id": "35077",
+            "province": "Ontario",
+            "riding": "Ottawa South",
+            "query": "Total population in private households by citizenship",
+            "population": 120395
+      },
+      {
+            "id": "35078",
+            "province": "Ontario",
+            "riding": "Ottawa--Vanier",
+            "query": "Total population in private households by citizenship",
+            "population": 107155
+      },
+      {
+            "id": "35079",
+            "province": "Ontario",
+            "riding": "Ottawa West--Nepean",
+            "query": "Total population in private households by citizenship",
+            "population": 109325
+      },
+      {
+            "id": "35080",
+            "province": "Ontario",
+            "riding": "Oxford",
+            "query": "Total population in private households by citizenship",
+            "population": 106965
+      },
+      {
+            "id": "35081",
+            "province": "Ontario",
+            "riding": "Parkdale--High Park",
+            "query": "Total population in private households by citizenship",
+            "population": 102500
+      },
+      {
+            "id": "35082",
+            "province": "Ontario",
+            "riding": "Parry Sound--Muskoka",
+            "query": "Total population in private households by citizenship",
+            "population": 88445
+      },
+      {
+            "id": "35083",
+            "province": "Ontario",
+            "riding": "Perth--Wellington",
+            "query": "Total population in private households by citizenship",
+            "population": 102760
+      },
+      {
+            "id": "35084",
+            "province": "Ontario",
+            "riding": "Peterborough--Kawartha",
+            "query": "Total population in private households by citizenship",
+            "population": 112665
+      },
+      {
+            "id": "35085",
+            "province": "Ontario",
+            "riding": "Pickering--Uxbridge",
+            "query": "Total population in private households by citizenship",
+            "population": 108335
+      },
+      {
+            "id": "35086",
+            "province": "Ontario",
+            "riding": "Renfrew--Nipissing--Pembroke",
+            "query": "Total population in private households by citizenship",
+            "population": 99770
+      },
+      {
+            "id": "35087",
+            "province": "Ontario",
+            "riding": "Richmond Hill",
+            "query": "Total population in private households by citizenship",
+            "population": 108130
+      },
+      {
+            "id": "35088",
+            "province": "Ontario",
+            "riding": "Carleton",
+            "query": "Total population in private households by citizenship",
+            "population": 88775
+      },
+      {
+            "id": "35089",
+            "province": "Ontario",
+            "riding": "St. Catharines",
+            "query": "Total population in private households by citizenship",
+            "population": 108535
+      },
+      {
+            "id": "35090",
+            "province": "Ontario",
+            "riding": "Toronto--St. Paul's",
+            "query": "Total population in private households by citizenship",
+            "population": 101370
+      },
+      {
+            "id": "35091",
+            "province": "Ontario",
+            "riding": "Sarnia--Lambton",
+            "query": "Total population in private households by citizenship",
+            "population": 104485
+      },
+      {
+            "id": "35092",
+            "province": "Ontario",
+            "riding": "Sault Ste. Marie",
+            "query": "Total population in private households by citizenship",
+            "population": 80485
+      },
+      {
+            "id": "35093",
+            "province": "Ontario",
+            "riding": "Scarborough--Agincourt",
+            "query": "Total population in private households by citizenship",
+            "population": 103315
+      },
+      {
+            "id": "35094",
+            "province": "Ontario",
+            "riding": "Scarborough Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 107305
+      },
+      {
+            "id": "35095",
+            "province": "Ontario",
+            "riding": "Scarborough--Guildwood",
+            "query": "Total population in private households by citizenship",
+            "population": 100485
+      },
+      {
+            "id": "35096",
+            "province": "Ontario",
+            "riding": "Scarborough North",
+            "query": "Total population in private households by citizenship",
+            "population": 100175
+      },
+      {
+            "id": "35097",
+            "province": "Ontario",
+            "riding": "Scarborough--Rouge Park",
+            "query": "Total population in private households by citizenship",
+            "population": 102130
+      },
+      {
+            "id": "35098",
+            "province": "Ontario",
+            "riding": "Scarborough Southwest",
+            "query": "Total population in private households by citizenship",
+            "population": 104605
+      },
+      {
+            "id": "35099",
+            "province": "Ontario",
+            "riding": "Simcoe--Grey",
+            "query": "Total population in private households by citizenship",
+            "population": 114025
+      },
+      {
+            "id": "35100",
+            "province": "Ontario",
+            "riding": "Simcoe North",
+            "query": "Total population in private households by citizenship",
+            "population": 105900
+      },
+      {
+            "id": "35101",
+            "province": "Ontario",
+            "riding": "Spadina--Fort York",
+            "query": "Total population in private households by citizenship",
+            "population": 81280
+      },
+      {
+            "id": "35102",
+            "province": "Ontario",
+            "riding": "Stormont--Dundas--South Glengarry",
+            "query": "Total population in private households by citizenship",
+            "population": 98700
+      },
+      {
+            "id": "35103",
+            "province": "Ontario",
+            "riding": "Sudbury",
+            "query": "Total population in private households by citizenship",
+            "population": 90015
+      },
+      {
+            "id": "35104",
+            "province": "Ontario",
+            "riding": "Thornhill",
+            "query": "Total population in private households by citizenship",
+            "population": 109675
+      },
+      {
+            "id": "35105",
+            "province": "Ontario",
+            "riding": "Thunder Bay--Rainy River",
+            "query": "Total population in private households by citizenship",
+            "population": 81655
+      },
+      {
+            "id": "35106",
+            "province": "Ontario",
+            "riding": "Thunder Bay--Superior North",
+            "query": "Total population in private households by citizenship",
+            "population": 81215
+      },
+      {
+            "id": "35107",
+            "province": "Ontario",
+            "riding": "Timmins--James Bay",
+            "query": "Total population in private households by citizenship",
+            "population": 80225
+      },
+      {
+            "id": "35108",
+            "province": "Ontario",
+            "riding": "Toronto Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 89830
+      },
+      {
+            "id": "35109",
+            "province": "Ontario",
+            "riding": "Toronto--Danforth",
+            "query": "Total population in private households by citizenship",
+            "population": 102415
+      },
+      {
+            "id": "35110",
+            "province": "Ontario",
+            "riding": "University--Rosedale",
+            "query": "Total population in private households by citizenship",
+            "population": 94355
+      },
+      {
+            "id": "35111",
+            "province": "Ontario",
+            "riding": "Vaughan--Woodbridge",
+            "query": "Total population in private households by citizenship",
+            "population": 104545
+      },
+      {
+            "id": "35112",
+            "province": "Ontario",
+            "riding": "Waterloo",
+            "query": "Total population in private households by citizenship",
+            "population": 101480
+      },
+      {
+            "id": "35113",
+            "province": "Ontario",
+            "riding": "Wellington--Halton Hills",
+            "query": "Total population in private households by citizenship",
+            "population": 114000
+      },
+      {
+            "id": "35114",
+            "province": "Ontario",
+            "riding": "Whitby",
+            "query": "Total population in private households by citizenship",
+            "population": 120285
+      },
+      {
+            "id": "35115",
+            "province": "Ontario",
+            "riding": "Willowdale",
+            "query": "Total population in private households by citizenship",
+            "population": 108740
+      },
+      {
+            "id": "35116",
+            "province": "Ontario",
+            "riding": "Windsor--Tecumseh",
+            "query": "Total population in private households by citizenship",
+            "population": 114350
+      },
+      {
+            "id": "35117",
+            "province": "Ontario",
+            "riding": "Windsor West",
+            "query": "Total population in private households by citizenship",
+            "population": 117060
+      },
+      {
+            "id": "35118",
+            "province": "Ontario",
+            "riding": "York Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 99390
+      },
+      {
+            "id": "35119",
+            "province": "Ontario",
+            "riding": "York--Simcoe",
+            "query": "Total population in private households by citizenship",
+            "population": 93105
+      },
+      {
+            "id": "35120",
+            "province": "Ontario",
+            "riding": "York South--Weston",
+            "query": "Total population in private households by citizenship",
+            "population": 114810
+      },
+      {
+            "id": "35121",
+            "province": "Ontario",
+            "riding": "Humber River--Black Creek",
+            "query": "Total population in private households by citizenship",
+            "population": 107490
+      },
+      {
+            "id": "46001",
+            "province": "Manitoba",
+            "riding": "Brandon--Souris",
+            "query": "Total population in private households by citizenship",
+            "population": 80015
+      },
+      {
+            "id": "46002",
+            "province": "Manitoba",
+            "riding": "Charleswood--St. James--Assiniboia--Headingley",
+            "query": "Total population in private households by citizenship",
+            "population": 79615
+      },
+      {
+            "id": "46003",
+            "province": "Manitoba",
+            "riding": "Churchill--Keewatinook Aski",
+            "query": "Total population in private households by citizenship",
+            "population": 83700
+      },
+      {
+            "id": "46004",
+            "province": "Manitoba",
+            "riding": "Dauphin--Swan River--Neepawa",
+            "query": "Total population in private households by citizenship",
+            "population": 83950
+      },
+      {
+            "id": "46005",
+            "province": "Manitoba",
+            "riding": "Elmwood--Transcona",
+            "query": "Total population in private households by citizenship",
+            "population": 84960
+      },
+      {
+            "id": "46006",
+            "province": "Manitoba",
+            "riding": "Kildonan--St. Paul",
+            "query": "Total population in private households by citizenship",
+            "population": 80915
+      },
+      {
+            "id": "46007",
+            "province": "Manitoba",
+            "riding": "Portage--Lisgar",
+            "query": "Total population in private households by citizenship",
+            "population": 85565
+      },
+      {
+            "id": "46008",
+            "province": "Manitoba",
+            "riding": "Provencher",
+            "query": "Total population in private households by citizenship",
+            "population": 86480
+      },
+      {
+            "id": "46009",
+            "province": "Manitoba",
+            "riding": "Saint Boniface--Saint Vital",
+            "query": "Total population in private households by citizenship",
+            "population": 82430
+      },
+      {
+            "id": "46010",
+            "province": "Manitoba",
+            "riding": "Selkirk--Interlake--Eastman",
+            "query": "Total population in private households by citizenship",
+            "population": 88350
+      },
+      {
+            "id": "46011",
+            "province": "Manitoba",
+            "riding": "Winnipeg Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 78545
+      },
+      {
+            "id": "46012",
+            "province": "Manitoba",
+            "riding": "Winnipeg North",
+            "query": "Total population in private households by citizenship",
+            "population": 87325
+      },
+      {
+            "id": "46013",
+            "province": "Manitoba",
+            "riding": "Winnipeg South",
+            "query": "Total population in private households by citizenship",
+            "population": 84125
+      },
+      {
+            "id": "46014",
+            "province": "Manitoba",
+            "riding": "Winnipeg South Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 88370
+      },
+      {
+            "id": "47001",
+            "province": "Saskatchewan",
+            "riding": "Battlefords--Lloydminster",
+            "query": "Total population in private households by citizenship",
+            "population": 68675
+      },
+      {
+            "id": "47002",
+            "province": "Saskatchewan",
+            "riding": "Cypress Hills--Grasslands",
+            "query": "Total population in private households by citizenship",
+            "population": 63340
+      },
+      {
+            "id": "47003",
+            "province": "Saskatchewan",
+            "riding": "Desnethé--Missinippi--Churchill River",
+            "query": "Total population in private households by citizenship",
+            "population": 68570
+      },
+      {
+            "id": "47004",
+            "province": "Saskatchewan",
+            "riding": "Carlton Trail--Eagle Creek",
+            "query": "Total population in private households by citizenship",
+            "population": 70640
+      },
+      {
+            "id": "47005",
+            "province": "Saskatchewan",
+            "riding": "Moose Jaw--Lake Centre--Lanigan",
+            "query": "Total population in private households by citizenship",
+            "population": 73715
+      },
+      {
+            "id": "47006",
+            "province": "Saskatchewan",
+            "riding": "Prince Albert",
+            "query": "Total population in private households by citizenship",
+            "population": 76610
+      },
+      {
+            "id": "47007",
+            "province": "Saskatchewan",
+            "riding": "Regina--Lewvan",
+            "query": "Total population in private households by citizenship",
+            "population": 78465
+      },
+      {
+            "id": "47008",
+            "province": "Saskatchewan",
+            "riding": "Regina--Qu'Appelle",
+            "query": "Total population in private households by citizenship",
+            "population": 71885
+      },
+      {
+            "id": "47009",
+            "province": "Saskatchewan",
+            "riding": "Regina--Wascana",
+            "query": "Total population in private households by citizenship",
+            "population": 75570
+      },
+      {
+            "id": "47010",
+            "province": "Saskatchewan",
+            "riding": "Saskatoon--Grasswood",
+            "query": "Total population in private households by citizenship",
+            "population": 70955
+      },
+      {
+            "id": "47011",
+            "province": "Saskatchewan",
+            "riding": "Saskatoon--University",
+            "query": "Total population in private households by citizenship",
+            "population": 74945
+      },
+      {
+            "id": "47012",
+            "province": "Saskatchewan",
+            "riding": "Saskatoon West",
+            "query": "Total population in private households by citizenship",
+            "population": 75245
+      },
+      {
+            "id": "47013",
+            "province": "Saskatchewan",
+            "riding": "Souris--Moose Mountain",
+            "query": "Total population in private households by citizenship",
+            "population": 70330
+      },
+      {
+            "id": "47014",
+            "province": "Saskatchewan",
+            "riding": "Yorkton--Melville",
+            "query": "Total population in private households by citizenship",
+            "population": 69830
+      },
+      {
+            "id": "48001",
+            "province": "Alberta",
+            "riding": "Banff--Airdrie",
+            "query": "Total population in private households by citizenship",
+            "population": 102185
+      },
+      {
+            "id": "48002",
+            "province": "Alberta",
+            "riding": "Battle River--Crowfoot",
+            "query": "Total population in private households by citizenship",
+            "population": 100675
+      },
+      {
+            "id": "48003",
+            "province": "Alberta",
+            "riding": "Bow River",
+            "query": "Total population in private households by citizenship",
+            "population": 98765
+      },
+      {
+            "id": "48004",
+            "province": "Alberta",
+            "riding": "Calgary Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 105150
+      },
+      {
+            "id": "48005",
+            "province": "Alberta",
+            "riding": "Calgary Confederation",
+            "query": "Total population in private households by citizenship",
+            "population": 108655
+      },
+      {
+            "id": "48006",
+            "province": "Alberta",
+            "riding": "Calgary Forest Lawn",
+            "query": "Total population in private households by citizenship",
+            "population": 107425
+      },
+      {
+            "id": "48007",
+            "province": "Alberta",
+            "riding": "Calgary Heritage",
+            "query": "Total population in private households by citizenship",
+            "population": 106885
+      },
+      {
+            "id": "48008",
+            "province": "Alberta",
+            "riding": "Calgary Midnapore",
+            "query": "Total population in private households by citizenship",
+            "population": 109835
+      },
+      {
+            "id": "48009",
+            "province": "Alberta",
+            "riding": "Calgary Nose Hill",
+            "query": "Total population in private households by citizenship",
+            "population": 109085
+      },
+      {
+            "id": "48010",
+            "province": "Alberta",
+            "riding": "Calgary Rocky Ridge",
+            "query": "Total population in private households by citizenship",
+            "population": 107955
+      },
+      {
+            "id": "48011",
+            "province": "Alberta",
+            "riding": "Calgary Shepard",
+            "query": "Total population in private households by citizenship",
+            "population": 109630
+      },
+      {
+            "id": "48012",
+            "province": "Alberta",
+            "riding": "Calgary Signal Hill",
+            "query": "Total population in private households by citizenship",
+            "population": 108035
+      },
+      {
+            "id": "48013",
+            "province": "Alberta",
+            "riding": "Calgary Skyview",
+            "query": "Total population in private households by citizenship",
+            "population": 109580
+      },
+      {
+            "id": "48014",
+            "province": "Alberta",
+            "riding": "Edmonton Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 102075
+      },
+      {
+            "id": "48015",
+            "province": "Alberta",
+            "riding": "Edmonton Griesbach",
+            "query": "Total population in private households by citizenship",
+            "population": 102750
+      },
+      {
+            "id": "48016",
+            "province": "Alberta",
+            "riding": "Edmonton Manning",
+            "query": "Total population in private households by citizenship",
+            "population": 105350
+      },
+      {
+            "id": "48017",
+            "province": "Alberta",
+            "riding": "Edmonton Mill Woods",
+            "query": "Total population in private households by citizenship",
+            "population": 104985
+      },
+      {
+            "id": "48018",
+            "province": "Alberta",
+            "riding": "Edmonton Riverbend",
+            "query": "Total population in private households by citizenship",
+            "population": 105055
+      },
+      {
+            "id": "48019",
+            "province": "Alberta",
+            "riding": "Edmonton Strathcona",
+            "query": "Total population in private households by citizenship",
+            "population": 100585
+      },
+      {
+            "id": "48020",
+            "province": "Alberta",
+            "riding": "Edmonton West",
+            "query": "Total population in private households by citizenship",
+            "population": 102850
+      },
+      {
+            "id": "48021",
+            "province": "Alberta",
+            "riding": "Edmonton--Wetaskiwin",
+            "query": "Total population in private households by citizenship",
+            "population": 109530
+      },
+      {
+            "id": "48022",
+            "province": "Alberta",
+            "riding": "Foothills",
+            "query": "Total population in private households by citizenship",
+            "population": 102365
+      },
+      {
+            "id": "48023",
+            "province": "Alberta",
+            "riding": "Fort McMurray--Cold Lake",
+            "query": "Total population in private households by citizenship",
+            "population": 101525
+      },
+      {
+            "id": "48024",
+            "province": "Alberta",
+            "riding": "Grande Prairie--Mackenzie",
+            "query": "Total population in private households by citizenship",
+            "population": 105545
+      },
+      {
+            "id": "48025",
+            "province": "Alberta",
+            "riding": "Lakeland",
+            "query": "Total population in private households by citizenship",
+            "population": 101445
+      },
+      {
+            "id": "48026",
+            "province": "Alberta",
+            "riding": "Lethbridge",
+            "query": "Total population in private households by citizenship",
+            "population": 102785
+      },
+      {
+            "id": "48027",
+            "province": "Alberta",
+            "riding": "Medicine Hat--Cardston--Warner",
+            "query": "Total population in private households by citizenship",
+            "population": 97225
+      },
+      {
+            "id": "48028",
+            "province": "Alberta",
+            "riding": "Peace River--Westlock",
+            "query": "Total population in private households by citizenship",
+            "population": 104750
+      },
+      {
+            "id": "48029",
+            "province": "Alberta",
+            "riding": "Red Deer--Mountain View",
+            "query": "Total population in private households by citizenship",
+            "population": 107610
+      },
+      {
+            "id": "48030",
+            "province": "Alberta",
+            "riding": "Red Deer--Lacombe",
+            "query": "Total population in private households by citizenship",
+            "population": 111575
+      },
+      {
+            "id": "48031",
+            "province": "Alberta",
+            "riding": "St. Albert--Edmonton",
+            "query": "Total population in private households by citizenship",
+            "population": 104105
+      },
+      {
+            "id": "48032",
+            "province": "Alberta",
+            "riding": "Sherwood Park--Fort Saskatchewan",
+            "query": "Total population in private households by citizenship",
+            "population": 110295
+      },
+      {
+            "id": "48033",
+            "province": "Alberta",
+            "riding": "Sturgeon River--Parkland",
+            "query": "Total population in private households by citizenship",
+            "population": 104455
+      },
+      {
+            "id": "48034",
+            "province": "Alberta",
+            "riding": "Yellowhead",
+            "query": "Total population in private households by citizenship",
+            "population": 97255
+      },
+      {
+            "id": "59001",
+            "province": "British Columbia",
+            "riding": "Abbotsford",
+            "query": "Total population in private households by citizenship",
+            "population": 94625
+      },
+      {
+            "id": "59002",
+            "province": "British Columbia",
+            "riding": "Burnaby North--Seymour",
+            "query": "Total population in private households by citizenship",
+            "population": 99280
+      },
+      {
+            "id": "59003",
+            "province": "British Columbia",
+            "riding": "Burnaby South",
+            "query": "Total population in private households by citizenship",
+            "population": 104180
+      },
+      {
+            "id": "59004",
+            "province": "British Columbia",
+            "riding": "Cariboo--Prince George",
+            "query": "Total population in private households by citizenship",
+            "population": 107195
+      },
+      {
+            "id": "59005",
+            "province": "British Columbia",
+            "riding": "Central Okanagan--Similkameen--Nicola",
+            "query": "Total population in private households by citizenship",
+            "population": 101690
+      },
+      {
+            "id": "59006",
+            "province": "British Columbia",
+            "riding": "Chilliwack--Hope",
+            "query": "Total population in private households by citizenship",
+            "population": 91200
+      },
+      {
+            "id": "59007",
+            "province": "British Columbia",
+            "riding": "Cloverdale--Langley City",
+            "query": "Total population in private households by citizenship",
+            "population": 99925
+      },
+      {
+            "id": "59008",
+            "province": "British Columbia",
+            "riding": "Coquitlam--Port Coquitlam",
+            "query": "Total population in private households by citizenship",
+            "population": 109500
+      },
+      {
+            "id": "59009",
+            "province": "British Columbia",
+            "riding": "Courtenay--Alberni",
+            "query": "Total population in private households by citizenship",
+            "population": 107825
+      },
+      {
+            "id": "59010",
+            "province": "British Columbia",
+            "riding": "Cowichan--Malahat--Langford",
+            "query": "Total population in private households by citizenship",
+            "population": 97350
+      },
+      {
+            "id": "59011",
+            "province": "British Columbia",
+            "riding": "Delta",
+            "query": "Total population in private households by citizenship",
+            "population": 99470
+      },
+      {
+            "id": "59012",
+            "province": "British Columbia",
+            "riding": "Fleetwood--Port Kells",
+            "query": "Total population in private households by citizenship",
+            "population": 109130
+      },
+      {
+            "id": "59013",
+            "province": "British Columbia",
+            "riding": "Kamloops--Thompson--Cariboo",
+            "query": "Total population in private households by citizenship",
+            "population": 116565
+      },
+      {
+            "id": "59014",
+            "province": "British Columbia",
+            "riding": "Kelowna--Lake Country",
+            "query": "Total population in private households by citizenship",
+            "population": 108390
+      },
+      {
+            "id": "59015",
+            "province": "British Columbia",
+            "riding": "Kootenay--Columbia",
+            "query": "Total population in private households by citizenship",
+            "population": 105665
+      },
+      {
+            "id": "59016",
+            "province": "British Columbia",
+            "riding": "Langley--Aldergrove",
+            "query": "Total population in private households by citizenship",
+            "population": 101375
+      },
+      {
+            "id": "59017",
+            "province": "British Columbia",
+            "riding": "Mission--Matsqui--Fraser Canyon",
+            "query": "Total population in private households by citizenship",
+            "population": 88840
+      },
+      {
+            "id": "59018",
+            "province": "British Columbia",
+            "riding": "Nanaimo--Ladysmith",
+            "query": "Total population in private households by citizenship",
+            "population": 112445
+      },
+      {
+            "id": "59019",
+            "province": "British Columbia",
+            "riding": "New Westminster--Burnaby",
+            "query": "Total population in private households by citizenship",
+            "population": 106775
+      },
+      {
+            "id": "59020",
+            "province": "British Columbia",
+            "riding": "North Okanagan--Shuswap",
+            "query": "Total population in private households by citizenship",
+            "population": 118405
+      },
+      {
+            "id": "59021",
+            "province": "British Columbia",
+            "riding": "North Vancouver",
+            "query": "Total population in private households by citizenship",
+            "population": 108530
+      },
+      {
+            "id": "59022",
+            "province": "British Columbia",
+            "riding": "Pitt Meadows--Maple Ridge",
+            "query": "Total population in private households by citizenship",
+            "population": 93085
+      },
+      {
+            "id": "59023",
+            "province": "British Columbia",
+            "riding": "Port Moody--Coquitlam",
+            "query": "Total population in private households by citizenship",
+            "population": 106905
+      },
+      {
+            "id": "59024",
+            "province": "British Columbia",
+            "riding": "Prince George--Peace River--Northern Rockies",
+            "query": "Total population in private households by citizenship",
+            "population": 105295
+      },
+      {
+            "id": "59025",
+            "province": "British Columbia",
+            "riding": "Richmond Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 93170
+      },
+      {
+            "id": "59026",
+            "province": "British Columbia",
+            "riding": "Esquimalt--Saanich--Sooke",
+            "query": "Total population in private households by citizenship",
+            "population": 111510
+      },
+      {
+            "id": "59027",
+            "province": "British Columbia",
+            "riding": "Saanich--Gulf Islands",
+            "query": "Total population in private households by citizenship",
+            "population": 102085
+      },
+      {
+            "id": "59028",
+            "province": "British Columbia",
+            "riding": "Skeena--Bulkley Valley",
+            "query": "Total population in private households by citizenship",
+            "population": 89755
+      },
+      {
+            "id": "59029",
+            "province": "British Columbia",
+            "riding": "South Okanagan--West Kootenay",
+            "query": "Total population in private households by citizenship",
+            "population": 109220
+      },
+      {
+            "id": "59030",
+            "province": "British Columbia",
+            "riding": "South Surrey--White Rock",
+            "query": "Total population in private households by citizenship",
+            "population": 91965
+      },
+      {
+            "id": "59031",
+            "province": "British Columbia",
+            "riding": "Steveston--Richmond East",
+            "query": "Total population in private households by citizenship",
+            "population": 96130
+      },
+      {
+            "id": "59032",
+            "province": "British Columbia",
+            "riding": "Surrey Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 109915
+      },
+      {
+            "id": "59033",
+            "province": "British Columbia",
+            "riding": "Surrey--Newton",
+            "query": "Total population in private households by citizenship",
+            "population": 104445
+      },
+      {
+            "id": "59034",
+            "province": "British Columbia",
+            "riding": "Vancouver Centre",
+            "query": "Total population in private households by citizenship",
+            "population": 101040
+      },
+      {
+            "id": "59035",
+            "province": "British Columbia",
+            "riding": "Vancouver East",
+            "query": "Total population in private households by citizenship",
+            "population": 103920
+      },
+      {
+            "id": "59036",
+            "province": "British Columbia",
+            "riding": "Vancouver Granville",
+            "query": "Total population in private households by citizenship",
+            "population": 98170
+      },
+      {
+            "id": "59037",
+            "province": "British Columbia",
+            "riding": "North Island--Powell River",
+            "query": "Total population in private households by citizenship",
+            "population": 101800
+      },
+      {
+            "id": "59038",
+            "province": "British Columbia",
+            "riding": "Vancouver Kingsway",
+            "query": "Total population in private households by citizenship",
+            "population": 101495
+      },
+      {
+            "id": "59039",
+            "province": "British Columbia",
+            "riding": "Vancouver Quadra",
+            "query": "Total population in private households by citizenship",
+            "population": 100325
+      },
+      {
+            "id": "59040",
+            "province": "British Columbia",
+            "riding": "Vancouver South",
+            "query": "Total population in private households by citizenship",
+            "population": 99015
+      },
+      {
+            "id": "59041",
+            "province": "British Columbia",
+            "riding": "Victoria",
+            "query": "Total population in private households by citizenship",
+            "population": 106055
+      },
+      {
+            "id": "59042",
+            "province": "British Columbia",
+            "riding": "West Vancouver--Sunshine Coast--Sea to Sky Country",
+            "query": "Total population in private households by citizenship",
+            "population": 110810
+      },
+      {
+            "id": "60001",
+            "province": "Yukon",
+            "riding": "Yukon",
+            "query": "Total population in private households by citizenship",
+            "population": 33320
+      },
+      {
+            "id": "61001",
+            "province": "Northwest Territories",
+            "riding": "Northwest Territories",
+            "query": "Total population in private households by citizenship",
+            "population": 40795
+      },
+      {
+            "id": "62001",
+            "province": "Nunavut",
+            "riding": "Nunavut",
+            "query": "Total population in private households by citizenship",
+            "population": 31695
+      }
+]
