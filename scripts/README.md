@@ -18,4 +18,4 @@ The CRMP specifications also wanted the following information:
 
 However, I could not find a reliable source to extract those pieces of data in a way to match the pmtiles - there were either no traces of relevent data, or it just was not mentioned at all. So I guess this is what we work with for now.
 
-With this json file, we can now refer to each item in the list by the 'fed_num' that will match the pmtile 'fed_num' districts, and show a short summary based on the selected district.
+With this json file, we can now refer to each item in the list by the 'id' fields that will match the pmtile 'fed_num' ridings, and show a short summary based on the selected district.
