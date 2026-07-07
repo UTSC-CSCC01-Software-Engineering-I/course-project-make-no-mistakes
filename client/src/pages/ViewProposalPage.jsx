@@ -1,5 +1,5 @@
 import { useParams } from 'react-router'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import proposals from '../data/proposals.json'
 import comments from '../data/comments.json'
 import ProposalComment from '../components/ProposalComment'
@@ -9,15 +9,103 @@ import './ViewProposalPage.css'
 import thumbsUpIcon from '../assets/thumbsUp.png'
 import commentIcon from '../assets/greencomment.png'
 
+function getDistanceInMeters(coord1, coord2) {
+  const [lon1, lat1] = coord1;
+  const [lon2, lat2] = coord2;
+  const R = 6371e3; 
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; 
+}
+
+function isPointInPolygon(point, polygonCoords) {
+  const [x, y] = point;
+  let inside = false;
+  // outer ring of parent polygon
+  const ring = polygonCoords[0];
+  if (!ring) return false;
+  
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    
+    const intersect = ((yi > y) !== (yj > y))
+        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+// Helper: Check if a coordinate is identical to any vertex of another polygon (within tiny floating tolerance)
+function isSharedCoordinate(coord, polygonCoords) {
+  const ring = polygonCoords[0];
+  if (!ring) return false;
+  
+  const TOLERANCE = 1e-6; 
+  return ring.some(p => Math.abs(p[0] - coord[0]) < TOLERANCE && Math.abs(p[1] - coord[1]) < TOLERANCE);
+}
+
+function getPolygonAreaOverlapPercentage(polyA, polyB) {
+  const coordsA = polyA.geometry.coordinates[0]; // Outer ring of A
+  const coordsB = polyB.geometry.coordinates;    // Rings of B
+  
+  if (!coordsA || !coordsB) return 0;
+
+  // 1. Calculate Bounding Box of Poly A
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  coordsA.forEach(([x, y]) => {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  });
+
+  // 12x12 sample grid inside the bounding box
+  const GRID_RESOLUTION = 12; // 144 sample points provides excellent accuracy and speed
+  let totalPointsInA = 0;
+  let pointsInAAndB = 0;
+
+  const stepX = (maxX - minX) / (GRID_RESOLUTION - 1);
+  const stepY = (maxY - minY) / (GRID_RESOLUTION - 1);
+
+  for (let i = 0; i < GRID_RESOLUTION; i++) {
+    for (let j = 0; j < GRID_RESOLUTION; j++) {
+      const px = minX + i * stepX;
+      const py = minY + j * stepY;
+      const samplePoint = [px, py];
+
+      if (isPointInPolygon(samplePoint, polyA.geometry.coordinates)) {
+        totalPointsInA++;
+
+        // check if it also falls inside Poly B
+        if (isPointInPolygon(samplePoint, coordsB)) {
+          pointsInAAndB++;
+        }
+      }
+    }
+  }
+
+  if (totalPointsInA === 0) return 0;
+  return pointsInAAndB / totalPointsInA;
+}
+
+const DISTANCE_THRESHOLD = 50; 
+
 function ViewProposalPage() {
   const { proposalId } = useParams()
+  const mapComponentRef = useRef(null);
 
-  // getting the data for the proposal
   const proposal = proposals.find(
     proposal => String(proposal.id) === String(proposalId)
   )
 
-  // making sure the proposal was found
   if (!proposal) {
     return (
       <main>
@@ -27,8 +115,70 @@ function ViewProposalPage() {
   }
 
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
+  const [validationError, setValidationError] = useState(null)
+
   function incrementLikes() {
     setLikes(previousLikes => previousLikes + 1)
+  }
+
+const handleDrawChange = (geoJsonData) => {
+    let foundClosedLineString = false;
+    let hasStrayLines = false;
+    let hasNestedPolygon = false;
+
+    if (geoJsonData && geoJsonData.features) {
+      const polygons = [];
+
+      for (const feature of geoJsonData.features) {
+        if (feature.geometry.type === 'LineString') {
+          hasStrayLines = true;
+          
+          const coords = feature.geometry.coordinates;
+          if (coords.length >= 3) {
+            const firstPoint = coords[0];
+            const lastPoint = coords[coords.length - 1];
+            if (getDistanceInMeters(firstPoint, lastPoint) <= DISTANCE_THRESHOLD) {
+              foundClosedLineString = true;
+            }
+          }
+        } else if (feature.geometry.type === 'Polygon') {
+          polygons.push(feature);
+        }
+      }
+
+      // spatial sampling method
+      const OVERLAP_PERCENT_THRESHOLD = 0.25;
+      
+      for (let i = 0; i < polygons.length; i++) {
+        for (let j = 0; j < polygons.length; j++) {
+          if (i === j) continue;
+          
+          const overlapPercent = getPolygonAreaOverlapPercentage(polygons[i], polygons[j]);
+          if (overlapPercent > OVERLAP_PERCENT_THRESHOLD) {
+            hasNestedPolygon = true;
+            break;
+          }
+        }
+        if (hasNestedPolygon) break;
+      }
+    }
+
+    setIsLineStringClosed(foundClosedLineString);
+
+    if (hasStrayLines) {
+      setValidationError("Invalid: Stray lines detected. All census boundaries must be closed polygons.");
+    } else if (hasNestedPolygon) {
+      setValidationError("Invalid: Overlapping boundary detected. Census tracts cannot overlap by more than 45%.");
+    } else {
+      setValidationError(null); 
+    }
+  }
+
+  const handleSimplifyClick = () => {
+    if (mapComponentRef.current) {
+        mapComponentRef.current.simplifyDrawing();
+    }
   }
 
   return (
@@ -53,9 +203,9 @@ function ViewProposalPage() {
             </span>
           </div>
 
-            <span className="proposalHeaderText">
-              {proposal.postUser}
-            </span>
+          <span className="proposalHeaderText">
+            {proposal.postUser}
+          </span>
           <span className="proposalHeaderText">
             {proposal.postDate}
           </span>
@@ -82,7 +232,30 @@ function ViewProposalPage() {
 
       <div className="proposalContentBox">
         <div className="mapBox">
-          <Map mode="view" />
+            
+          <button className="simplifyButton" onClick={handleSimplifyClick}>
+            Simplify
+          </button>
+
+          {validationError ? (
+            <div className="validationBanner invalid">
+              {validationError}
+            </div>
+          ) : isLineStringClosed ? (
+            <div className="validationBanner warning">
+              Closed polygon detected! Click "Simplify" to fuse coordinates and save memory.
+            </div>
+          ) : (
+            <div className="validationBanner valid">
+              ✓ Census Boundaries Valid
+            </div>
+          )}
+
+          <Map
+            ref={mapComponentRef}
+            mode="objection"
+            onDrawChange={handleDrawChange} 
+          />
         </div>
 
         <div className="commentBox">
