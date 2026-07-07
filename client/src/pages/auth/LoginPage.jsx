@@ -64,7 +64,6 @@ export default function LoginPage() {
 						name="emailEntry"
 						value={credentialEntry.emailEntry}
 						onChange={handleInputChange}
-
 						className="credentialField"
 					/>
 				</div>
@@ -77,7 +76,6 @@ export default function LoginPage() {
 						name="pwdEntry"
 						value={credentialEntry.pwdEntry}
 						onChange={handleInputChange}
-
 						className="credentialField"
 					/>
 				</div>

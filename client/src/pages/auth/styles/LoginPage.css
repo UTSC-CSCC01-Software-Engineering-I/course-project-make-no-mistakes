@@ -29,6 +29,7 @@
 }
 
 .credentialField {
+	font-family: Verdana;
 	margin: 15px 0;
 	display: flex;
 	flex-wrap: wrap;
@@ -52,6 +53,10 @@
 
 .loginButton {
 	font-size: medium;
+	font-family: Verdana;
+	background-color: #f5fff7;
+	border: 2px solid #539b72;
+	color: #3a6d5a;
 	border-radius: 10px;
 	margin: 0;
 	padding: 5px;
@@ -64,5 +69,7 @@
 }
 
 .registrationRedirect {
+	font-family: Verdana;
+	font-size: 12px;
 	margin-top: 20px;
 }
