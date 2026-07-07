@@ -1,7 +1,8 @@
 import { useParams } from 'react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { io } from 'socket.io-client'
+
 import proposals from '../data/proposals.json'
-import comments from '../data/comments.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
 import './ViewProposalPage.css'
@@ -12,23 +13,91 @@ import commentIcon from '../assets/greencomment.png'
 function ViewProposalPage() {
   const { proposalId } = useParams()
 
-  // getting the data for the proposal
+  const [liveComments, setLiveComments] = useState([])
+  const [newCommentText, setNewCommentText] = useState("")
+  const [isProcessing, setIsProcessing] = useState(false)
+
   const proposal = proposals.find(
     proposal => String(proposal.id) === String(proposalId)
   )
 
-  // making sure the proposal was found
+  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+
+  // --- 1. Real-Time WebSocket & Fetch Effect ---
+  useEffect(() => {
+    if (!proposalId) return
+
+    // GET Request (Relies on Vite proxy to forward to 8080)
+    fetch(`/api/comments?proposalId=${proposalId}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) setLiveComments(data)
+      })
+      .catch(err => console.error("[Frontend GET Error]:", err))
+
+    // Use environment variable for Socket to prevent hardcoding issues for teammates
+    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const socket = io(SOCKET_URL);
+
+    socket.on('comment_approved', (newComment) => {
+      if (String(newComment.proposalId) === String(proposalId)) {
+        setLiveComments(prev => [...prev, newComment])
+        setIsProcessing(false)
+      }
+    })
+
+    socket.on('comment_rejected', (data) => {
+      alert(`AI Rejected: ${data.reason}`)
+      setIsProcessing(false)
+    })
+
+    return () => socket.disconnect()
+  }, [proposalId])
+
+  // --- 2. Handle Comment Submission ---
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault()
+    if (!newCommentText.trim()) return
+
+    setIsProcessing(true)
+    console.log("[Frontend] Attempting to post to /api/comments...");
+
+    try {
+      // POST Request (Relies on Vite proxy to forward to 8080)
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newCommentText, proposalId: proposalId })
+      });
+      
+      if (!res.ok) {
+        // If the server crashes or proxy fails, grab the exact error text
+        const errorText = await res.text();
+        throw new Error(`Server returned ${res.status}: ${errorText}`);
+      }
+
+      console.log("[Frontend] Successfully submitted to server!");
+      setNewCommentText(""); 
+    } catch (error) {
+      console.error("[Frontend POST Error]:", error);
+      alert("Failed to submit comment. Check the browser console!");
+      setIsProcessing(false); 
+    }
+  }
+
+  function incrementLikes() {
+    setLikes(previousLikes => previousLikes + 1)
+  }
+
   if (!proposal) {
     return (
       <main>
         <p>Error: Proposal not found</p>
       </main>
     )
-  }
-
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
-  function incrementLikes() {
-    setLikes(previousLikes => previousLikes + 1)
   }
 
   return (
@@ -74,7 +143,7 @@ function ViewProposalPage() {
             />
 
             <span className="smallerCommentHeaderText">
-              {proposal.postComments}
+              {liveComments.length}
             </span>
           </div>
         </div>
@@ -86,20 +155,42 @@ function ViewProposalPage() {
         </div>
 
         <div className="commentBox">
+          <div className="addCommentSection" style={{ padding: '1rem', borderBottom: '2px solid #eee' }}>
+            <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <textarea 
+                value={newCommentText}
+                onChange={(e) => setNewCommentText(e.target.value)}
+                placeholder="Write your objection or comment here..."
+                rows="3"
+                style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                required
+              />
+              <button 
+                type="submit" 
+                disabled={isProcessing}
+                style={{ padding: '10px', background: isProcessing ? '#ccc' : '#2e7d32', color: 'white', border: 'none', borderRadius: '8px', cursor: isProcessing ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+              >
+                {isProcessing ? 'AI is reviewing...' : 'Post Comment'}
+              </button>
+            </form>
+          </div>
+
           <section className="proposalCommentList">
-            {comments
-              .filter(comment => String(comment.proposalId) === String(proposal.id))
-              .map(comment => (
+            {liveComments.length === 0 ? (
+              <p style={{ padding: '1rem', textAlign: 'center', color: '#666' }}>No comments yet. Be the first to object!</p>
+            ) : (
+              liveComments.map(comment => (
                 <ProposalComment
                   key={comment.id}
                   proposalId={comment.proposalId}
-                  relatedRidings={comment.relatedRidings}
-                  postUser={comment.postUser}
-                  postDate={comment.postDate}
-                  postComment={comment.postComment}
-                  postLikes={comment.postLikes}
+                  relatedRidings={comment.relatedRidings || ["N/A"]}
+                  postUser={comment.authorName || "Anonymous"} 
+                  postDate={new Date(comment.createdAt).toLocaleDateString()}
+                  postComment={comment.content}
+                  postLikes={comment.upvotes || 0}
                 />
-              ))}
+              ))
+            )}
           </section>
         </div>
       </div>

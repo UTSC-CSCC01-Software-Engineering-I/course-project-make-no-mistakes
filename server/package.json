@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --env-file=.env server",
-	"dev": "node --watch --env-file=.env server"
+    "dev": "node --watch --env-file=.env server"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +19,9 @@
     }
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.108.2",
+    "@supabase/supabase-js": "^2.109.0",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "ws": "^8.21.0"
   }
 }
