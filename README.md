@@ -32,7 +32,13 @@ https://docs.google.com/document/d/15cw1lSDrG1fyzA78g8930l5ecIyO_Wq_aeLcFtWy7Vc
 
 Class Diagram:
 
-## (Delete Later, For Reference) Set Up Guide(?):
+## Demo Feedback
+
+### Demo 1: 06/23/2026
+"UI needs improvements; basic colors, navbar UX; it is out of order"
+- To improve on this feedback, the navigation bar has been rearranged, and colors are used to indicate the current screen.
+
+## (For Reference) Informal Set Up Guide:
 Please correct any inaccuracies below:
 
 ### With VS Code: (Inside a folder for this project)
