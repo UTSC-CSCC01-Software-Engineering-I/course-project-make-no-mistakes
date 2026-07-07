@@ -66,14 +66,17 @@ function ViewProposalPage() {
     console.log("[Frontend] Attempting to post to /api/comments...");
 
     try {
-      // POST Request (Relies on Vite proxy to forward to 8080)
       const res = await fetch('/api/comments', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('sb_token')}` // <-- ADD THIS
+          'Authorization': `Bearer ${localStorage.getItem('sb_token')}` // Added missing comma (if there were more items, but here it's fine just closing it)
         },
-        body: JSON.stringify({ content: newCommentText, proposalId: proposalId })
+        body: JSON.stringify({ 
+            content: newCommentText, 
+            proposalId: proposalId,
+            authorName: localStorage.getItem('user_email') 
+        })
       });
       
       if (!res.ok) {

@@ -6,7 +6,6 @@ const sequelize = new Sequelize({
   logging: false
 });
 
-// We only need the Comment model. Supabase handles your Users!
 const Comment = sequelize.define('Comment', {
   content: { type: DataTypes.STRING, allowNull: false },
   proposalId: { type: DataTypes.STRING, allowNull: false }, 
@@ -14,7 +13,12 @@ const Comment = sequelize.define('Comment', {
   status: { type: DataTypes.STRING, defaultValue: 'pending' }, 
   upvotes: { type: DataTypes.INTEGER, defaultValue: 0 },
   downvotes: { type: DataTypes.INTEGER, defaultValue: 0 },
-  rejectionReason: { type: DataTypes.STRING, allowNull: true }
+  rejectionReason: { type: DataTypes.STRING, allowNull: true },
+  authorName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Anonymous'
+  },
 });
 
 // Forces SQLite to create the tables if they are missing

@@ -37,6 +37,7 @@ export default function LoginPage() {
 			// Save BOTH the token and the user ID
 			localStorage.setItem('sb_token', token);
 			localStorage.setItem('user_id', user.id); 
+			localStorage.setItem('user_email', user.email);
 		
 			alert(response.data.message);
 			navigate('/', { replace: true });

@@ -58,7 +58,8 @@ commentsRouter.post('/', isAuthenticated, async (req, res) => {
     const comment = await Comment.create({
       content: req.body.content,
       proposalId: req.body.proposalId,
-      userId: req.user.id, // Now uses the real UUID
+      userId: req.user.id, // Uses the real UUID (supabase)
+      authorName: req.body.authorName || 'Anonymous',
       status: 'pending'
     });
 
