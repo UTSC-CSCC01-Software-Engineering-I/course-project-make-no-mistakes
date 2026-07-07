@@ -31,18 +31,17 @@ export default function LoginPage() {
 		e.preventDefault();
 
 		try {
-
 			const response = await axios.post('http://localhost:8080/auth/login', credentialEntry);
-
 			const { token, user } = response.data;
-
+		
+			// Save BOTH the token and the user ID
 			localStorage.setItem('sb_token', token);
-
+			localStorage.setItem('user_id', user.id); 
+			localStorage.setItem('user_email', user.email);
+		
 			alert(response.data.message);
-
 			navigate('/', { replace: true });
-
-		} catch (err) {
+		}catch (err) {
 			alert(err.response?.data?.error || 'Login Failed');
 		}
 
