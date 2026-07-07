@@ -73,6 +73,7 @@ body {
     height: 100%;
     background-color: white;
     border-left: 2px solid #87bd93;
+    overflow: auto;
 }
 
 .mapImage {

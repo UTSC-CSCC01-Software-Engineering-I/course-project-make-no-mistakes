@@ -110,8 +110,6 @@ function ViewProposalPage() {
     proposal => String(proposal.id) === String(proposalId)
   )
 
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
-
   // --- 1. Real-Time WebSocket & Fetch Effect ---
   useEffect(() => {
     if (!proposalId) return
