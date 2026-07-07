@@ -69,7 +69,10 @@ function ViewProposalPage() {
       // POST Request (Relies on Vite proxy to forward to 8080)
       const res = await fetch('/api/comments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('sb_token')}` // <-- ADD THIS
+        },
         body: JSON.stringify({ content: newCommentText, proposalId: proposalId })
       });
       
@@ -182,12 +185,19 @@ function ViewProposalPage() {
               liveComments.map(comment => (
                 <ProposalComment
                   key={comment.id}
+                  commentId={comment.id}
                   proposalId={comment.proposalId}
+                  commentUserId={comment.userId} 
+                  currentUserId={localStorage.getItem('user_id')} // <-- PASSES THE ID YOU JUST SAVED IN LOGIN
                   relatedRidings={comment.relatedRidings || ["N/A"]}
                   postUser={comment.authorName || "Anonymous"} 
                   postDate={new Date(comment.createdAt).toLocaleDateString()}
                   postComment={comment.content}
                   postLikes={comment.upvotes || 0}
+                  postDownvotes={comment.downvotes || 0}
+                  onDelete={(deletedId) => {
+                    setLiveComments(prev => prev.filter(c => c.id !== deletedId));
+                  }}
                 />
               ))
             )}

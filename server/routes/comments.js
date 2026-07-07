@@ -1,14 +1,35 @@
 const express = require('express');
 const { Comment } = require('../models/index.js');
-// FIXED PATH: Changed 'workers' to 'worker' to match your exact folder structure
 const { addCommentToQueue } = require('../worker/commentWorker.js'); 
+const supabase = require('../lib/supabase'); // NEW: Import Supabase to verify users
 
 const commentsRouter = express.Router();
 
-// Mock Auth Middleware
-const isAuthenticated = (req, res, next) => {
-  req.user = { id: 1 };
-  next();
+// REAL Auth Middleware
+const isAuthenticated = async (req, res, next) => {
+  try {
+    // 1. Grab the token from the request headers
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Missing or invalid token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    // 2. Ask Supabase to verify the token and get the real user
+    const { data, error } = await supabase.auth.getUser(token);
+    
+    if (error || !data?.user) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+
+    // 3. Attach the REAL Supabase UUID to the request
+    req.user = { id: data.user.id };
+    next();
+  } catch (err) {
+    console.error("[AUTH ERROR]", err);
+    return res.status(500).json({ error: 'Authentication error' });
+  }
 };
 
 // 0. GET Comments
@@ -31,13 +52,13 @@ commentsRouter.get('/', async (req, res) => {
 commentsRouter.post('/', isAuthenticated, async (req, res) => {
   console.log(`\n[ROUTE] --- NEW COMMENT POST REQUEST ---`);
   console.log(`[ROUTE] Request body:`, req.body);
-  console.log(`[ROUTE] User ID:`, req.user.id);
+  console.log(`[ROUTE] Real User ID:`, req.user.id);
   
   try {
     const comment = await Comment.create({
       content: req.body.content,
       proposalId: req.body.proposalId,
-      userId: req.user.id,
+      userId: req.user.id, // Now uses the real UUID
       status: 'pending'
     });
 
@@ -60,13 +81,15 @@ commentsRouter.delete('/:id', isAuthenticated, async (req, res) => {
     const comment = await Comment.findByPk(req.params.id);
     if (!comment) return res.status(404).json({ error: "Comment not found" });
     
-    if (comment.userId !== req.user.id) {
+    // Checks if the token's UUID matches the comment's UUID
+    if (String(comment.userId) !== String(req.user.id)) {
       return res.status(403).json({ error: "Forbidden. You can only delete your own comments." });
     }
 
     await comment.destroy();
     res.status(204).end();
   } catch (error) {
+    console.error("[DELETE ERROR]", error);
     res.status(500).json({ error: "Failed to delete" });
   }
 });
@@ -85,6 +108,7 @@ commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
     await comment.reload();
     res.json(comment);
   } catch (error) {
+    console.error("[VOTE ERROR]", error);
     res.status(500).json({ error: "Voting failed" });
   }
 });
