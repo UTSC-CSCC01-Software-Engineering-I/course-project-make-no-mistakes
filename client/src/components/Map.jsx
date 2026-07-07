@@ -66,9 +66,9 @@ const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, onMa
 
             const snapshot = terraDraw.getSnapshot();
 
-            const DISTANCE_THRESHOLD = 150;  
-            const GAP_SNAP_THRESHOLD = 150; 
-            const BORDER_ALIGN_THRESHOLD = 20; 
+            const DISTANCE_THRESHOLD = 300;  
+            const GAP_SNAP_THRESHOLD = 300; 
+            const BORDER_ALIGN_THRESHOLD = 40; 
 
             const anchorVertices = [];
             snapshot.forEach(f => {
@@ -176,9 +176,6 @@ const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, onMa
                 }
             });
 
-            // Note: We removed clearUndoRedoHistory() here.
-            // Multiple Undos and Redos will now remain fully functional on your toolbar!
-
             if (onDrawChangeRef.current) {
                 onDrawChangeRef.current({
                     type: 'FeatureCollection',
@@ -251,7 +248,6 @@ const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, onMa
             selectionMarkerRef.current?.remove();
             map.remove();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); 
 
     useEffect(() => {
