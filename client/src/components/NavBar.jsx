@@ -16,27 +16,43 @@ function NavBar() {
 
   return (
     <nav className="navBar">
-      <NavLink to="/" className="navBarLink">
-        Browse
-      </NavLink>
+      	<NavLink to="/"
+			className={({ isActive }) =>
+				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+			}>
+        	Home
+      	</NavLink>
 
-	{isLoggedIn ? (
-			<button onClick={handleLogout} className='logoutButton'>
-				Logout
-			</button>
-		) : (
-			<NavLink to="/login" className="navBarLink">
-			  Login
-			</NavLink>
-		)
-	}
-      <NavLink to="/commissioner-dashboard" className="navBarLink">
-        Dashboard
-      </NavLink>
+      	<NavLink to="/commissioner-dashboard"
+			className={({ isActive }) =>
+				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+			}>
+        	Dashboard
+      	</NavLink>
 
-	  <NavLink to="/user-submissions" className="navBarLink">
-        My Submissions
-      </NavLink>
+	  	<NavLink to="/user-submissions"
+			className={({ isActive }) =>
+				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+			}>
+        	My Submissions
+      	</NavLink>
+
+		<div className="navBarR">
+			{isLoggedIn ? (
+				<button onClick={handleLogout} className='logoutButton'>
+					Logout
+				</button>
+				) : (
+					<NavLink to="/login"
+					className={({ isActive }) =>
+						isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+					}>
+					Login
+					</NavLink>
+				)
+			}
+		</div>
+	  	
 
     </nav>
   )
