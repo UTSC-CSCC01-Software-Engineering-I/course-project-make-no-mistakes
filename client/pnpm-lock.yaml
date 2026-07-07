@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@watergis/maplibre-gl-terradraw':
+        specifier: ^1.14.3
+        version: 1.14.3(maplibre-gl@5.24.0)(terra-draw@1.31.2)
       axios:
         specifier: ^1.18.0
         version: 1.18.0
@@ -23,6 +26,9 @@ importers:
       react-router:
         specifier: ^8.0.1
         version: 8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      terra-draw:
+        specifier: ^1.31.2
+        version: 1.31.2
     devDependencies:
       '@babel/core':
         specifier: ^8.0.1
@@ -1380,6 +1386,20 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
+  '@watergis/maplibre-gl-terradraw@1.14.3':
+    resolution: {integrity: sha512-zB2BAkAcPhlHjxoRgHQWTrC9Mv3sRR9jAQrEIUml3y9d8IxRlO6cMDvxT1Squ9BSVhrS/OoEi3dV2vK8Sfiwdw==}
+    engines: {pnpm: ^11.0.0}
+    peerDependencies:
+      maplibre-gl: ^4.0.0 || ^5.0.0
+      terra-draw: ^1.0.0
+      terra-draw-maplibre-gl-adapter: ^1.0.0
+      terradraw: '*'
+    peerDependenciesMeta:
+      terra-draw-maplibre-gl-adapter:
+        optional: true
+      terradraw:
+        optional: true
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -2712,6 +2732,9 @@ packages:
   synckit@0.11.13:
     resolution: {integrity: sha512-eNRKgb3z66Yp3D2CixVujOUvXLFUTij/zVnV8KRyvFdQwpz7I5DS8UfRkTeLzb64u+dkzDSdelE24izu+zSSUg==}
     engines: {node: ^14.18.0 || >=16.0.0}
+
+  terra-draw@1.31.2:
+    resolution: {integrity: sha512-jyHodIOZVsyqUeZpkZCrsrLrEgcnWxZNlwZH64RUwKWP0o77qhub+iSCpV1XTESXOi2c1LQ87cHe1slk30L1ig==}
 
   test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
@@ -4427,6 +4450,11 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.0.16(@types/node@26.1.0)
 
+  '@watergis/maplibre-gl-terradraw@1.14.3(maplibre-gl@5.24.0)(terra-draw@1.31.2)':
+    dependencies:
+      maplibre-gl: 5.24.0
+      terra-draw: 1.31.2
+
   acorn-jsx@5.3.2(acorn@8.17.0):
     dependencies:
       acorn: 8.17.0
@@ -5927,6 +5955,8 @@ snapshots:
   synckit@0.11.13:
     dependencies:
       '@pkgr/core': 0.3.6
+
+  terra-draw@1.31.2: {}
 
   test-exclude@6.0.0:
     dependencies:

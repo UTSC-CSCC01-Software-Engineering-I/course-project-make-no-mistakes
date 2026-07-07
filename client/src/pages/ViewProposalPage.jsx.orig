@@ -1,6 +1,11 @@
 import { useParams } from 'react-router'
-import { useState, useEffect, useRef } from 'react'
+<<<<<<< HEAD
+import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
+
+=======
+import { useState, useRef } from 'react'
+>>>>>>> refs/remotes/origin/main
 import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
@@ -102,14 +107,18 @@ function ViewProposalPage() {
   const { proposalId } = useParams()
   const mapComponentRef = useRef(null);
 
+<<<<<<< HEAD
   const [liveComments, setLiveComments] = useState([])
   const [newCommentText, setNewCommentText] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
 
+=======
+>>>>>>> refs/remotes/origin/main
   const proposal = proposals.find(
     proposal => String(proposal.id) === String(proposalId)
   )
 
+<<<<<<< HEAD
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
 
   // --- 1. Real-Time WebSocket & Fetch Effect ---
@@ -181,6 +190,8 @@ function ViewProposalPage() {
     setLikes(previousLikes => previousLikes + 1)
   }
 
+=======
+>>>>>>> refs/remotes/origin/main
   if (!proposal) {
     return (
       <main>
@@ -189,6 +200,8 @@ function ViewProposalPage() {
     )
   }
 
+<<<<<<< HEAD
+=======
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
   const [isLineStringClosed, setIsLineStringClosed] = useState(false)
   const [validationError, setValidationError] = useState(null)
@@ -256,6 +269,7 @@ const handleDrawChange = (geoJsonData) => {
     }
   }
 
+>>>>>>> refs/remotes/origin/main
   return (
     <main>
       <header className="proposalPageHeader">
