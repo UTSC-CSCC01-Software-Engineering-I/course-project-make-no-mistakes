@@ -1,37 +1,42 @@
 import { io } from 'socket.io-client';
 import { apiService } from './apiService.js';
-import { meact } from './meact.js'; 
+import { meact } from './meact.js';
 
 (function () {
   "use strict";
 
-  const [currentUserKey, getCurrentUser, setCurrentUser] = meact.useState(null);
   const [commentsKey, getComments, setComments] = meact.useState([]);
-  const [isProcessingKey, getIsProcessing, setIsProcessing] = meact.useState(false);
+  const [isProcessingKey, getIsProcessing, setIsProcessing] =
+    meact.useState(false);
 
-  const socket = io("http://localhost:3000"); 
+  const socket = io("http://localhost:3000");
 
   document.addEventListener("DOMContentLoaded", initialize);
 
   function initialize() {
-    meact.useEffect(renderComments, [commentsKey, currentUserKey]);
+    meact.useEffect(renderComments, [commentsKey]);
     meact.useEffect(renderProcessingState, [isProcessingKey]);
 
     const commentForm = document.getElementById("comment-form");
+
     if (commentForm) {
       commentForm.addEventListener("submit", handleCommentSubmit);
     }
 
-    // AI Task Queue WebSocket Listeners
-    socket.on('comment_approved', function (newComment) {
+    socket.on("comment_approved", function (newComment) {
       const currentComments = getComments();
+
       setComments([...currentComments, newComment]);
       setIsProcessing(false);
     });
 
-    socket.on('comment_rejected', function (data) {
-      const user = getCurrentUser();
-      if (user && String(user.id) === String(data.userId)) {
+    socket.on("comment_rejected", function (data) {
+      const currentUserId = localStorage.getItem("user_id");
+
+      if (
+        currentUserId &&
+        String(currentUserId) === String(data.userId)
+      ) {
         alert(`Comment Rejected: ${data.reason}`);
         setIsProcessing(false);
       }
@@ -40,15 +45,26 @@ import { meact } from './meact.js';
 
   function handleCommentSubmit(event) {
     event.preventDefault();
-    const contentInput = document.getElementById("comment-content-input");
+
+    const currentUserId = localStorage.getItem("user_id");
+
+    if (!currentUserId) {
+      promptLogin();
+      return;
+    }
+
+    const contentInput =
+      document.getElementById("comment-content-input");
+
     const content = contentInput.value;
 
     if (!content) return;
 
     setIsProcessing(true);
-    contentInput.value = ""; 
+    contentInput.value = "";
 
-    apiService.addComment(content)
+    apiService
+      .addComment(content)
       .catch(function () {
         alert("Failed to submit comment.");
         setIsProcessing(false);
@@ -56,14 +72,18 @@ import { meact } from './meact.js';
   }
 
   function renderProcessingState() {
-    const submitBtn = document.getElementById("submit-comment-btn");
-    const statusText = document.getElementById("ai-status-text");
-    
+    const submitBtn =
+      document.getElementById("submit-comment-btn");
+
+    const statusText =
+      document.getElementById("ai-status-text");
+
     if (!submitBtn || !statusText) return;
 
     if (getIsProcessing()) {
       submitBtn.disabled = true;
-      statusText.textContent = "AI is reviewing your comment...";
+      statusText.textContent =
+        "AI is reviewing your comment...";
       statusText.classList.remove("hidden");
     } else {
       submitBtn.disabled = false;
@@ -72,10 +92,13 @@ import { meact } from './meact.js';
   }
 
   function renderComments() {
-    const container = document.getElementById("comments-container");
+    const container =
+      document.getElementById("comments-container");
+
     if (!container) return;
-    
+
     container.innerHTML = "";
+
     const comments = getComments();
 
     comments.forEach(function (comment) {
@@ -86,11 +109,16 @@ import { meact } from './meact.js';
   function createCommentElement(comment) {
     const element = document.createElement("div");
     element.className = "comment";
-    
-    const user = getCurrentUser();
-    const isAuthenticated = user !== null;
-    
-    const canDelete = Boolean(user && user.id && (String(user.id) === String(comment.userId)));
+
+    const currentUserId =
+      localStorage.getItem("user_id");
+
+    const isAuthenticated =
+      currentUserId !== null;
+
+    const canDelete =
+      currentUserId &&
+      String(currentUserId) === String(comment.userId);
 
     const upvotes = comment.upvotes || 0;
     const downvotes = comment.downvotes || 0;
@@ -99,43 +127,122 @@ import { meact } from './meact.js';
       <div class="comment-user">
         <p>${escapeHtml(comment.content)}</p>
       </div>
-      <div class="comment-actions" style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-        <button class="upvote-btn" type="button" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-          <img src="/images/upvote-icon.png" alt="Upvote" style="width: 20px;">
+
+      <div
+        class="comment-actions"
+        style="
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          margin-top: 5px;
+        "
+      >
+        <button
+          class="upvote-btn"
+          type="button"
+          style="
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          "
+        >
+          <img
+            src="/images/upvote-icon.png"
+            alt="Upvote"
+            style="width: 20px;"
+          >
           <span>${upvotes}</span>
         </button>
-        <button class="downvote-btn" type="button" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-          <img src="/images/downvote-icon.png" alt="Downvote" style="width: 20px;">
+
+        <button
+          class="downvote-btn"
+          type="button"
+          style="
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          "
+        >
+          <img
+            src="/images/downvote-icon.png"
+            alt="Downvote"
+            style="width: 20px;"
+          >
           <span>${downvotes}</span>
         </button>
-        ${canDelete ? `
-          <button class="delete-comment-button" type="button" style="background: none; border: none; cursor: pointer; margin-left: auto;">
-            <img src="/images/delete-icon.png" alt="Delete" style="width: 20px;">
-          </button>
-        ` : ""}
+
+        ${
+          canDelete
+            ? `
+              <button
+                class="delete-comment-button"
+                type="button"
+                style="
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                  margin-left: auto;
+                "
+              >
+                <img
+                  src="/images/delete-icon.png"
+                  alt="Delete"
+                  style="width: 20px;"
+                >
+              </button>
+            `
+            : ""
+        }
       </div>
     `;
 
     if (isAuthenticated) {
-      element.querySelector(".upvote-btn").addEventListener("click", function () {
-        apiService.updateCommentVote(comment.id, 'upvote').then(updateSingleComment);
-      });
+      element
+        .querySelector(".upvote-btn")
+        .addEventListener("click", function () {
+          apiService
+            .updateCommentVote(comment.id, "upvote")
+            .then(updateSingleComment);
+        });
 
-      element.querySelector(".downvote-btn").addEventListener("click", function () {
-        apiService.updateCommentVote(comment.id, 'downvote').then(updateSingleComment);
-      });
+      element
+        .querySelector(".downvote-btn")
+        .addEventListener("click", function () {
+          apiService
+            .updateCommentVote(comment.id, "downvote")
+            .then(updateSingleComment);
+        });
     } else {
-      element.querySelector(".upvote-btn").addEventListener("click", promptLogin);
-      element.querySelector(".downvote-btn").addEventListener("click", promptLogin);
+      element
+        .querySelector(".upvote-btn")
+        .addEventListener("click", promptLogin);
+
+      element
+        .querySelector(".downvote-btn")
+        .addEventListener("click", promptLogin);
     }
 
     if (canDelete) {
-      element.querySelector(".delete-comment-button").addEventListener("click", function () {
-        apiService.deleteComment(comment.id).then(function () {
-          const filtered = getComments().filter(c => c.id !== comment.id);
-          setComments(filtered);
+      element
+        .querySelector(".delete-comment-button")
+        .addEventListener("click", function () {
+          apiService
+            .deleteComment(comment.id)
+            .then(function () {
+              const filtered = getComments().filter(
+                commentItem =>
+                  commentItem.id !== comment.id
+              );
+
+              setComments(filtered);
+            });
         });
-      });
     }
 
     return element;
@@ -143,27 +250,33 @@ import { meact } from './meact.js';
 
   function updateSingleComment(updatedComment) {
     const comments = getComments();
-    const newComments = comments.map(function (c) {
-      return c.id === updatedComment.id ? updatedComment : c;
+
+    const newComments = comments.map(function (comment) {
+      return comment.id === updatedComment.id
+        ? updatedComment
+        : comment;
     });
+
     setComments(newComments);
   }
 
-
   function promptLogin() {
-    const authModal = document.getElementById("auth-modal");
+    const authModal =
+      document.getElementById("auth-modal");
+
     if (authModal) {
       authModal.classList.remove("hidden");
     } else {
-      // Fallback just in case the modal isn't on the current page view
-      alert("Please log in to vote on comments.");
+      alert("Please log in to use comment features.");
     }
   }
 
   function escapeHtml(value) {
     if (!value) return "";
+
     const div = document.createElement("div");
     div.textContent = value;
+
     return div.innerHTML;
   }
 })();
