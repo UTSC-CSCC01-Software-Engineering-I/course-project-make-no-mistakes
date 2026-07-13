@@ -1,116 +1,247 @@
 const express = require('express');
+
 const { Comment } = require('../models/index.js');
-const { addCommentToQueue } = require('../worker/commentWorker.js'); 
-const supabase = require('../lib/supabase'); // NEW: Import Supabase to verify users
+const { addCommentToQueue } = require('../worker/commentWorker.js');
+const supabase = require('../lib/supabase');
 
 const commentsRouter = express.Router();
 
-// REAL Auth Middleware
+/**
+ * Verifies the Supabase access token provided by the frontend.
+ */
 const isAuthenticated = async (req, res, next) => {
   try {
-    // 1. Grab the token from the request headers
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Missing or invalid token' });
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({
+        error: 'You must be logged in to perform this action.',
+        code: 'AUTH_REQUIRED',
+      });
     }
 
-    const token = authHeader.split(' ')[1];
-    
-    // 2. Ask Supabase to verify the token and get the real user
+    const token = authHeader.slice('Bearer '.length).trim();
+
+    if (!token) {
+      return res.status(401).json({
+        error: 'You must be logged in to perform this action.',
+        code: 'AUTH_REQUIRED',
+      });
+    }
+
     const { data, error } = await supabase.auth.getUser(token);
-    
+
     if (error || !data?.user) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+      console.error('[AUTH VALIDATION ERROR]', {
+        message: error?.message,
+        status: error?.status,
+        code: error?.code,
+      });
+
+      return res.status(401).json({
+        error: 'Your session has expired. Please log in again.',
+        code: 'SESSION_EXPIRED',
+      });
     }
 
-    // 3. Attach the REAL Supabase UUID to the request
-    req.user = { id: data.user.id };
-    next();
-  } catch (err) {
-    console.error("[AUTH ERROR]", err);
-    return res.status(500).json({ error: 'Authentication error' });
+    req.user = {
+      id: data.user.id,
+      email: data.user.email,
+      metadata: data.user.user_metadata || {},
+    };
+
+    return next();
+  } catch (error) {
+    console.error('[AUTH ERROR]', error);
+
+    return res.status(500).json({
+      error: 'Unable to verify authentication.',
+      code: 'AUTH_SERVICE_ERROR',
+    });
   }
 };
 
-// 0. GET Comments
+/**
+ * GET /api/comments?proposalId=...
+ *
+ * Public route. Anyone can read approved comments.
+ */
 commentsRouter.get('/', async (req, res) => {
-  try {
-    const { proposalId } = req.query;
-    if (!proposalId) return res.status(400).json({ error: "proposalId is required" });
+  const { proposalId } = req.query;
 
+  if (!proposalId) {
+    return res.status(400).json({
+      error: 'proposalId is required.',
+      code: 'PROPOSAL_ID_REQUIRED',
+    });
+  }
+
+  try {
     const comments = await Comment.findAll({
-      where: { proposalId: proposalId, status: 'approved' }
+      where: {
+        proposalId,
+        status: 'approved',
+      },
     });
-    res.json(comments);
+
+    return res.status(200).json(comments);
   } catch (error) {
-    console.error("[ROUTE ERROR]", error);
-    res.status(500).json({ error: "Failed to fetch comments" });
+    console.error('[GET COMMENTS ERROR]', error);
+
+    return res.status(500).json({
+      error: 'Failed to fetch comments.',
+      code: 'COMMENTS_FETCH_FAILED',
+    });
   }
 });
 
-// 1. POST Comment
+/**
+ * POST /api/comments
+ *
+ * Protected route. Only authenticated users can submit comments.
+ */
 commentsRouter.post('/', isAuthenticated, async (req, res) => {
-  console.log(`\n[ROUTE] --- NEW COMMENT POST REQUEST ---`);
-  console.log(`[ROUTE] Request body:`, req.body);
-  console.log(`[ROUTE] Real User ID:`, req.user.id);
-  
+  const content =
+    typeof req.body.content === 'string'
+      ? req.body.content.trim()
+      : '';
+
+  const { proposalId } = req.body;
+
+  if (!content) {
+    return res.status(400).json({
+      error: 'Comment content is required.',
+      code: 'COMMENT_CONTENT_REQUIRED',
+    });
+  }
+
+  if (!proposalId) {
+    return res.status(400).json({
+      error: 'proposalId is required.',
+      code: 'PROPOSAL_ID_REQUIRED',
+    });
+  }
+
   try {
+    /*
+     * Do not accept authorName from the request body.
+     * Get the display name from the verified Supabase user instead.
+     */
+    const authorName =
+      req.user.metadata.full_name ||
+      req.user.metadata.name ||
+      req.user.email ||
+      'Anonymous';
+
     const comment = await Comment.create({
-      content: req.body.content,
-      proposalId: req.body.proposalId,
-      userId: req.user.id, // Uses the real UUID (supabase)
-      authorName: req.body.authorName || 'Anonymous',
-      status: 'pending'
+      content,
+      proposalId,
+      userId: req.user.id,
+      authorName,
+      status: 'pending',
     });
 
-    console.log(`[ROUTE] Success! Comment saved to DB with ID: ${comment.id}`);
-    
-    // Fire & Forget: Add to background worker queue
-    addCommentToQueue(comment.id);
-    
-    res.status(202).json({ message: "Comment submitted for AI review", id: comment.id });
+    /*
+     * Submit the comment to the worker without delaying the HTTP response.
+     * A queue error will not incorrectly report that the database insert failed.
+     */
+    Promise.resolve()
+      .then(() => addCommentToQueue(comment.id))
+      .catch((error) => {
+        console.error('[COMMENT QUEUE ERROR]', {
+          commentId: comment.id,
+          error,
+        });
+      });
+
+    return res.status(202).json({
+      message: 'Comment submitted for AI review',
+      id: comment.id,
+    });
   } catch (error) {
-    console.error(`[ROUTE ERROR] Failed to save comment to database!`);
-    console.error(error);
-    res.status(500).json({ error: "Failed to post comment" });
+    console.error('[CREATE COMMENT ERROR]', error);
+
+    return res.status(500).json({
+      error: 'Failed to post comment.',
+      code: 'COMMENT_CREATE_FAILED',
+    });
   }
 });
 
-// 2. DELETE Comment
+/**
+ * DELETE /api/comments/:id
+ *
+ * Protected route. A user can delete only their own comments.
+ */
 commentsRouter.delete('/:id', isAuthenticated, async (req, res) => {
   try {
     const comment = await Comment.findByPk(req.params.id);
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
-    
-    // Checks if the token's UUID matches the comment's UUID
+
+    if (!comment) {
+      return res.status(404).json({
+        error: 'Comment not found.',
+        code: 'COMMENT_NOT_FOUND',
+      });
+    }
+
     if (String(comment.userId) !== String(req.user.id)) {
-      return res.status(403).json({ error: "Forbidden. You can only delete your own comments." });
+      return res.status(403).json({
+        error: 'Forbidden. You can only delete your own comments.',
+        code: 'COMMENT_DELETE_FORBIDDEN',
+      });
     }
 
     await comment.destroy();
-    res.status(204).end();
+
+    return res.status(204).end();
   } catch (error) {
-    console.error("[DELETE ERROR]", error);
-    res.status(500).json({ error: "Failed to delete" });
+    console.error('[DELETE COMMENT ERROR]', error);
+
+    return res.status(500).json({
+      error: 'Failed to delete comment.',
+      code: 'COMMENT_DELETE_FAILED',
+    });
   }
 });
 
-// 3. PATCH Upvote/Downvote
+/**
+ * PATCH /api/comments/:id/vote
+ *
+ * Protected route. Only authenticated users can vote.
+ */
 commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
   const { action } = req.body;
+
+  if (action !== 'upvote' && action !== 'downvote') {
+    return res.status(400).json({
+      error: 'Invalid vote action.',
+      code: 'INVALID_VOTE_ACTION',
+    });
+  }
+
   try {
     const comment = await Comment.findByPk(req.params.id);
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
 
-    if (action === 'upvote') await comment.increment('upvotes');
-    else if (action === 'downvote') await comment.increment('downvotes');
-    else return res.status(400).json({ error: "Invalid vote action" });
+    if (!comment) {
+      return res.status(404).json({
+        error: 'Comment not found.',
+        code: 'COMMENT_NOT_FOUND',
+      });
+    }
 
+    const field = action === 'upvote' ? 'upvotes' : 'downvotes';
+
+    await comment.increment(field);
     await comment.reload();
-    res.json(comment);
+
+    return res.status(200).json(comment);
   } catch (error) {
-    console.error("[VOTE ERROR]", error);
-    res.status(500).json({ error: "Voting failed" });
+    console.error('[VOTE ERROR]', error);
+
+    return res.status(500).json({
+      error: 'Voting failed.',
+      code: 'VOTE_FAILED',
+    });
   }
 });
 
