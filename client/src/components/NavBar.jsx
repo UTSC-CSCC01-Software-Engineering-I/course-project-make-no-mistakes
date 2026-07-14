@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router'
 import axios from 'axios'
 import { getToken, isTokenValid } from '/src/utils/authToken'
+import useRole from '/src/utils/useRole'
 import './NavBar.css'
 
 function NavBar() {
@@ -8,6 +9,7 @@ function NavBar() {
 	const navigate = useNavigate();
 
 	const isLoggedIn = isTokenValid();
+	const { role } = useRole();
 
 	async function handleLogout() {
 		try {
@@ -32,7 +34,7 @@ function NavBar() {
       	</NavLink>
 
 		{
-			isLoggedIn ?
+			role === 'commissioner' ?
 				(<NavLink to="/commissioner-dashboard"
 					className={({ isActive }) =>
 						isActive ? "navBarLink activeNavBarLink" : "navBarLink"
