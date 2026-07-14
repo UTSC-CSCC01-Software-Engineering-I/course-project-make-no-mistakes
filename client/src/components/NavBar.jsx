@@ -31,12 +31,16 @@ function NavBar() {
         	Home
       	</NavLink>
 
-      	<NavLink to="/commissioner-dashboard"
-			className={({ isActive }) =>
-				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
-			}>
-        	Dashboard
-      	</NavLink>
+		{
+			isLoggedIn ?
+				(<NavLink to="/commissioner-dashboard"
+					className={({ isActive }) =>
+						isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+					}>
+				Dashboard
+				</NavLink>) :
+				()
+		}
 
 	  	<NavLink to="/user-submissions"
 			className={({ isActive }) =>

@@ -1,5 +1,4 @@
-// Helpers for reading the stored Supabase JWT and checking whether it is
-// still valid.
+// Helpers for reading the stored Supabase JWT and checking whether it is still valid.
 
 export function getToken() {
 	return localStorage.getItem('sb_token');
