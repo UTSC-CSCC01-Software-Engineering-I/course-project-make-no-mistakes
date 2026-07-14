@@ -3,6 +3,8 @@ const authRouter = express.Router();
 
 // import public-facing supabase client
 const supabase = require("../lib/supabase")
+const supabaseAdmin = require("../lib/supabaseAdmin")
+const { requireAuth } = require("../middleware/requireRole")
 
 // registration route
 authRouter.post("/register", async (req, res) => {
@@ -47,6 +49,16 @@ authRouter.post("/login", async (req, res) => {
 		token: data.session.access_token,
 		user: data.user
 	});
+})
+
+// logout route: revokes the refresh token for this session only,
+// the user's other sessions/devices stay logged in.
+authRouter.post("/logout", requireAuth, async (req, res) => {
+	const { error } = await supabaseAdmin.auth.admin.signOut(req.token, 'local');
+
+	if (error) return res.status(400).json({ error: error.message });
+
+	return res.json({ message: "Logged out successfully!" });
 })
 
 module.exports = authRouter;
