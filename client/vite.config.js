@@ -4,20 +4,25 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+
     proxy: {
-      // Secretly forwards any /api requests to your backend
+      // Forward API requests to the server container
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://server:8080',
         changeOrigin: true,
         secure: false,
       },
-      // Since your server.js also has an /auth route, we should proxy that too!
+
+      // Forward authentication requests to the server container
       '/auth': {
-        target: 'http://localhost:8080',
+        target: 'http://server:8080',
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
+      },
+    },
+  },
 })
