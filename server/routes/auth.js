@@ -1,5 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
+
+// import public-facing supabase client
 const supabase = require("../lib/supabase")
 
 // registration route
