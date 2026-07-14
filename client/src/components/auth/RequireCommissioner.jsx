@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router'
 import axios from 'axios'
+import { getToken, isTokenValid } from '/src/utils/authToken'
 
 // Route guard: only renders children for logged-in commissioners.
 // This is a UX guard, not a security boundary
@@ -12,9 +13,9 @@ export default function RequireCommissioner({ children }) {
 
 	useEffect(() => {
 
-		const token = localStorage.getItem('sb_token');
+		const token = getToken();
 
-		if (!token) {
+		if (!isTokenValid(token)) {
 			setStatus('denied');
 			return;
 		}

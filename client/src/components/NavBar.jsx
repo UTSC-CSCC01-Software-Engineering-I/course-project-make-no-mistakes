@@ -1,14 +1,22 @@
 import { NavLink, useNavigate } from 'react-router'
+import axios from 'axios'
+import { getToken, isTokenValid } from '/src/utils/authToken'
 import './NavBar.css'
 
 function NavBar() {
 
 	const navigate = useNavigate();
 
-	// TODO hook up to backend for verification of token
-	const isLoggedIn = !!localStorage.getItem('sb_token');
+	const isLoggedIn = isTokenValid();
 
-	function handleLogout() {
+	async function handleLogout() {
+		try {
+			await axios.post('http://localhost:8080/auth/logout', null, {
+				headers: { Authorization: `Bearer ${getToken()}` }
+			});
+		} catch {
+		}
+
 		localStorage.removeItem('sb_token');
 		navigate('/login', { replace: true });
 		window.location.reload();
