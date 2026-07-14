@@ -1,11 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
-<<<<<<< HEAD
-import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 
-=======
-import { useState, useRef } from 'react'
->>>>>>> refs/remotes/origin/main
 import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
@@ -14,184 +10,357 @@ import './ViewProposalPage.css'
 import thumbsUpIcon from '../assets/thumbsUp.png'
 import commentIcon from '../assets/greencomment.png'
 
-function getDistanceInMeters(coord1, coord2) {
-  const [lon1, lat1] = coord1;
-  const [lon2, lat2] = coord2;
-  const R = 6371e3; 
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
+const DISTANCE_THRESHOLD = 50
+const AUTH_TOKEN_STORAGE_KEY = 'token'
+const LOGIN_PATH = '/login'
 
-  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; 
+function getDistanceInMeters(coord1, coord2) {
+  const [lon1, lat1] = coord1
+  const [lon2, lat2] = coord2
+  const R = 6371e3
+  const phi1 = (lat1 * Math.PI) / 180
+  const phi2 = (lat2 * Math.PI) / 180
+  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180
+  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180
+
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) *
+      Math.cos(phi2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2)
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
 }
 
 function isPointInPolygon(point, polygonCoords) {
-  const [x, y] = point;
-  let inside = false;
-  // outer ring of parent polygon
-  const ring = polygonCoords[0];
-  if (!ring) return false;
-  
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const xi = ring[i][0], yi = ring[i][1];
-    const xj = ring[j][0], yj = ring[j][1];
-    
-    const intersect = ((yi > y) !== (yj > y))
-        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
-}
+  const [x, y] = point
+  const ring = polygonCoords[0]
+  let inside = false
 
-// Helper: Check if a coordinate is identical to any vertex of another polygon (within tiny floating tolerance)
-function isSharedCoordinate(coord, polygonCoords) {
-  const ring = polygonCoords[0];
-  if (!ring) return false;
-  
-  const TOLERANCE = 1e-6; 
-  return ring.some(p => Math.abs(p[0] - coord[0]) < TOLERANCE && Math.abs(p[1] - coord[1]) < TOLERANCE);
+  if (!ring) return false
+
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i]
+    const [xj, yj] = ring[j]
+
+    const intersect =
+      yi > y !== yj > y &&
+      x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
+
+    if (intersect) inside = !inside
+  }
+
+  return inside
 }
 
 function getPolygonAreaOverlapPercentage(polyA, polyB) {
-  const coordsA = polyA.geometry.coordinates[0]; // Outer ring of A
-  const coordsB = polyB.geometry.coordinates;    // Rings of B
-  
-  if (!coordsA || !coordsB) return 0;
+  const coordsA = polyA.geometry.coordinates[0]
+  const coordsB = polyB.geometry.coordinates
 
-  // 1. Calculate Bounding Box of Poly A
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  if (!coordsA || !coordsB) return 0
+
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+
   coordsA.forEach(([x, y]) => {
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  });
+    if (x < minX) minX = x
+    if (x > maxX) maxX = x
+    if (y < minY) minY = y
+    if (y > maxY) maxY = y
+  })
 
-  // 12x12 sample grid inside the bounding box
-  const GRID_RESOLUTION = 12; // 144 sample points provides excellent accuracy and speed
-  let totalPointsInA = 0;
-  let pointsInAAndB = 0;
+  const GRID_RESOLUTION = 12
+  let totalPointsInA = 0
+  let pointsInAAndB = 0
 
-  const stepX = (maxX - minX) / (GRID_RESOLUTION - 1);
-  const stepY = (maxY - minY) / (GRID_RESOLUTION - 1);
+  const stepX = (maxX - minX) / (GRID_RESOLUTION - 1)
+  const stepY = (maxY - minY) / (GRID_RESOLUTION - 1)
 
   for (let i = 0; i < GRID_RESOLUTION; i++) {
     for (let j = 0; j < GRID_RESOLUTION; j++) {
-      const px = minX + i * stepX;
-      const py = minY + j * stepY;
-      const samplePoint = [px, py];
+      const samplePoint = [minX + i * stepX, minY + j * stepY]
 
       if (isPointInPolygon(samplePoint, polyA.geometry.coordinates)) {
-        totalPointsInA++;
+        totalPointsInA += 1
 
-        // check if it also falls inside Poly B
         if (isPointInPolygon(samplePoint, coordsB)) {
-          pointsInAAndB++;
+          pointsInAAndB += 1
         }
       }
     }
   }
 
-  if (totalPointsInA === 0) return 0;
-  return pointsInAAndB / totalPointsInA;
+  if (totalPointsInA === 0) return 0
+  return pointsInAAndB / totalPointsInA
 }
-
-const DISTANCE_THRESHOLD = 50; 
 
 function ViewProposalPage() {
   const { proposalId } = useParams()
-  const mapComponentRef = useRef(null);
+  const mapComponentRef = useRef(null)
 
-<<<<<<< HEAD
-  const [liveComments, setLiveComments] = useState([])
-  const [newCommentText, setNewCommentText] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
-
-=======
->>>>>>> refs/remotes/origin/main
   const proposal = proposals.find(
-    proposal => String(proposal.id) === String(proposalId)
+    (item) => String(item.id) === String(proposalId)
   )
 
-<<<<<<< HEAD
+  const [liveComments, setLiveComments] = useState([])
+  const [newCommentText, setNewCommentText] = useState('')
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+  const [commentNotice, setCommentNotice] = useState(null)
+  const [hasAccessToken, setHasAccessToken] = useState(() =>
+    Boolean(localStorage.getItem(AUTH_TOKEN_STORAGE_KEY))
+  )
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
+  const [validationError, setValidationError] = useState(null)
 
-  // --- 1. Real-Time WebSocket & Fetch Effect ---
+  const commentDraftKey = `comment-draft-${proposalId}`
+
   useEffect(() => {
-    if (!proposalId) return
+    setLikes(proposal?.postLikes ?? 0)
+  }, [proposal])
 
-    // GET Request (Relies on Vite proxy to forward to 8080)
-    fetch(`/api/comments?proposalId=${proposalId}`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        if (Array.isArray(data)) setLiveComments(data)
-      })
-      .catch(err => console.error("[Frontend GET Error]:", err))
+  useEffect(() => {
+    const savedDraft = sessionStorage.getItem(commentDraftKey)
 
-    // Use environment variable for Socket to prevent hardcoding issues for teammates
-    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    const socket = io(SOCKET_URL);
+    if (savedDraft) {
+      setNewCommentText(savedDraft)
+    }
+
+    setHasAccessToken(
+      Boolean(localStorage.getItem(AUTH_TOKEN_STORAGE_KEY))
+    )
+  }, [commentDraftKey])
+
+  useEffect(() => {
+    if (!proposalId) return undefined
+
+    const controller = new AbortController()
+
+    fetch(`/api/comments?proposalId=${encodeURIComponent(proposalId)}`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Status ${response.status}`)
+        }
+
+        return response.json()
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setLiveComments(data)
+        }
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error('[Frontend GET Error]:', error)
+        }
+      })
+
+    const socketUrl =
+      import.meta.env.VITE_API_URL || 'http://localhost:8080'
+    const socket = io(socketUrl)
 
     socket.on('comment_approved', (newComment) => {
-      if (String(newComment.proposalId) === String(proposalId)) {
-        setLiveComments(prev => [...prev, newComment])
-        setIsProcessing(false)
-      }
+      if (String(newComment.proposalId) !== String(proposalId)) return
+
+      setLiveComments((previousComments) => {
+        const commentAlreadyExists = previousComments.some(
+          (comment) => String(comment.id) === String(newComment.id)
+        )
+
+        return commentAlreadyExists
+          ? previousComments
+          : [...previousComments, newComment]
+      })
     })
 
     socket.on('comment_rejected', (data) => {
-      alert(`AI Rejected: ${data.reason}`)
-      setIsProcessing(false)
+      setCommentNotice({
+        type: 'error',
+        text: data?.reason
+          ? `Your comment was not approved: ${data.reason}`
+          : 'Your comment was not approved.',
+      })
     })
 
-    return () => socket.disconnect()
+    return () => {
+      controller.abort()
+      socket.disconnect()
+    }
   }, [proposalId])
 
-  // --- 2. Handle Comment Submission ---
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault()
-    if (!newCommentText.trim()) return
+  function saveCommentDraft(content) {
+    if (content) {
+      sessionStorage.setItem(commentDraftKey, content)
+    }
+  }
 
-    setIsProcessing(true)
-    console.log("[Frontend] Attempting to post to /api/comments...");
+  function redirectToLogin(reason) {
+    const returnTo = `${window.location.pathname}${window.location.search}`
+    const loginUrl = new URL(LOGIN_PATH, window.location.origin)
+
+    loginUrl.searchParams.set('returnTo', returnTo)
+
+    if (reason) {
+      loginUrl.searchParams.set('reason', reason)
+    }
+
+    window.location.assign(loginUrl.toString())
+  }
+
+  async function handleCommentSubmit(event) {
+    event.preventDefault()
+
+    const content = newCommentText.trim()
+
+    if (!content || isSubmittingComment) return
+
+    const accessToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
+
+    if (!accessToken) {
+      saveCommentDraft(content)
+      redirectToLogin('authentication-required')
+      return
+    }
+
+    setIsSubmittingComment(true)
+    setCommentNotice(null)
 
     try {
-      // POST Request (Relies on Vite proxy to forward to 8080)
-      const res = await fetch('/api/comments', {
+      const response = await fetch('/api/comments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newCommentText, proposalId: proposalId })
-      });
-      
-      if (!res.ok) {
-        // If the server crashes or proxy fails, grab the exact error text
-        const errorText = await res.text();
-        throw new Error(`Server returned ${res.status}: ${errorText}`);
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          content,
+          proposalId,
+        }),
+      })
+
+      let responseBody = null
+
+      try {
+        responseBody = await response.json()
+      } catch {
+        responseBody = null
       }
 
-      console.log("[Frontend] Successfully submitted to server!");
-      setNewCommentText(""); 
+      if (response.status === 401) {
+        saveCommentDraft(content)
+        localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        setHasAccessToken(false)
+        redirectToLogin('session-expired')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          responseBody?.error ||
+            `The server returned status ${response.status}.`
+        )
+      }
+
+      setNewCommentText('')
+      sessionStorage.removeItem(commentDraftKey)
+      setCommentNotice({
+        type: 'success',
+        text:
+          responseBody?.message ||
+          'Your comment was submitted for review.',
+      })
     } catch (error) {
-      console.error("[Frontend POST Error]:", error);
-      alert("Failed to submit comment. Check the browser console!");
-      setIsProcessing(false); 
+      console.error('[Frontend POST Error]:', error)
+      saveCommentDraft(content)
+      setCommentNotice({
+        type: 'error',
+        text: error.message || 'Unable to submit your comment.',
+      })
+    } finally {
+      setIsSubmittingComment(false)
     }
   }
 
   function incrementLikes() {
-    setLikes(previousLikes => previousLikes + 1)
+    setLikes((previousLikes) => previousLikes + 1)
   }
 
-=======
->>>>>>> refs/remotes/origin/main
+  function handleDrawChange(geoJsonData) {
+    let foundClosedLineString = false
+    let hasStrayLines = false
+    let hasNestedPolygon = false
+
+    if (geoJsonData?.features) {
+      const polygons = []
+
+      for (const feature of geoJsonData.features) {
+        if (feature.geometry.type === 'LineString') {
+          hasStrayLines = true
+
+          const coords = feature.geometry.coordinates
+
+          if (coords.length >= 3) {
+            const firstPoint = coords[0]
+            const lastPoint = coords[coords.length - 1]
+
+            if (
+              getDistanceInMeters(firstPoint, lastPoint) <=
+              DISTANCE_THRESHOLD
+            ) {
+              foundClosedLineString = true
+            }
+          }
+        } else if (feature.geometry.type === 'Polygon') {
+          polygons.push(feature)
+        }
+      }
+
+      const OVERLAP_PERCENT_THRESHOLD = 0.25
+
+      for (let i = 0; i < polygons.length; i++) {
+        for (let j = 0; j < polygons.length; j++) {
+          if (i === j) continue
+
+          const overlapPercent = getPolygonAreaOverlapPercentage(
+            polygons[i],
+            polygons[j]
+          )
+
+          if (overlapPercent > OVERLAP_PERCENT_THRESHOLD) {
+            hasNestedPolygon = true
+            break
+          }
+        }
+
+        if (hasNestedPolygon) break
+      }
+    }
+
+    setIsLineStringClosed(foundClosedLineString)
+
+    if (hasStrayLines) {
+      setValidationError(
+        'Invalid: Stray lines detected. All census boundaries must be closed polygons.'
+      )
+    } else if (hasNestedPolygon) {
+      setValidationError(
+        'Invalid: Overlapping boundary detected. Census tracts cannot overlap by more than 25%.'
+      )
+    } else {
+      setValidationError(null)
+    }
+  }
+
+  function handleSimplifyClick() {
+    mapComponentRef.current?.simplifyDrawing()
+  }
+
   if (!proposal) {
     return (
       <main>
@@ -200,86 +369,23 @@ function ViewProposalPage() {
     )
   }
 
-<<<<<<< HEAD
-=======
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
-  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
-  const [validationError, setValidationError] = useState(null)
+  const noticeStyle =
+    commentNotice?.type === 'error'
+      ? { color: '#b42318', margin: 0 }
+      : { color: '#2e7d32', margin: 0 }
 
-  function incrementLikes() {
-    setLikes(previousLikes => previousLikes + 1)
-  }
-
-const handleDrawChange = (geoJsonData) => {
-    let foundClosedLineString = false;
-    let hasStrayLines = false;
-    let hasNestedPolygon = false;
-
-    if (geoJsonData && geoJsonData.features) {
-      const polygons = [];
-
-      for (const feature of geoJsonData.features) {
-        if (feature.geometry.type === 'LineString') {
-          hasStrayLines = true;
-          
-          const coords = feature.geometry.coordinates;
-          if (coords.length >= 3) {
-            const firstPoint = coords[0];
-            const lastPoint = coords[coords.length - 1];
-            if (getDistanceInMeters(firstPoint, lastPoint) <= DISTANCE_THRESHOLD) {
-              foundClosedLineString = true;
-            }
-          }
-        } else if (feature.geometry.type === 'Polygon') {
-          polygons.push(feature);
-        }
-      }
-
-      // spatial sampling method
-      const OVERLAP_PERCENT_THRESHOLD = 0.25;
-      
-      for (let i = 0; i < polygons.length; i++) {
-        for (let j = 0; j < polygons.length; j++) {
-          if (i === j) continue;
-          
-          const overlapPercent = getPolygonAreaOverlapPercentage(polygons[i], polygons[j]);
-          if (overlapPercent > OVERLAP_PERCENT_THRESHOLD) {
-            hasNestedPolygon = true;
-            break;
-          }
-        }
-        if (hasNestedPolygon) break;
-      }
-    }
-
-    setIsLineStringClosed(foundClosedLineString);
-
-    if (hasStrayLines) {
-      setValidationError("Invalid: Stray lines detected. All census boundaries must be closed polygons.");
-    } else if (hasNestedPolygon) {
-      setValidationError("Invalid: Overlapping boundary detected. Census tracts cannot overlap by more than 45%.");
-    } else {
-      setValidationError(null); 
-    }
-  }
-
-  const handleSimplifyClick = () => {
-    if (mapComponentRef.current) {
-        mapComponentRef.current.simplifyDrawing();
-    }
-  }
-
->>>>>>> refs/remotes/origin/main
   return (
     <main>
       <header className="proposalPageHeader">
         <div className="horizontalProposalHeaderBox">
-          <span className="proposalHeaderText">
-            ID: {proposal.id}
-          </span>
+          <span className="proposalHeaderText">ID: {proposal.id}</span>
 
           <div className="ratingBox">
-            <button className="prettierButton" onClick={incrementLikes}>
+            <button
+              className="prettierButton"
+              onClick={incrementLikes}
+              type="button"
+            >
               <img
                 className="iconBox"
                 src={thumbsUpIcon}
@@ -287,31 +393,18 @@ const handleDrawChange = (geoJsonData) => {
               />
             </button>
 
-            <span className="proposalHeaderText">
-              {likes} likes
-            </span>
+            <span className="proposalHeaderText">{likes} likes</span>
           </div>
 
-          <span className="proposalHeaderText">
-            {proposal.postUser}
-          </span>
-          <span className="proposalHeaderText">
-            {proposal.postDate}
-          </span>
+          <span className="proposalHeaderText">{proposal.postUser}</span>
+          <span className="proposalHeaderText">{proposal.postDate}</span>
         </div>
 
         <div className="horizontalCommentHeaderBox">
-          <span className="commentHeaderText">
-            Comments:
-          </span>
+          <span className="commentHeaderText">Comments:</span>
 
           <div className="commentCountBox">
-            <img
-              className="iconBox"
-              src={commentIcon}
-              alt="comment icon"
-            />
-
+            <img className="iconBox" src={commentIcon} alt="comment icon" />
             <span className="smallerCommentHeaderText">
               {liveComments.length}
             </span>
@@ -321,18 +414,20 @@ const handleDrawChange = (geoJsonData) => {
 
       <div className="proposalContentBox">
         <div className="mapBox">
-            
-          <button className="simplifyButton" onClick={handleSimplifyClick}>
+          <button
+            className="simplifyButton"
+            onClick={handleSimplifyClick}
+            type="button"
+          >
             Simplify
           </button>
 
           {validationError ? (
-            <div className="validationBanner invalid">
-              {validationError}
-            </div>
+            <div className="validationBanner invalid">{validationError}</div>
           ) : isLineStringClosed ? (
             <div className="validationBanner warning">
-              Closed polygon detected! Click "Simplify" to fuse coordinates and save memory.
+              Closed polygon detected! Click &quot;Simplify&quot; to fuse
+              coordinates and save memory.
             </div>
           ) : (
             <div className="validationBanner valid">
@@ -343,42 +438,125 @@ const handleDrawChange = (geoJsonData) => {
           <Map
             ref={mapComponentRef}
             mode="objection"
-            onDrawChange={handleDrawChange} 
+            onDrawChange={handleDrawChange}
           />
         </div>
 
         <div className="commentBox">
-          <div className="addCommentSection" style={{ padding: '1rem', borderBottom: '2px solid #eee' }}>
-            <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <textarea 
-                value={newCommentText}
-                onChange={(e) => setNewCommentText(e.target.value)}
-                placeholder="Write your objection or comment here..."
-                rows="3"
-                style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
-                required
-              />
-              <button 
-                type="submit" 
-                disabled={isProcessing}
-                style={{ padding: '10px', background: isProcessing ? '#ccc' : '#2e7d32', color: 'white', border: 'none', borderRadius: '8px', cursor: isProcessing ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+          <div
+            className="addCommentSection"
+            style={{ padding: '1rem', borderBottom: '2px solid #eee' }}
+          >
+            {hasAccessToken ? (
+              <form
+                onSubmit={handleCommentSubmit}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
               >
-                {isProcessing ? 'AI is reviewing...' : 'Post Comment'}
-              </button>
-            </form>
+                <textarea
+                  value={newCommentText}
+                  onChange={(event) => {
+                    setNewCommentText(event.target.value)
+                    setCommentNotice(null)
+                  }}
+                  placeholder="Write your objection or comment here..."
+                  rows="3"
+                  style={{
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px solid #ccc',
+                  }}
+                  required
+                />
+
+                {commentNotice && (
+                  <p role="status" style={noticeStyle}>
+                    {commentNotice.text}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingComment || !newCommentText.trim()}
+                  style={{
+                    padding: '10px',
+                    background:
+                      isSubmittingComment || !newCommentText.trim()
+                        ? '#ccc'
+                        : '#2e7d32',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor:
+                      isSubmittingComment || !newCommentText.trim()
+                        ? 'not-allowed'
+                        : 'pointer',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {isSubmittingComment ? 'Submitting...' : 'Post Comment'}
+                </button>
+              </form>
+            ) : (
+              <div
+                role="region"
+                aria-label="Login required to comment"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                }}
+              >
+                <p style={{ margin: 0, color: '#555' }}>
+                  Log in to join the discussion and post a comment.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => redirectToLogin('authentication-required')}
+                  style={{
+                    padding: '10px 16px',
+                    background: '#2e7d32',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Log in to Comment
+                </button>
+              </div>
+            )}
           </div>
 
           <section className="proposalCommentList">
             {liveComments.length === 0 ? (
-              <p style={{ padding: '1rem', textAlign: 'center', color: '#666' }}>No comments yet. Be the first to object!</p>
+              <p
+                style={{
+                  padding: '1rem',
+                  textAlign: 'center',
+                  color: '#666',
+                }}
+              >
+                No comments yet. Be the first to object!
+              </p>
             ) : (
-              liveComments.map(comment => (
+              liveComments.map((comment) => (
                 <ProposalComment
                   key={comment.id}
                   proposalId={comment.proposalId}
-                  relatedRidings={comment.relatedRidings || ["N/A"]}
-                  postUser={comment.authorName || "Anonymous"} 
-                  postDate={new Date(comment.createdAt).toLocaleDateString()}
+                  relatedRidings={comment.relatedRidings || ['N/A']}
+                  postUser={comment.authorName || 'Anonymous'}
+                  postDate={
+                    comment.createdAt
+                      ? new Date(comment.createdAt).toLocaleDateString()
+                      : ''
+                  }
                   postComment={comment.content}
                   postLikes={comment.upvotes || 0}
                 />
