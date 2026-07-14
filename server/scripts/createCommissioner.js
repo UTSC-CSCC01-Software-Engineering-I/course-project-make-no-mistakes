@@ -1,41 +1,40 @@
-// Backend-only tool for creating commissioner accounts by invitation.
+// Backend-only tool for creating commissioner accounts directly.
 // Not exposed over HTTP — requires shell access to the server and the service-role key in .env.
 //
-// Sends a Supabase invite email; the commissioner follows the link to set
-// their own password
+// Creates the account with the given email + password immediately (no invite
+// email); the commissioner can log in right away with those credentials.
 //
 // Usage (from server/):
-//   node --env-file=.env scripts/createCommissioner.js <email> [redirectTo]
-//
-// redirectTo (optional): URL the invite link lands on after the user accepts,
-// e.g. your password-setup page. Must be in the Supabase project's allowed
-// redirect URLs; defaults to the project's Site URL.
+//   node --env-file=.env scripts/createCommissioner.js <email> <password>
 
 // import privileged supabase client instance
 const supabaseAdmin = require("../lib/supabaseAdmin");
 
 async function main() {
-	const [email, redirectTo] = process.argv.slice(2);
+	const [email, password] = process.argv.slice(2);
 
-	if (!email) {
-		console.error("Usage: node --env-file=.env scripts/createCommissioner.js <email> [redirectTo]");
+	if (!email || !password) {
+		console.error("Usage: node --env-file=.env scripts/createCommissioner.js <email> <password>");
 		process.exit(1);
 	}
 
-	const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+	const { data, error } = await supabaseAdmin.auth.admin.createUser({
 		email,
-		redirectTo ? { redirectTo } : {}
-	);
+		password,
+		email_confirm: true,
+	});
 
 	if (error) {
-		console.error("Failed to invite commissioner:", error.message);
+		console.error("Failed to create commissioner:", error.message);
 		process.exit(1);
 	}
 
 	const userId = data.user.id;
 
-	// inviteUserByEmail has no app_metadata option, so mirror the role there
-	// in a second call (kept for parity with clients that read it off the JWT)
+	// AI-assisted code
+	// createUser has no top-level role option, so mirror the role in
+	// app_metadata via a second call (kept for parity with clients that read
+	// it off the JWT)
 	const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
 		app_metadata: { role: "commissioner" },
 	});
