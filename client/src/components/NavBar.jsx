@@ -39,7 +39,7 @@ function NavBar() {
 					}>
 				Dashboard
 				</NavLink>) :
-				()
+				null
 		}
 
 	  	<NavLink to="/user-submissions"
