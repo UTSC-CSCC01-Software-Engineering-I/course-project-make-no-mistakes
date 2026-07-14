@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --env-file=.env server",
-	"dev": "node --watch --env-file=.env server"
+    "dev": "node --watch --env-file=.env server",
+    "create-commissioner": "node --env-file=.env scripts/createCommissioner"
   },
   "keywords": [],
   "author": "",

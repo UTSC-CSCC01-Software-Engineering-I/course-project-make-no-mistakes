@@ -17,6 +17,10 @@ app.use(cors(corsOptions));
 const authRouter = require('./routes/auth.js');
 app.use("/auth", authRouter);
 
+// role router //////////////////////////////////////////////////
+const roleRouter = require('./routes/role.js');
+app.use("/role", roleRouter);
+
 // page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");

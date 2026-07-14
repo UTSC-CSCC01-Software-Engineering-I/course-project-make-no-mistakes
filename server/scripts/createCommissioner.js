@@ -1,8 +1,8 @@
 // Backend-only tool for creating commissioner accounts directly.
 // Not exposed over HTTP — requires shell access to the server and the service-role key in .env.
 //
-// Creates the account with the given email + password immediately (no invite
-// email); the commissioner can log in right away with those credentials.
+// Creates the account with the given email + password immediately,
+// the commissioner can log in right away with those credentials.
 //
 // Usage (from server/):
 //   node --env-file=.env scripts/createCommissioner.js <email> <password>
@@ -45,7 +45,7 @@ async function main() {
 	}
 
 	// the signup trigger creates the profile as 'publicuser'; promote it
-	// through the sanctioned admin_set_role function
+	// through the admin_set_role function
 	const { error: roleError } = await supabaseAdmin.rpc("admin_set_role", {
 		target_user: userId,
 		new_role: "commissioner",
@@ -56,7 +56,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	console.log(`Commissioner invited: ${data.user.email} (${userId}) — invite email sent`);
+	console.log(`Commissioner account created: ${data.user.email}`);
 }
 
 main();
