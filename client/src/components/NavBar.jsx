@@ -9,7 +9,7 @@ function NavBar() {
 	const navigate = useNavigate();
 
 	const isLoggedIn = isTokenValid();
-	const { role } = useRoleContext();
+	const { role, refreshRole } = useRoleContext();
 
 	async function handleLogout() {
 		try {
@@ -19,8 +19,10 @@ function NavBar() {
 		} catch {}
 
 		localStorage.removeItem('sb_token');
+
+		await refreshRole();
+
 		navigate('/login', { replace: true });
-		window.location.reload();
 	}
 
   return (

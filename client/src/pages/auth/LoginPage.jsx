@@ -2,11 +2,13 @@ import './styles/LoginPage.css'
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router'
 import CredentialInput from '/src/components/auth/CredentialInput.jsx'
+import { useRoleContext } from '/src/utils/RoleProvider'
 import axios from "axios";
 
 export default function LoginPage() {
 
 	const navigate = useNavigate();
+	const { refreshRole } = useRoleContext();
 
 	// collect credentials
 	const [credentialEntry, setCredentialEntry] = useState({
@@ -38,11 +40,11 @@ export default function LoginPage() {
 
 			localStorage.setItem('sb_token', token);
 
+			await refreshRole();
+
 			alert(response.data.message);
 
 			navigate('/', { replace: true });
-
-			window.location.reload();
 
 		} catch (err) {
 			alert(err.response?.data?.error || 'Login Failed');
