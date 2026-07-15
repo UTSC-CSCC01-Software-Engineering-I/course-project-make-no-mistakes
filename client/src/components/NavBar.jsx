@@ -45,7 +45,7 @@ function NavBar() {
 				null
 		}
 
-		// TODO: should be visible iff logged in and user role is 'publicuser'
+		{/* TODO: should be visible iff logged in and user role is 'publicuser' */}
 	  	<NavLink to="/user-submissions"
 			className={({ isActive }) =>
 				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
