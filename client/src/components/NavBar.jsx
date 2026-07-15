@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router'
 import axios from 'axios'
 import { getToken, isTokenValid } from '/src/utils/authToken'
-import useRole from '/src/utils/useRole'
+import { useRoleContext } from '/src/utils/RoleProvider'
 import './NavBar.css'
 
 function NavBar() {
@@ -9,15 +9,14 @@ function NavBar() {
 	const navigate = useNavigate();
 
 	const isLoggedIn = isTokenValid();
-	const { role } = useRole();
+	const { role } = useRoleContext();
 
 	async function handleLogout() {
 		try {
 			await axios.post('http://localhost:8080/auth/logout', null, {
 				headers: { Authorization: `Bearer ${getToken()}` }
 			});
-		} catch {
-		}
+		} catch {}
 
 		localStorage.removeItem('sb_token');
 		navigate('/login', { replace: true });
@@ -35,15 +34,18 @@ function NavBar() {
 
 		{
 			role === 'commissioner' ?
-				(<NavLink to="/commissioner-dashboard"
-					className={({ isActive }) =>
-						isActive ? "navBarLink activeNavBarLink" : "navBarLink"
-					}>
-				Dashboard
-				</NavLink>) :
+				(
+					<NavLink to="/commissioner-dashboard"
+						className={({ isActive }) =>
+							isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+						}>
+					Dashboard
+					</NavLink>
+				) :
 				null
 		}
 
+		// TODO: should be visible iff logged in and user role is 'publicuser'
 	  	<NavLink to="/user-submissions"
 			className={({ isActive }) =>
 				isActive ? "navBarLink activeNavBarLink" : "navBarLink"

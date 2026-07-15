@@ -8,6 +8,7 @@ import RegisterPage from '/src/pages/auth/RegisterPage'
 import ViewProposalPage from '/src/pages/ViewProposalPage'
 import CommissionerDashboardPage from '/src/pages/CommissionerDashboardPage'
 import RequireCommissioner from '/src/components/auth/RequireCommissioner'
+import RoleProvider from '/src/utils/RoleProvider'
 import UserSubmissionsPage from '/src/pages/UserSubmissionsPage'
 import SubmitObjectionPage from '/src/pages/SubmitObjectionPage'
 import SubmitCounterProposalPage from '/src/pages/SubmitCounterProposalPage'
@@ -16,7 +17,7 @@ import './App.css'
 
 function App() {
   return (
-    <>
+    <RoleProvider>
       <NavBar />
 
       <Routes>
@@ -32,7 +33,7 @@ function App() {
           element={<ViewProposalPage />}
         />
       </Routes>
-    </>
+    </RoleProvider>
   )
 }
 
