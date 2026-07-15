@@ -42,6 +42,8 @@ export default function LoginPage() {
 
 			navigate('/', { replace: true });
 
+			window.location.reload();
+
 		} catch (err) {
 			alert(err.response?.data?.error || 'Login Failed');
 		}
