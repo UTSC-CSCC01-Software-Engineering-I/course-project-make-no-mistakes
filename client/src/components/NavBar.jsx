@@ -43,18 +43,21 @@ function NavBar() {
 						}>
 					Dashboard
 					</NavLink>
-				) :
-				null
+				) : null
 		}
 
-		{/* TODO: should be visible iff logged in and user role is 'publicuser' */}
-	  	<NavLink to="/user-submissions"
-			className={({ isActive }) =>
-				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
-			}>
-        	My Submissions
-      	</NavLink>
-
+		{
+			role === 'publicuser' ?
+				(
+					<NavLink to="/user-submissions"
+						className={({ isActive }) =>
+							isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+						}>
+					My Submissions
+					</NavLink>
+				) : null
+		}
+	  	
 		<div className="navBarR">
 			{isLoggedIn ? (
 				<button onClick={handleLogout} className='logoutButton'>
