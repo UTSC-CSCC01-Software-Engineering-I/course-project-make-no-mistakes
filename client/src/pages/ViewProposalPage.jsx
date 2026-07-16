@@ -1,9 +1,9 @@
 import { useParams } from 'react-router'
 import { useState, useEffect, useRef } from 'react'
 import { io } from 'socket.io-client'
-import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
+import { apiService } from '../apiService'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -28,7 +28,6 @@ function getDistanceInMeters(coord1, coord2) {
 function isPointInPolygon(point, polygonCoords) {
   const [x, y] = point;
   let inside = false;
-  // outer ring of parent polygon
   const ring = polygonCoords[0];
   if (!ring) return false;
   
@@ -43,22 +42,12 @@ function isPointInPolygon(point, polygonCoords) {
   return inside;
 }
 
-// Helper: Check if a coordinate is identical to any vertex of another polygon (within tiny floating tolerance)
-function isSharedCoordinate(coord, polygonCoords) {
-  const ring = polygonCoords[0];
-  if (!ring) return false;
-  
-  const TOLERANCE = 1e-6; 
-  return ring.some(p => Math.abs(p[0] - coord[0]) < TOLERANCE && Math.abs(p[1] - coord[1]) < TOLERANCE);
-}
-
 function getPolygonAreaOverlapPercentage(polyA, polyB) {
-  const coordsA = polyA.geometry.coordinates[0]; // Outer ring of A
-  const coordsB = polyB.geometry.coordinates;    // Rings of B
+  const coordsA = polyA.geometry.coordinates[0];
+  const coordsB = polyB.geometry.coordinates;
   
   if (!coordsA || !coordsB) return 0;
 
-  // 1. Calculate Bounding Box of Poly A
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
   coordsA.forEach(([x, y]) => {
     if (x < minX) minX = x;
@@ -67,8 +56,7 @@ function getPolygonAreaOverlapPercentage(polyA, polyB) {
     if (y > maxY) maxY = y;
   });
 
-  // 12x12 sample grid inside the bounding box
-  const GRID_RESOLUTION = 12; // 144 sample points provides excellent accuracy and speed
+  const GRID_RESOLUTION = 12;
   let totalPointsInA = 0;
   let pointsInAAndB = 0;
 
@@ -83,8 +71,6 @@ function getPolygonAreaOverlapPercentage(polyA, polyB) {
 
       if (isPointInPolygon(samplePoint, polyA.geometry.coordinates)) {
         totalPointsInA++;
-
-        // check if it also falls inside Poly B
         if (isPointInPolygon(samplePoint, coordsB)) {
           pointsInAAndB++;
         }
@@ -102,36 +88,85 @@ function ViewProposalPage() {
   const { proposalId } = useParams()
   const mapComponentRef = useRef(null);
 
+  const [proposal, setProposal] = useState(null)
+  const [proposalLoading, setProposalLoading] = useState(true)
+  const [proposalError, setProposalError] = useState(null)
+
   const [liveComments, setLiveComments] = useState([])
+  const [commentsLoading, setCommentsLoading] = useState(true)
+  const [commentsError, setCommentsError] = useState(null)
+
   const [newCommentText, setNewCommentText] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
+  const [likes, setLikes] = useState(0)
+  const [downvotes, setDownvotes] = useState(0)
+  const [currentUserVote, setCurrentUserVote] = useState(null)
+  const [voteBusy, setVoteBusy] = useState(false)
+  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
+  const [validationError, setValidationError] = useState(null)
 
-  const proposal = proposals.find(
-    proposal => String(proposal.id) === String(proposalId)
-  )
-
-  // --- 1. Real-Time WebSocket & Fetch Effect ---
+  // Load proposal from API
   useEffect(() => {
     if (!proposalId) return
+    let cancelled = false
+    setProposalLoading(true)
+    setProposalError(null)
 
-    // GET Request (Relies on Vite proxy to forward to 8080)
-    fetch(`/api/comments?proposalId=${proposalId}`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        return res.json();
+    apiService
+      .getProposal(proposalId)
+      .then((data) => {
+        if (cancelled) return
+        setProposal(data)
+        setLikes(data.postLikes ?? 0)
+        setDownvotes(data.postDownvotes ?? 0)
+        setCurrentUserVote(data.currentUserVote ?? null)
       })
-      .then(data => {
+      .catch((err) => {
+        if (cancelled) return
+        setProposal(null)
+        setProposalError(err.status === 404 ? 'Proposal not found' : (err.message || 'Failed to load proposal'))
+      })
+      .finally(() => {
+        if (!cancelled) setProposalLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [proposalId])
+
+  // Load comments + Socket.io for real-time updates (REST is still source of truth on load)
+  useEffect(() => {
+    if (!proposalId) return
+    let cancelled = false
+    setCommentsLoading(true)
+    setCommentsError(null)
+
+    apiService
+      .getComments(proposalId)
+      .then((data) => {
+        if (cancelled) return
         if (Array.isArray(data)) setLiveComments(data)
       })
-      .catch(err => console.error("[Frontend GET Error]:", err))
+      .catch((err) => {
+        if (cancelled) return
+        console.error('[Frontend GET Error]:', err)
+        setCommentsError(err.message || 'Failed to load comments')
+      })
+      .finally(() => {
+        if (!cancelled) setCommentsLoading(false)
+      })
 
-    // Use environment variable for Socket to prevent hardcoding issues for teammates
-    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    // Socket connects directly to the API host (Vite proxies REST only).
+    const SOCKET_URL =
+      (typeof process !== 'undefined' && process.env && process.env.VITE_API_URL) ||
+      'http://localhost:8080';
     const socket = io(SOCKET_URL);
 
     socket.on('comment_approved', (newComment) => {
       if (String(newComment.proposalId) === String(proposalId)) {
-        setLiveComments(prev => [...prev, newComment])
+        setLiveComments(prev => {
+          if (prev.some(c => c.id === newComment.id)) return prev
+          return [...prev, newComment]
+        })
         setIsProcessing(false)
       }
     })
@@ -141,67 +176,96 @@ function ViewProposalPage() {
       setIsProcessing(false)
     })
 
-    return () => socket.disconnect()
+    socket.on('comment:voted', (updated) => {
+      if (String(updated.proposalId) !== String(proposalId)) return
+      setLiveComments(prev =>
+        prev.map(c =>
+          c.id === updated.id
+            ? { ...c, upvotes: updated.upvotes, downvotes: updated.downvotes }
+            : c
+        )
+      )
+    })
+
+    socket.on('comment:voteUpdated', (updated) => {
+      if (String(updated.proposalId) !== String(proposalId)) return
+      setLiveComments(prev =>
+        prev.map(c =>
+          c.id === updated.id
+            ? { ...c, upvotes: updated.upvotes, downvotes: updated.downvotes }
+            : c
+        )
+      )
+    })
+
+    socket.on('proposal:voteUpdated', (updated) => {
+      if (String(updated.id) !== String(proposalId)) return
+      setLikes(updated.upvotes ?? updated.postLikes ?? 0)
+      setDownvotes(updated.downvotes ?? updated.postDownvotes ?? 0)
+    })
+
+    socket.on('comment:deleted', (payload) => {
+      if (String(payload.proposalId) !== String(proposalId)) return
+      setLiveComments(prev => prev.filter(c => c.id !== payload.id))
+    })
+
+    return () => {
+      cancelled = true
+      socket.disconnect()
+    }
   }, [proposalId])
 
-  // --- 2. Handle Comment Submission ---
   const handleCommentSubmit = async (e) => {
     e.preventDefault()
     if (!newCommentText.trim()) return
 
+    const token = localStorage.getItem('sb_token')
+    if (!token) {
+      alert('Please log in to post a comment.')
+      return
+    }
+
     setIsProcessing(true)
-    console.log("[Frontend] Attempting to post to /api/comments...");
 
     try {
-      const res = await fetch('/api/comments', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('sb_token')}` // Added missing comma (if there were more items, but here it's fine just closing it)
-        },
-        body: JSON.stringify({ 
-            content: newCommentText, 
-            proposalId: proposalId,
-            authorName: localStorage.getItem('user_email') 
-        })
-      });
-      
-      if (!res.ok) {
-        // If the server crashes or proxy fails, grab the exact error text
-        const errorText = await res.text();
-        throw new Error(`Server returned ${res.status}: ${errorText}`);
-      }
-
-      console.log("[Frontend] Successfully submitted to server!");
-      setNewCommentText(""); 
+      await apiService.addComment(proposalId, newCommentText.trim())
+      setNewCommentText("")
     } catch (error) {
-      console.error("[Frontend POST Error]:", error);
-      alert("Failed to submit comment. Check the browser console!");
-      setIsProcessing(false); 
+      console.error('[Frontend POST Error]:', error);
+      alert(error.message || 'Failed to submit comment.')
+      setIsProcessing(false)
     }
   }
 
-  function incrementLikes() {
-    setLikes(previousLikes => previousLikes + 1)
+  async function handleProposalVote(value) {
+    if (!localStorage.getItem('sb_token')) {
+      alert('Please log in to vote.')
+      return
+    }
+    if (currentUserVote != null || voteBusy) return
+
+    setVoteBusy(true)
+    try {
+      const result = await apiService.voteProposal(proposalId, value)
+      setLikes(result.upvotes ?? result.postLikes ?? likes)
+      setDownvotes(result.downvotes ?? result.postDownvotes ?? downvotes)
+      setCurrentUserVote(result.currentUserVote ?? value)
+    } catch (err) {
+      console.error('[Proposal vote Error]:', err)
+      if (err.status === 409) {
+        alert('You have already voted on this proposal.')
+        setCurrentUserVote(value)
+      } else if (err.status === 401) {
+        alert('Please log in to vote.')
+      } else {
+        alert(err.message || 'Vote failed')
+      }
+    } finally {
+      setVoteBusy(false)
+    }
   }
 
-  if (!proposal) {
-    return (
-      <main>
-        <p>Error: Proposal not found</p>
-      </main>
-    )
-  }
-
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
-  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
-  const [validationError, setValidationError] = useState(null)
-
-  function incrementLikes() {
-    setLikes(previousLikes => previousLikes + 1)
-  }
-
-const handleDrawChange = (geoJsonData) => {
+  const handleDrawChange = (geoJsonData) => {
     let foundClosedLineString = false;
     let hasStrayLines = false;
     let hasNestedPolygon = false;
@@ -226,7 +290,6 @@ const handleDrawChange = (geoJsonData) => {
         }
       }
 
-      // spatial sampling method
       const OVERLAP_PERCENT_THRESHOLD = 0.25;
       
       for (let i = 0; i < polygons.length; i++) {
@@ -260,6 +323,22 @@ const handleDrawChange = (geoJsonData) => {
     }
   }
 
+  if (proposalLoading) {
+    return (
+      <main>
+        <p>Loading proposal…</p>
+      </main>
+    )
+  }
+
+  if (proposalError || !proposal) {
+    return (
+      <main>
+        <p>Error: {proposalError || 'Proposal not found'}</p>
+      </main>
+    )
+  }
+
   return (
     <main>
       <header className="proposalPageHeader">
@@ -269,7 +348,12 @@ const handleDrawChange = (geoJsonData) => {
           </span>
 
           <div className="ratingBox">
-            <button className="prettierButton" onClick={incrementLikes}>
+            <button
+              className="prettierButton"
+              onClick={() => handleProposalVote(1)}
+              disabled={currentUserVote != null || voteBusy}
+              title={currentUserVote != null ? 'You already voted' : 'Thumbs up'}
+            >
               <img
                 className="iconBox"
                 src={thumbsUpIcon}
@@ -279,6 +363,24 @@ const handleDrawChange = (geoJsonData) => {
 
             <span className="proposalHeaderText">
               {likes} likes
+            </span>
+
+            <button
+              className="prettierButton"
+              onClick={() => handleProposalVote(-1)}
+              disabled={currentUserVote != null || voteBusy}
+              title={currentUserVote != null ? 'You already voted' : 'Thumbs down'}
+            >
+              <img
+                className="iconBox"
+                src={thumbsUpIcon}
+                alt="thumbs down button"
+                style={{ transform: 'rotate(180deg)' }}
+              />
+            </button>
+
+            <span className="proposalHeaderText">
+              {downvotes} dislikes
             </span>
           </div>
 
@@ -359,7 +461,15 @@ const handleDrawChange = (geoJsonData) => {
           </div>
 
           <section className="proposalCommentList">
-            {liveComments.length === 0 ? (
+            {commentsLoading && (
+              <p style={{ padding: '1rem', textAlign: 'center', color: '#666' }}>Loading comments…</p>
+            )}
+            {commentsError && (
+              <p style={{ padding: '1rem', textAlign: 'center', color: '#d32f2f' }} role="alert">
+                {commentsError}
+              </p>
+            )}
+            {!commentsLoading && !commentsError && liveComments.length === 0 ? (
               <p style={{ padding: '1rem', textAlign: 'center', color: '#666' }}>No comments yet. Be the first to object!</p>
             ) : (
               liveComments.map(comment => (
@@ -368,8 +478,8 @@ const handleDrawChange = (geoJsonData) => {
                   commentId={comment.id}
                   proposalId={comment.proposalId}
                   commentUserId={comment.userId} 
-                  currentUserId={localStorage.getItem('user_id')} // <-- PASSES THE ID YOU JUST SAVED IN LOGIN
-                  relatedRidings={comment.relatedRidings || ["N/A"]}
+                  currentUserId={localStorage.getItem('user_id')}
+                  relatedRidings={comment.relatedRidings || []}
                   postUser={comment.authorName || "Anonymous"} 
                   postDate={new Date(comment.createdAt).toLocaleDateString()}
                   postComment={comment.content}

@@ -38,42 +38,91 @@ Class Diagram:
 "UI needs improvements; basic colors, navbar UX; it is out of order"
 - To improve on this feedback, the navigation bar has been rearranged, and colors are used to indicate the current screen.
 
-## (For Reference) Informal Set Up Guide:
-Please correct any inaccuracies below:
+## Local development (database-backed API)
 
-### With VS Code: (Inside a folder for this project)
-- git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
+The React client loads proposals, comments, and user submissions through REST
+calls in `client/src/apiService.js`. Express routes query Sequelize models.
+Socket.io is only used for live comment/vote notifications after data is saved.
 
-### (For a new branch)
-- git switch -c feature/branchName
+### Important: two separate Supabase projects
 
-- git switch remote/branch (use after fetching, git will automatically create local branch with same name and track the remote branch)
+| Purpose | Env vars | Project |
+|---------|----------|---------|
+| **Auth** (login / JWT) | `AUTH_SUPABASE_URL`, `AUTH_SUPABASE_PUBLISHABLE_KEY`, optional `AUTH_SUPABASE_SECRET_KEY` / `AUTH_SUPABASE_JWKS_URL` | Teammate auth project — do **not** use for Postgres |
+| **Data** (Postgres) | `DATABASE_URL` | `db.sckuxldttzxrriqtseyz.supabase.co` |
 
-### Checking Frontend Preview (must navigate to 'client/' directory first):
-- npm run build
-- npm run preview
-- npm dev
-	* can use this during development; changes to files will automatically refresh frontend
+Legacy aliases `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` still work for auth if `AUTH_*` are unset.
 
-### Running the backend (must navigate to 'server/' directory first):
-- npm start
-- npm dev
-	* can use this during development; changes to files will automatically refresh backend
-		* note that if the backend refreshes, the frontend must be restarted (run 'build + preview' or 'dev' again)
+Authenticated users are verified against the **auth** project, then mapped to a local
+`User` row (`authUserId`) in the **data** Postgres database. Voting uses that local user id.
 
-NOTE: backend must be started first, in a separate terminal session, before starting the frontend
+### 1. Configure environment (`server/.env`)
 
-NOTE: pnpm (aliased by 'pn') can be used in place of npm for the above commands
-
-e.g.
 ```bash
-# Session 1
-.../course-project-make-no-mistakes/server> npm dev
-
-
-# Session 2
-.../course-project-make-no-mistakes/client> npm dev
+cp server/.env.example server/.env
 ```
+
+Fill in:
+
+```env
+AUTH_SUPABASE_URL=https://<auth-project>.supabase.co
+AUTH_SUPABASE_PUBLISHABLE_KEY=<auth-publishable-key>
+
+# Data project password from: Data Supabase → Settings → Database
+# Percent-encode special characters in the password (@ → %40, # → %23, …)
+DATABASE_URL=postgresql://postgres:<PASSWORD>@db.sckuxldttzxrriqtseyz.supabase.co:5432/postgres
+
+PORT=8080
+```
+
+If `DATABASE_URL` is empty, the server falls back to local SQLite (dev only).
+
+### 2. Install dependencies
+
+```bash
+cd server && npm install
+cd ../client && npm install
+```
+
+### 3. Seed temporary JSON into the database (once; safe to re-run)
+
+```bash
+cd server
+npm run seed
+```
+
+Uses `DATABASE_URL` when present. Imports proposals/comments fixtures and sample
+submissions without duplicating existing rows.
+
+### 4. Run both servers (two terminals)
+
+```bash
+# Terminal 1 — API + Socket.io on :8080
+cd server
+npm run dev
+
+# Terminal 2 — Vite React app on :5173 (proxies /api and /auth → :8080)
+cd client
+npm run dev
+```
+
+Open http://localhost:5173
+
+### API overview
+
+| Method | Path | Notes |
+|--------|------|--------|
+| GET | `/api/proposals?sort=&minVotes=&page=&limit=` | DB-filtered browse |
+| GET | `/api/proposals/:id` | Single proposal (+ `currentUserVote` if logged in) |
+| PATCH | `/api/proposals/:id/vote` | Auth — `{ "value": 1 \| -1 }`, one vote per user |
+| GET | `/api/proposals/:id/comments` | Approved comments |
+| POST | `/api/proposals/:id/comments` | Auth required |
+| PATCH | `/api/comments/:id/vote` | Auth — `{ "value": 1 \| -1 }`, one vote per user |
+| GET/DELETE | `/api/comments...` | List (legacy), delete |
+| GET | `/api/users/me/submissions` | Auth — current user only |
+
+Static assets under `server/public` and the Vite build are served with long
+cache headers; `/api/*` responses use `Cache-Control: no-store`.
 
 ### Committing Changes:
 - git add .

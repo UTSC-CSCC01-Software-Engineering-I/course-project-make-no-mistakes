@@ -1,54 +1,63 @@
 const request = require('supertest');
 const express = require('express');
 
-// Import the files relative to the 'routes' folder
 const commentsRouter = require('./comments');
-const { Comment } = require('../models/index.js');
+const { Comment, findOrCreateLocalUser } = require('../models/index.js');
 const supabase = require('../lib/supabase');
+const { castVote, parseVoteValue } = require('../services/voteService.js');
 
-// 1. Setup a fake Express app just for testing
-const app = express();
-app.use(express.json());
-app.use('/api/comments', commentsRouter);
-
-// 2. Mock the Database, Supabase, and Background Worker
 jest.mock('../models/index.js', () => ({
   Comment: {
     create: jest.fn(),
     findAll: jest.fn(),
     findByPk: jest.fn(),
-  }
+  },
+  Vote: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+  findOrCreateLocalUser: jest.fn(),
 }));
 
 jest.mock('../lib/supabase', () => ({
   auth: {
-    getUser: jest.fn()
-  }
+    getUser: jest.fn(),
+  },
 }));
 
 jest.mock('../worker/commentWorker.js', () => ({
-  addCommentToQueue: jest.fn()
+  addCommentToQueue: jest.fn(),
 }));
 
-// 3. The Test Suite
-describe('Comments API Routes', () => {
+jest.mock('../services/voteService.js', () => {
+  const actual = jest.requireActual('../services/voteService.js');
+  return {
+    ...actual,
+    castVote: jest.fn(),
+  };
+});
 
-  // Reset our fakes before each test runs so they don't pollute each other
+const app = express();
+app.use(express.json());
+app.use('/api/comments', commentsRouter);
+
+describe('Comments API Routes', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    findOrCreateLocalUser.mockResolvedValue({
+      id: 42,
+      authUserId: 'fake-uuid-123',
+      email: 'test@student.ca',
+      role: 'citizen',
+    });
   });
 
-  // ----------------------------------------------------------------------
-  // TEST 1: Happy Path - Create a new comment
-  // ----------------------------------------------------------------------
   test('1. POST /api/comments - Should successfully create a comment and save authorName', async () => {
-    // Fake login
     supabase.auth.getUser.mockResolvedValue({
-      data: { user: { id: 'fake-uuid-123' } },
-      error: null
+      data: { user: { id: 'fake-uuid-123', email: 'test@student.ca' } },
+      error: null,
     });
 
-    // Fake database save
     Comment.create.mockResolvedValue({ id: 99 });
 
     const response = await request(app)
@@ -57,42 +66,34 @@ describe('Comments API Routes', () => {
       .send({
         content: 'This is a test comment',
         proposalId: 'prop-1',
-        authorName: 'test@student.ca'
+        authorName: 'test@student.ca',
       });
 
     expect(response.status).toBe(202);
-    expect(response.body.message).toBe("Comment submitted for AI review");
-    expect(Comment.create).toHaveBeenCalledWith(expect.objectContaining({
-      userId: 'fake-uuid-123',
-      authorName: 'test@student.ca'
-    }));
+    expect(response.body.message).toBe('Comment submitted for AI review');
+    expect(Comment.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'fake-uuid-123',
+        authorName: 'test@student.ca',
+      })
+    );
   });
 
-  // ----------------------------------------------------------------------
-  // TEST 2: Security - Block unauthenticated users
-  // ----------------------------------------------------------------------
   test('2. POST /api/comments - Should block the request if no token is provided', async () => {
-    const response = await request(app)
-      .post('/api/comments')
-      .send({
-        content: 'I am a hacker',
-        proposalId: 'prop-1'
-      });
+    const response = await request(app).post('/api/comments').send({
+      content: 'I am a hacker',
+      proposalId: 'prop-1',
+    });
 
-    // Should throw a 401 Unauthorized
     expect(response.status).toBe(401);
     expect(response.body.error).toBe('Missing or invalid token');
-    expect(Comment.create).not.toHaveBeenCalled(); // Ensure DB was untouched
+    expect(Comment.create).not.toHaveBeenCalled();
   });
 
-  // ----------------------------------------------------------------------
-  // TEST 3: Happy Path - Fetch approved comments
-  // ----------------------------------------------------------------------
   test('3. GET /api/comments - Should fetch only approved comments for a specific proposal', async () => {
-    // Fake database returning an array of comments
     Comment.findAll.mockResolvedValue([
       { id: 1, content: 'Approved comment 1', status: 'approved' },
-      { id: 2, content: 'Approved comment 2', status: 'approved' }
+      { id: 2, content: 'Approved comment 2', status: 'approved' },
     ]);
 
     const response = await request(app).get('/api/comments?proposalId=prop-1');
@@ -100,25 +101,26 @@ describe('Comments API Routes', () => {
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
     expect(Comment.findAll).toHaveBeenCalledWith({
-      where: { proposalId: 'prop-1', status: 'approved' }
+      where: { proposalId: 'prop-1', status: 'approved' },
+      order: [['createdAt', 'ASC']],
     });
   });
 
-  // ----------------------------------------------------------------------
-  // TEST 4: Security - Prevent users from deleting someone else's comment
-  // ----------------------------------------------------------------------
   test('4. DELETE /api/comments/:id - Should forbid deletion if user is not the owner', async () => {
-    // Pretend user "hacker-999" is logged in
     supabase.auth.getUser.mockResolvedValue({
       data: { user: { id: 'hacker-999' } },
-      error: null
+      error: null,
+    });
+    findOrCreateLocalUser.mockResolvedValue({
+      id: 7,
+      authUserId: 'hacker-999',
+      role: 'citizen',
     });
 
-    // The comment found in the DB belongs to "victim-111"
     const mockComment = {
       id: 1,
       userId: 'victim-111',
-      destroy: jest.fn() // Fake destroy function
+      destroy: jest.fn(),
     };
     Comment.findByPk.mockResolvedValue(mockComment);
 
@@ -127,38 +129,60 @@ describe('Comments API Routes', () => {
       .set('Authorization', 'Bearer hacker-token');
 
     expect(response.status).toBe(403);
-    expect(response.body.error).toBe("Forbidden. You can only delete your own comments.");
-    expect(mockComment.destroy).not.toHaveBeenCalled(); // Ensure it was not deleted
+    expect(response.body.error).toBe(
+      'Forbidden. You can only delete your own comments.'
+    );
+    expect(mockComment.destroy).not.toHaveBeenCalled();
   });
 
-  // ----------------------------------------------------------------------
-  // TEST 5: Happy Path - Upvoting a comment
-  // ----------------------------------------------------------------------
   test('5. PATCH /api/comments/:id/vote - Should successfully increment upvotes', async () => {
-    // Fake login
     supabase.auth.getUser.mockResolvedValue({
       data: { user: { id: 'voter-555' } },
-      error: null
+      error: null,
+    });
+    findOrCreateLocalUser.mockResolvedValue({
+      id: 55,
+      authUserId: 'voter-555',
+      role: 'citizen',
     });
 
-    // Mock the comment object with Sequelize's increment and reload functions
     const mockComment = {
       id: 1,
+      proposalId: '1',
       upvotes: 0,
-      increment: jest.fn(),
-      reload: jest.fn()
+      downvotes: 0,
     };
     Comment.findByPk.mockResolvedValue(mockComment);
+    castVote.mockResolvedValue({
+      upvotes: 1,
+      downvotes: 0,
+      currentUserVote: 1,
+    });
 
     const response = await request(app)
       .patch('/api/comments/1/vote')
       .set('Authorization', 'Bearer valid-token')
-      .send({ action: 'upvote' });
+      .send({ value: 1 });
 
     expect(response.status).toBe(200);
-    // Verify Sequelize was told to increment the 'upvotes' column
-    expect(mockComment.increment).toHaveBeenCalledWith('upvotes');
-    expect(mockComment.reload).toHaveBeenCalled();
+    expect(response.body.upvotes).toBe(1);
+    expect(response.body.currentUserVote).toBe(1);
+    expect(castVote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        localUserId: 55,
+        commentId: 1,
+        value: 1,
+      })
+    );
   });
+});
 
+describe('parseVoteValue helper', () => {
+  test('accepts value 1 / -1 and legacy action strings', () => {
+    expect(parseVoteValue({ value: 1 })).toBe(1);
+    expect(parseVoteValue({ value: -1 })).toBe(-1);
+    expect(parseVoteValue({ action: 'upvote' })).toBe(1);
+    expect(parseVoteValue({ action: 'downvote' })).toBe(-1);
+    expect(parseVoteValue({ value: 2 })).toBeNull();
+  });
 });

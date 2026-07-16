@@ -1,16 +1,53 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ViewProposalPage from "../pages/ViewProposalPage";
-import proposals from "../data/proposals.json";
-import comments from "../data/comments.json";
 
-let mockProposalId = String(proposals[0].id);
+let mockProposalId = "1";
+
+const mockProposal = {
+  id: 1,
+  postUser: "user1",
+  postDate: "06/19/2026",
+  previewURL: "https://example.com/map.jpg",
+  postRating: 85,
+  postLikes: 120,
+  postDownvotes: 3,
+  postComments: 14,
+  currentUserVote: null,
+};
+
+const mockComments = [
+  {
+    id: 10,
+    proposalId: "1",
+    userId: "u1",
+    authorName: "username1",
+    content: "I think this is a great map!",
+    upvotes: 2,
+    downvotes: 0,
+    relatedRidings: [],
+    createdAt: "2026-06-19T00:00:00.000Z",
+  },
+];
+
+const mockGetProposal = jest.fn();
+const mockGetComments = jest.fn();
+const mockAddComment = jest.fn();
+const mockVoteProposal = jest.fn();
 
 jest.mock("react-router", () => ({
   __esModule: true,
   useParams: () => ({
     proposalId: mockProposalId,
+  }),
+}));
+
+jest.mock("socket.io-client", () => ({
+  __esModule: true,
+  io: () => ({
+    on: jest.fn(),
+    disconnect: jest.fn(),
   }),
 }));
 
@@ -23,57 +60,81 @@ jest.mock("../components/Map", () => ({
   ),
 }));
 
+jest.mock("../apiService", () => ({
+  __esModule: true,
+  apiService: {
+    getProposal: (...args) => mockGetProposal(...args),
+    getComments: (...args) => mockGetComments(...args),
+    addComment: (...args) => mockAddComment(...args),
+    voteProposal: (...args) => mockVoteProposal(...args),
+    voteComment: jest.fn(),
+    deleteComment: jest.fn(),
+    updateCommentVote: jest.fn(),
+  },
+}));
+
 function renderViewProposalPage(proposalId) {
   mockProposalId = String(proposalId);
+  mockGetProposal.mockReset();
+  mockGetComments.mockReset();
+  mockVoteProposal.mockReset();
+
+  if (String(proposalId) === "not-a-real-id") {
+    const err = new Error("Proposal not found");
+    err.status = 404;
+    mockGetProposal.mockRejectedValue(err);
+    mockGetComments.mockResolvedValue([]);
+  } else {
+    mockGetProposal.mockResolvedValue({ ...mockProposal });
+    mockGetComments.mockResolvedValue(mockComments);
+  }
+
   return render(<ViewProposalPage />);
 }
 
-// Case: A non-existent proposal is searched for
-test("Proposal DNE", () => {
+test("Proposal DNE", async () => {
   renderViewProposalPage("not-a-real-id");
 
-  expect(screen.getByText("Error: Proposal not found")).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText("Error: Proposal not found")).toBeInTheDocument();
+  });
 });
 
-// Checking incrementation for the like button on the proposal post
-test("Increment Likes (Post)", async () => {
+test("Proposal vote calls API and updates counts", async () => {
   const user = userEvent.setup();
-  const proposal = proposals[0];
+  window.alert = jest.fn();
+  localStorage.setItem("sb_token", "test-token");
 
-  renderViewProposalPage(proposal.id);
+  renderViewProposalPage(mockProposal.id);
 
-  expect(screen.getByText(`${proposal.postLikes} likes`)).toBeInTheDocument();
+  mockVoteProposal.mockResolvedValue({
+    upvotes: 121,
+    downvotes: 3,
+    currentUserVote: 1,
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText(`${mockProposal.postLikes} likes`)).toBeInTheDocument();
+  });
 
   const thumbsUpButtons = screen.getAllByAltText("thumbs up button");
+  await user.click(thumbsUpButtons[0].closest("button"));
 
-  // The first thumbs-up button belongs to the proposal post.
-  const proposalLikeButton = thumbsUpButtons[0].closest("button");
+  await waitFor(() => {
+    expect(mockVoteProposal).toHaveBeenCalledWith("1", 1);
+    expect(screen.getByText("121 likes")).toBeInTheDocument();
+  });
 
-  await user.click(proposalLikeButton);
-
-  expect(screen.getByText(`${proposal.postLikes + 1} likes`)).toBeInTheDocument();
+  localStorage.removeItem("sb_token");
 });
 
-// Checking incrementation for the like button on the first comment
-test("Increment Likes (Comment)", async () => {
-    const user = userEvent.setup();
-    const proposal = proposals[0];
-  
-    const firstComment = comments.find(
-      comment => String(comment.proposalId) === String(proposal.id)
-    );
-  
-    renderViewProposalPage(proposal.id);
-  
-    const commentText = screen.getByText(firstComment.postComment);
-    const commentArticle = commentText.closest("article");
-  
-    expect(commentArticle).toBeInTheDocument();
-    expect(commentArticle).toHaveTextContent(`Likes: ${firstComment.postLikes}`);
-  
-    const commentLikeButton = within(commentArticle).getByRole("button");
-  
-    await user.click(commentLikeButton);
-  
-    expect(commentArticle).toHaveTextContent(`Likes: ${firstComment.postLikes + 1}`);
+test("Loads comments from API", async () => {
+  renderViewProposalPage(mockProposal.id);
+
+  await waitFor(() => {
+    expect(screen.getByText("I think this is a great map!")).toBeInTheDocument();
+  });
+
+  expect(mockGetProposal).toHaveBeenCalledWith("1");
+  expect(mockGetComments).toHaveBeenCalledWith("1");
 });
