@@ -1,25 +1,34 @@
 const express = require("express"); 
-const app = express();
+const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 
-// cross origin resource sharing (lets server accept requests from different port than itself)
+const app = express();
+// We must wrap Express in an HTTP server to attach WebSockets
+const server = http.createServer(app);
+
 const corsOptions = {
-	origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173"],
 }
 
-// parse JSON into req.body
 app.use(express.json());
-
-// applies CORS option above
 app.use(cors(corsOptions));
 
-// auth router //////////////////////////////////////////////////
+// Initialize Socket.io on this server
+const io = new Server(server, { cors: corsOptions });
+global.io = io; // Makes it globally available for your AI Queue!
+
+// Mount the Routers
 const authRouter = require('./routes/auth.js');
 app.use("/auth", authRouter);
 
 // role router //////////////////////////////////////////////////
 const roleRouter = require('./routes/role.js');
 app.use("/role", roleRouter);
+
+// comment router ///////////////////////////////////////////////
+const commentsRouter = require('./routes/comments.js');
+app.use("/api/comments", commentsRouter);
 
 // page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
@@ -31,7 +40,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-// listen to incoming traffic to port 8080 //////////////////////
-app.listen(8080, () => {
-        console.log("Server has started listening on port 8080");
+// Start the server on Port 8080
+server.listen(8080, () => {
+    console.log("Server & WebSockets listening on port 8080");
 });

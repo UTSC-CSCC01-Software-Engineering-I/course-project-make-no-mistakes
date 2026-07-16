@@ -37,11 +37,12 @@ export default function LoginPage() {
 			const response = await axios.post('http://localhost:8080/auth/login', credentialEntry);
 
 			const { token, user } = response.data;
-
+		
 			localStorage.setItem('sb_token', token);
-
 			await refreshRole();
 
+			localStorage.setItem('user_id', user.id); 
+			localStorage.setItem('user_email', user.email);
 			alert(response.data.message);
 
 			navigate('/', { replace: true });
