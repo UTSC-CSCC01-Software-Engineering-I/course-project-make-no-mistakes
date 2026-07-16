@@ -1,86 +1,108 @@
 .proposalComment {
-    width: calc(100% - 20px);
-    margin: 10px;
-
-    background-color: white;
-    border: 2px solid #806789;
-    border-radius: 5px;
+    padding: 16px;
     overflow: hidden;
     font-family: Verdana, sans-serif;
-}
-
-.commentHeader {
+    background: #ffffff;
+  }
+  
+  /* Restores the purple header strip on every comment card. */
+  .proposalComment .commentHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 10px 12px;
+    gap: 12px;
+    margin: -16px -16px 0;
+    padding: 10px 16px;
     background-color: #d3c3e2;
-    border-bottom: 1px solid #b89bd0;
-}
-
-.commentHeaderText {
-    color: #635173;
+    border-bottom: 1px solid #b39bc7;
+  }
+  
+  .proposalComment .commentHeaderText {
+    color: #604472;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  
+  .proposalComment .commentSubHeader {
+    margin-top: 12px;
+  }
+  
+  .proposalComment .commentSubHeaderText {
+    color: #716879;
     font-size: 12px;
-    font-weight: 600;
-}
-
-.commentSubHeader {
-    padding: 8px 12px;
-    background-color: #f2ebf8;
-    border-bottom: 1px solid #d8c7e8;
-}
-
-.commentSubHeaderText {
-    color: #9773b3;
-    font-size: 12px;
-    font-weight: 400;
-}
-
-/* Main comment text */
-.commentBody {
-    padding: 14px 12px;
-    background-color: white;
-}
-
-.commentBodyText {
-    color: #333333;
+    line-height: 1.4;
+  }
+  
+  .proposalComment .commentBody {
+    margin-top: 12px;
+  }
+  
+  .proposalComment .commentBodyText {
+    margin: 0;
+    color: #2f2a33;
     font-size: 14px;
-    line-height: 1.5;
-    overflow-wrap: break-word;
-}
-
-.commentFooter {
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+  
+  .proposalComment .commentFooter {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    padding: 8px 12px;
-    background-color: #f2ebf8;
-    border-top: 1px solid #d8c7e8;
-}
-
-.likeButtonWrapper {
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+  
+  .proposalComment .commentVoteControls {
     display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  
+  .proposalComment .voteCount {
+    min-width: 18px;
+    color: #5f5864;
+    font-size: 12px;
+    text-align: center;
+  }
+  
+  .proposalComment .likeButtonWrapper {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
     align-items: center;
     justify-content: center;
-
-    width: 28px;
-    height: 28px;
-
-    border: none;
-    background: none;
-    padding: 0;
+    padding: 3px;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
     cursor: pointer;
-    flex-shrink: 0;
-}
-
-.likeButton {
-    width: 22px;
-    height: 22px;
-    max-width: 22px;
-    max-height: 22px;
-
-    object-fit: contain;
+  }
+  
+  .proposalComment .likeButtonWrapper:hover:not(:disabled) {
+    background: rgba(91, 79, 138, 0.1);
+  }
+  
+  /* Keep icons visible while making logged-out voting look unavailable. */
+  .proposalComment .likeButtonWrapper:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
+  
+  .proposalComment .likeButtonWrapper:focus-visible {
+    outline: 3px solid rgba(91, 79, 138, 0.3);
+    outline-offset: 2px;
+  }
+  
+  .proposalComment img.likeButton {
     display: block;
-}
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    object-fit: contain;
+    visibility: visible;
+  }
+  
+  .proposalComment img.downvoteIcon {
+    transform: rotate(180deg);
+  }

@@ -1,229 +1,475 @@
 * {
     box-sizing: border-box;
-}
-
-body {
+  }
+  
+  body {
     margin: 0;
-}
-
-.prettierButton {
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.proposalPageHeader {
+  }
+  
+  button,
+  textarea {
+    font: inherit;
+  }
+  
+  .proposalPage {
+    min-height: 100vh;
+    background: #ffffff;
+  }
+  
+  .proposalNotFound {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding: 24px;
+    font-family: Verdana, sans-serif;
+  }
+  
+  .proposalPageHeader {
     display: flex;
-    width: 100vw;
+    width: 100%;
+    min-height: 48px;
     align-items: stretch;
-}
-
-.horizontalProposalHeaderBox {
+  }
+  
+  .horizontalProposalHeaderBox {
     display: flex;
+    width: 70%;
     align-items: center;
     justify-content: space-evenly;
-    width: 70vw;
-
-
+    gap: 16px;
     padding: 12px;
     background-color: #daede1;
-    border-bottom: 2px solid #709a8e;
     border-right: 1px solid #5b4f8a;
-}
-
-.horizontalCommentHeaderBox {
+    border-bottom: 2px solid #709a8e;
+  }
+  
+  .horizontalCommentHeaderBox {
     display: flex;
+    width: 30%;
     align-items: center;
-    justify-content: space-evenly;
-    width: 30vw;
-
-
-    padding: 12px;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
     background-color: #d3c3e2;
     border-bottom: 2px solid #635173;
     border-left: 1px solid #5b4f8a;
-}
-
-.proposalContentBox {
-    display: flex;
-    width: 100vw;
-    height: calc(100vh - 48px);
-    max-height: calc(100vh - 48px);
-    overflow: hidden;
-}
-
-.mapBox {
-    width: 70vw;
-    height: 100%;
-    background-color: rgb(246, 255, 243);
-
+  }
+  
+  .proposalHeaderText,
+  .commentHeaderText,
+  .smallerCommentHeaderText {
+    font-family: Verdana, sans-serif;
+    font-size: 16px;
+  }
+  
+  .proposalHeaderText {
+    color: #39765e;
+    font-weight: 500;
+  }
+  
+  .commentHeaderText {
+    color: #76538f;
+    font-weight: 700;
+  }
+  
+  .smallerCommentHeaderText {
+    color: #76538f;
+    font-weight: 500;
+  }
+  
+  .prettierButton {
+    display: inline-grid;
+    place-items: center;
+    padding: 3px;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .prettierButton:hover {
+    background: rgba(73, 141, 114, 0.12);
+  }
+  
+  .prettierButton:focus-visible,
+  .simplifyButton:focus-visible,
+  .commentSubmitButton:focus-visible,
+  .loginToCommentButton:focus-visible,
+  .commentTextArea:focus-visible {
+    outline: 3px solid rgba(91, 79, 138, 0.35);
+    outline-offset: 2px;
+  }
+  
+  .ratingBox,
+  .commentCountBox {
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-
-.mapBox .mapContainer {
-    height: 100%;
-    width: 100%;
-}
-
-.commentBox {
-    width: 30vw;
-    height: 100%;
-    background-color: white;
-    border-left: 2px solid #87bd93;
-    overflow: auto;
-}
-
-.mapImage {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-.iconBox {
+    gap: 6px;
+  }
+  
+  .iconBox {
     width: 24px;
     height: 24px;
     object-fit: contain;
     background-color: transparent;
-}
-
-.proposalHeaderText {
-    font-family: Verdana;
-    color: #498d72;
-    font-weight: 500;
-    font-size: 16px;
-}
-
-.commentHeaderText {
-    font-family: Verdana;
-    color: #9773b3;
-    font-weight: 550;
-    font-size: 16px;
-}
-.smallerCommentHeaderText {
-    font-family: Verdana;
-    color: #9773b3;
-    font-weight: 500;
-    font-size: 16px;
-}
-
-.ratingBox {
+  }
+  
+  .proposalContentBox {
     display: flex;
+    width: 100%;
+    height: calc(100vh - 48px);
+    min-height: 0;
+    overflow: hidden;
+  }
+  
+  .mapBox {
+    position: relative;
+    display: flex;
+    width: 70%;
+    height: 100%;
     align-items: center;
-    gap: 6px;
-}
-
-.horizontalCommentHeaderBox {
+    justify-content: center;
+    overflow: hidden;
+    background-color: rgb(246, 255, 243);
+  }
+  
+  .mapBox .mapContainer {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mapImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .commentBox {
+    display: flex;
+    width: 30%;
+    height: 100%;
+    min-width: 0;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-left: 2px solid #87bd93;
+  }
+  
+  .addCommentSection {
+    padding: 18px;
+    background: #faf8fc;
+    border-bottom: 2px solid #ece7f1;
+  }
+  
+  .commentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .commentFormLabel {
+    color: #4e3d5d;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  
+  .commentTextArea {
+    width: 100%;
+    min-height: 104px;
+    resize: vertical;
+    padding: 11px 12px;
+    color: #2d2732;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #ffffff;
+    border: 1px solid #bcb2c5;
+    border-radius: 8px;
+  }
+  
+  .commentTextArea::placeholder {
+    color: #827989;
+  }
+  
+  .commentFormFooter {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    width: 30vw;
-    padding: 12px;
-
-    background-color: #d3c3e2;
-    border-bottom: 2px solid #635173;
-}
-
-.commentCountBox {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.mapBox {
-    width: 70vw;
-    height: 100%;
-    background-color: rgb(246, 255, 243);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    position: relative; 
-}
-
-.closedPolygonWarning {
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10; /* ensures it stays above the map tools and canvas */
-    
-    background-color: #ffeeb2;
-    color: #9d7c00;
+    gap: 12px;
+  }
+  
+  .commentCharacterCount {
+    color: #746c79;
     font-family: Verdana, sans-serif;
-    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  .commentSubmitButton,
+  .loginToCommentButton {
+    padding: 10px 16px;
+    color: #ffffff;
+    font-family: Verdana, sans-serif;
     font-size: 14px;
-    
-    padding: 12px 24px;
-    border: 2px solid #dfb300;
+    font-weight: 700;
+    background: #39765e;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      transform 0.1s ease;
+  }
+  
+  .commentSubmitButton:hover:not(:disabled),
+  .loginToCommentButton:hover {
+    background: #2b604b;
+  }
+  
+  .commentSubmitButton:active:not(:disabled),
+  .loginToCommentButton:active {
+    transform: translateY(1px);
+  }
+  
+  .commentSubmitButton:disabled {
+    color: #6f6f6f;
+    background: #d2d2d2;
+    cursor: not-allowed;
+  }
+  
+  .commentNotice {
+    margin: 2px 0 0;
+    padding: 9px 10px;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
     border-radius: 6px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    
-    pointer-events: none;
-}
-
-.simplifyButton {
+  }
+  
+  .commentNotice.success {
+    color: #246b3c;
+    background: #e8f6ed;
+    border: 1px solid #a8d9b8;
+  }
+  
+  .commentNotice.error {
+    color: #982d2d;
+    background: #fcebea;
+    border: 1px solid #e5aaaa;
+  }
+  
+  .commentLoginPrompt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .commentLoginPrompt h2 {
+    margin: 0;
+    color: #4e3d5d;
+    font-family: Verdana, sans-serif;
+    font-size: 16px;
+  }
+  
+  .commentLoginPrompt p {
+    margin: 0;
+    color: #5f5864;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .proposalCommentList {
+    flex: 1;
+  }
+  
+  .emptyCommentMessage {
+    margin: 0;
+    padding: 24px 16px;
+    color: #6b6570;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .simplifyButton {
     position: absolute;
     top: 16px;
     left: 50%;
-    transform: translateX(-50%);
     z-index: 10;
-    
-    background-color: #5b4f8a;
-    color: white;
+    transform: translateX(-50%);
+    padding: 7px 13px;
+    color: #ffffff;
     font-family: Verdana, sans-serif;
-    font-weight: bold;
     font-size: 11px;
-    
-    padding: 6px 12px;
-    border: none;
+    font-weight: 700;
+    background-color: #5b4f8a;
+    border: 0;
     border-radius: 4px;
-    cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s;
-}
-
-.simplifyButton:hover {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .simplifyButton:hover {
     background-color: #443a6b;
-}
-
-.validationBanner {
+  }
+  
+  .validationBanner {
     position: absolute;
     top: 60px;
     left: 50%;
-    transform: translateX(-50%);
     z-index: 10;
-    
-    font-family: Verdana, sans-serif;
-    font-weight: bold;
-    font-size: 13px;
+    width: auto;
+    max-width: 90%;
+    transform: translateX(-50%);
     padding: 10px 20px;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
     border-radius: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     pointer-events: none;
-    text-align: center;
-    width: auto;
-    max-width: 90%;
-}
-
-.validationBanner.invalid {
-    background-color: #fce8e6;
+  }
+  
+  .validationBanner.invalid {
     color: #a82e2e;
+    background-color: #fce8e6;
     border: 2px solid #ea9a9a;
-}
-
-.validationBanner.warning {
+  }
+  
+  .validationBanner.warning {
+    color: #806500;
     background-color: #ffeeb2;
-    color: #9d7c00;
     border: 2px solid #dfb300;
-}
-
-.validationBanner.valid {
+  }
+  
+  .validationBanner.valid {
+    color: #247d41;
     background-color: #e6fced;
-    color: #2ea854;
     border: 2px solid #9aeaae;
-}
+  }
+  
+  @media (max-width: 900px) {
+    .proposalPageHeader {
+      flex-direction: column;
+    }
+  
+    .horizontalProposalHeaderBox,
+    .horizontalCommentHeaderBox {
+      width: 100%;
+      border-right: 0;
+      border-left: 0;
+    }
+  
+    .horizontalProposalHeaderBox {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+  
+    .proposalContentBox {
+      height: auto;
+      min-height: calc(100vh - 96px);
+      flex-direction: column;
+      overflow: visible;
+    }
+  
+    .mapBox,
+    .commentBox {
+      width: 100%;
+    }
+  
+    .mapBox {
+      height: 55vh;
+      min-height: 420px;
+    }
+  
+    .commentBox {
+      height: auto;
+      min-height: 45vh;
+      border-top: 2px solid #87bd93;
+      border-left: 0;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .horizontalProposalHeaderBox,
+    .horizontalCommentHeaderBox {
+      padding: 10px 12px;
+    }
+  
+    .proposalHeaderText,
+    .commentHeaderText,
+    .smallerCommentHeaderText {
+      font-size: 14px;
+    }
+  
+    .addCommentSection {
+      padding: 14px;
+    }
+  
+    .commentFormFooter {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  
+    .commentSubmitButton,
+    .loginToCommentButton {
+      width: 100%;
+    }
+  
+    .validationBanner {
+      width: calc(100% - 24px);
+      max-width: none;
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+  }
+  
+  /* Owner-only actions rendered by ViewProposalPage.jsx */
+  .proposalCommentItem {
+    position: relative;
+    border-bottom: 1px solid #ece7f1;
+  }
+  
+  .commentOwnerActions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 16px 12px;
+  }
+  
+  .deleteCommentButton {
+    padding: 7px 12px;
+    color: #982d2d;
+    font-family: Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    background: #ffffff;
+    border: 1px solid #d7a0a0;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .deleteCommentButton:hover:not(:disabled) {
+    background: #fcebea;
+    border-color: #bd6f6f;
+  }
+  
+  .deleteCommentButton:disabled {
+    color: #8a8383;
+    background: #eeeeee;
+    border-color: #d0cccc;
+    cursor: not-allowed;
+  }
+  
+  .deleteCommentButton:focus-visible {
+    outline: 3px solid rgba(152, 45, 45, 0.25);
+    outline-offset: 2px;
+  }
+  
+  .proposalPageHeader > .horizontalCommentHeaderBox {
+    background-color: #d3c3e2;
+    border-bottom-color: #635173;
+  }

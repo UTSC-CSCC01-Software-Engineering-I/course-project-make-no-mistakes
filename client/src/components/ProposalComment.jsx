@@ -1,133 +1,157 @@
-import './ProposalComment.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
 import thumbsUpIcon from '../assets/thumbsUp.png'
+import './ProposalComment.css'
+
+const AUTH_TOKEN_STORAGE_KEY = 'sb_token'
+const LEGACY_AUTH_TOKEN_STORAGE_KEY = 'token'
+
+function readAccessToken() {
+  return (
+    localStorage.getItem(AUTH_TOKEN_STORAGE_KEY) ||
+    localStorage.getItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
+  )
+}
+
+function clearAccessToken() {
+  clearAccessToken()
+  localStorage.removeItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
+}
 
 function ProposalComment({
-    commentId,
-    proposalId,
-    commentUserId, 
-    currentUserId, 
-    relatedRidings = [],
-    postUser,
-    postDate,
-    postComment,
-    postLikes = 0,
-    postDownvotes = 0,
-    onDelete
+  commentId,
+  relatedRidings = [],
+  postUser,
+  postDate,
+  postComment,
+  postLikes = 0,
+  postDownvotes = 0,
+  isLoggedIn = false,
 }) {
-    const [likes, setLikes] = useState(postLikes)
-    const [downvotes, setDownvotes] = useState(postDownvotes)
+  const [likes, setLikes] = useState(postLikes)
+  const [downvotes, setDownvotes] = useState(postDownvotes)
+  const [pendingVote, setPendingVote] = useState(null)
 
-    // GET THE CORRECT TOKEN NAME
-    const token = localStorage.getItem('sb_token'); 
+  useEffect(() => {
+    setLikes(postLikes)
+  }, [postLikes])
 
-    async function handleUpvote() {
-        if (!commentId) return; 
-        try {
-            const res = await fetch(`/api/comments/${commentId}/vote`, {
-                method: 'PATCH',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
-                body: JSON.stringify({ action: 'upvote' })
-            });
-            if (res.ok) setLikes(prev => prev + 1);
-        } catch (err) { console.error("Upvote failed", err); }
+  useEffect(() => {
+    setDownvotes(postDownvotes)
+  }, [postDownvotes])
+
+  async function handleVote(action) {
+    const token = readAccessToken()
+
+    if (!commentId || !isLoggedIn || !token || pendingVote) {
+      return
     }
 
-    async function handleDownvote() {
-        if (!commentId) return;
-        try {
-            const res = await fetch(`/api/comments/${commentId}/vote`, {
-                method: 'PATCH',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
-                body: JSON.stringify({ action: 'downvote' })
-            });
-            if (res.ok) setDownvotes(prev => prev + 1);
-        } catch (err) { console.error("Downvote failed", err); }
-    }
+    setPendingVote(action)
 
-    async function handleDelete() {
-        if (!commentId) return;
-        const confirmDelete = window.confirm("Are you sure you want to delete this comment?");
-        if (!confirmDelete) return;
-
-        try {
-            const res = await fetch(`/api/comments/${commentId}`, { 
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (res.ok) {
-                if (onDelete) onDelete(commentId); 
-            } else {
-                alert("Cannot delete. You can only delete your own comments!");
-            }
-        } catch (err) {
-            console.error("Delete failed", err);
+    try {
+      const response = await fetch(
+        `/api/comments/${encodeURIComponent(commentId)}/vote`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ action }),
         }
+      )
+
+      if (response.status === 401) {
+        clearAccessToken()
+        window.dispatchEvent(new Event('auth-changed'))
+        return
+      }
+
+      const responseBody = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        throw new Error(
+          responseBody?.error || `Voting failed (${response.status}).`
+        )
+      }
+
+      setLikes(Number(responseBody?.upvotes) || 0)
+      setDownvotes(Number(responseBody?.downvotes) || 0)
+    } catch (error) {
+      console.error('[COMMENT VOTE ERROR]', error)
+    } finally {
+      setPendingVote(null)
     }
+  }
 
-    // CHECK OWNERSHIP
-    const isOwner = String(currentUserId) === String(commentUserId);
-    
-    // ADD THIS LINE TO DEBUG:
-    console.log(`Comment ID: ${commentId} | Current User: ${currentUserId} | Comment Author: ${commentUserId}`);
+  const votingDisabled = !isLoggedIn || Boolean(pendingVote)
+  const voteTitle = isLoggedIn ? undefined : 'Log in to vote'
 
-    return (
-        <article className="proposalComment">
-            <header className="commentHeader">
-                <span className="commentHeaderText">{postUser}</span>
-                <span className="commentHeaderText">{postDate}</span>
-            </header>
+  return (
+    <article className="proposalComment">
+      <header className="commentHeader">
+        <span className="commentHeaderText">{postUser}</span>
+        <time className="commentHeaderText">{postDate}</time>
+      </header>
 
-            {relatedRidings.length > 0 && (
-                <header className="commentSubHeader">
-                    <span className="commentSubHeaderText">
-                        Selected Ridings: {relatedRidings.join(", ")}
-                    </span>
-                </header>
-            )}
+      {relatedRidings.length > 0 && (
+        <div className="commentSubHeader">
+          <span className="commentSubHeaderText">
+            Selected Ridings: {relatedRidings.join(', ')}
+          </span>
+        </div>
+      )}
 
-            <section className="commentBody">
-                <span className="commentBodyText">{postComment}</span>
-            </section>
+      <section className="commentBody">
+        <p className="commentBodyText">{postComment}</p>
+      </section>
 
-            <footer className="commentFooter" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <span className="commentSubHeaderText" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {likes} 
-                        <button className="likeButtonWrapper" onClick={handleUpvote} style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>
-                            <img className="likeButton" src={thumbsUpIcon} alt="upvote" />
-                        </button>
-                    </span>
+      <footer className="commentFooter">
+        <div className="commentVoteControls">
+          <span className="voteCount" aria-label={`${likes} upvotes`}>
+            {likes}
+          </span>
 
-                    <span className="commentSubHeaderText" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {downvotes} 
-                        <button className="likeButtonWrapper" onClick={handleDownvote} style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>
-                            <img className="likeButton" src={thumbsUpIcon} alt="downvote" style={{ transform: 'rotate(180deg)' }} />
-                        </button>
-                    </span>
-                </div>
+          <button
+            className="likeButtonWrapper"
+            type="button"
+            disabled={votingDisabled}
+            onClick={() => handleVote('upvote')}
+            aria-label={isLoggedIn ? 'Upvote comment' : 'Log in to upvote'}
+            title={voteTitle}
+          >
+            <img
+              className="likeButton"
+              src={thumbsUpIcon}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
 
-                {/* ONLY SHOW DELETE BUTTON IF LOGGED-IN USER OWNS IT */}
-                {isOwner && (
-                    <button 
-                        onClick={handleDelete} 
-                        style={{ background: '#d32f2f', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontWeight: 'bold' }}
-                    >
-                        Delete
-                    </button>
-                )}
-            </footer>
-        </article>
-    )
+          <span className="voteCount" aria-label={`${downvotes} downvotes`}>
+            {downvotes}
+          </span>
+
+          <button
+            className="likeButtonWrapper"
+            type="button"
+            disabled={votingDisabled}
+            onClick={() => handleVote('downvote')}
+            aria-label={isLoggedIn ? 'Downvote comment' : 'Log in to downvote'}
+            title={voteTitle}
+          >
+            <img
+              className="likeButton downvoteIcon"
+              src={thumbsUpIcon}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+      </footer>
+    </article>
+  )
 }
 
 export default ProposalComment
