@@ -25,3 +25,11 @@
     font-weight: 600;
     font-size: 30px;
 }
+
+.browsePageNoResults {
+    margin-top: 24px;
+    color: #315d4d;
+    font-family: Verdana;
+    font-size: 18px;
+    font-weight: 500;
+}
