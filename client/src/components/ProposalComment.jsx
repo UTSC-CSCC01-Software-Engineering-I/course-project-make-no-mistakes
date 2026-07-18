@@ -14,7 +14,7 @@ function readAccessToken() {
 }
 
 function clearAccessToken() {
-  clearAccessToken()
+  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
   localStorage.removeItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
 }
 
