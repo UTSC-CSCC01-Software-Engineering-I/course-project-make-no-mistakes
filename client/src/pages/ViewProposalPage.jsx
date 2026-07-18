@@ -5,6 +5,7 @@ import { io } from 'socket.io-client'
 import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
+import { SOCKET_URL } from '../config/api'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -13,6 +14,7 @@ import commentIcon from '../assets/greencomment.png'
 const DISTANCE_THRESHOLD = 50
 const AUTH_TOKEN_STORAGE_KEY = 'sb_token'
 const LEGACY_AUTH_TOKEN_STORAGE_KEY = 'token'
+const LOGIN_PATH = '/login'
 
 function readAccessToken() {
   return (
@@ -25,7 +27,6 @@ function clearAccessToken() {
   localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
   localStorage.removeItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
 }
-const LOGIN_PATH = '/login'
 
 function getUserIdFromAccessToken(accessToken) {
   if (!accessToken) return null
@@ -41,11 +42,6 @@ function getUserIdFromAccessToken(accessToken) {
       .padEnd(Math.ceil(payload.length / 4) * 4, '=')
 
     const decodedPayload = JSON.parse(atob(normalizedPayload))
-    const isExpired =
-      typeof decodedPayload.exp === 'number' &&
-      decodedPayload.exp * 1000 <= Date.now()
-
-    if (isExpired) return null
 
     return decodedPayload.sub || null
   } catch (error) {
@@ -153,9 +149,7 @@ function ViewProposalPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [deletingCommentId, setDeletingCommentId] = useState(null)
   const [commentNotice, setCommentNotice] = useState(null)
-  const [accessToken, setAccessToken] = useState(() =>
-    readAccessToken()
-  )
+  const [accessToken, setAccessToken] = useState(readAccessToken)
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
   const [isLineStringClosed, setIsLineStringClosed] = useState(false)
   const [validationError, setValidationError] = useState(null)
@@ -169,16 +163,7 @@ function ViewProposalPage() {
 
   useEffect(() => {
     function synchronizeAuthentication() {
-      const storedToken = readAccessToken()
-      const storedUserId = getUserIdFromAccessToken(storedToken)
-
-      if (!storedToken || !storedUserId) {
-        clearAccessToken()
-        setAccessToken(null)
-        return
-      }
-
-      setAccessToken(storedToken)
+      setAccessToken(readAccessToken())
     }
 
     window.addEventListener('storage', synchronizeAuthentication)
@@ -228,9 +213,9 @@ function ViewProposalPage() {
 
         return response.json()
       })
-      .then((comments) => {
-        if (Array.isArray(comments)) {
-          setLiveComments(comments)
+      .then((commentsResponse) => {
+        if (Array.isArray(commentsResponse)) {
+          setLiveComments(commentsResponse)
         }
       })
       .catch((error) => {
@@ -239,9 +224,7 @@ function ViewProposalPage() {
         }
       })
 
-    const socketUrl =
-      import.meta.env.VITE_API_URL || 'http://localhost:8080'
-    const socket = io(socketUrl)
+    const socket = io(SOCKET_URL)
 
     socket.on('comment_approved', (approvedComment) => {
       if (
@@ -303,7 +286,6 @@ function ViewProposalPage() {
 
     if (!content || isSubmittingComment) return
 
-    // Defensive guard. Logged-out users never receive the form in the DOM.
     if (!accessToken) {
       redirectToLogin('authentication-required')
       return
@@ -673,10 +655,7 @@ function ViewProposalPage() {
             ) : (
               liveComments.map((comment) => {
                 const belongsToCurrentUser =
-                  isLoggedIn &&
-                  Boolean(currentUserId) &&
-                  comment.userId !== null &&
-                  comment.userId !== undefined &&
+                  currentUserId &&
                   String(comment.userId) === String(currentUserId)
 
                 return (
@@ -691,8 +670,8 @@ function ViewProposalPage() {
                           : ''
                       }
                       postComment={comment.content}
-                      postLikes={comment.upvotes || 0}
-                      postDownvotes={comment.downvotes || 0}
+                      postLikes={comment.upvotes ?? 0}
+                      postDownvotes={comment.downvotes ?? 0}
                       isLoggedIn={isLoggedIn}
                     />
 
