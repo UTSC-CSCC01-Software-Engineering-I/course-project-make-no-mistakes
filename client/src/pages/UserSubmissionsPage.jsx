@@ -65,11 +65,23 @@ const fakeSubmissions = [
     }
 ];
 
+function getSubmissionDateInputValue(submission) {
+    const [month, day, year] = submission.date.split('/').map(Number);
+
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
 function UserSubmissionsPage() {
     const [activeTab, setActiveTab] = useState('comment');
+    const [searchDate, setSearchDate] = useState('');
     const navigate = useNavigate();
 
-    const filteredSubmissions = fakeSubmissions.filter(sub => sub.type === activeTab);
+    const filteredSubmissions = fakeSubmissions.filter(sub => {
+        const matchesTab = sub.type === activeTab;
+        const matchesDate = !searchDate || getSubmissionDateInputValue(sub) === searchDate;
+
+        return matchesTab && matchesDate;
+    });
 
     return (
         <main className="subsPage">
@@ -89,7 +101,13 @@ function UserSubmissionsPage() {
                 </div>
             </header>
             
-            <SearchBar />
+            <SearchBar
+                value={searchDate}
+                onChange={setSearchDate}
+                searchType="date"
+                showSearchTypeSelector={false}
+                showFilter={false}
+            />
 
             <nav className="subsToggleNav">
                 <button 
