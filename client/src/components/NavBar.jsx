@@ -5,7 +5,6 @@ import { useRoleContext } from '/src/utils/RoleProvider'
 import './NavBar.css'
 
 function NavBar() {
-
 	const navigate = useNavigate();
 
 	const isLoggedIn = isTokenValid();
@@ -19,20 +18,24 @@ function NavBar() {
 		} catch {}
 
 		localStorage.removeItem('sb_token');
+		localStorage.removeItem('token')
 
 		await refreshRole();
 
+		window.dispatchEvent(new Event('auth-changed'))
 		navigate('/login', { replace: true });
 	}
 
   return (
     <nav className="navBar">
-      	<NavLink to="/"
-			className={({ isActive }) =>
-				isActive ? "navBarLink activeNavBarLink" : "navBarLink"
-			}>
-        	Home
-      	</NavLink>
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          isActive ? 'navBarLink activeNavBarLink' : 'navBarLink'
+        }
+      >
+        Home
+      </NavLink>
 
 		{
 			role === 'commissioner' ?

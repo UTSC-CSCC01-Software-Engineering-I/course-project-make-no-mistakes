@@ -2,7 +2,7 @@
 // AI-assisted (claude)
 
 import axios from 'axios'
-import { getToken } from '/src/utils/authToken'
+import { getToken } from './authToken'
 
 const api = axios.create({ baseURL: '/api/proposals' })
 

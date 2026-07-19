@@ -473,3 +473,171 @@
     background-color: #d3c3e2;
     border-bottom-color: #635173;
   }
+
+  .mapBox {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+  }
+  
+  /* Province and layer selectors */
+  .mapLayerControls {
+    position: absolute;
+  
+    /* Bottom-right */
+    right: 14px;
+    bottom: 14px;
+  
+    /* Explicitly cancel old positioning */
+    left: auto;
+    top: auto;
+  
+    z-index: 30;
+  
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+  
+    max-width: calc(100% - 28px);
+    padding: 9px 11px;
+  
+    font-family: Verdana, Arial, sans-serif;
+  
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  }
+  
+  .mapLayerControl {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  
+  .mapLayerControl label {
+    margin: 0;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .mapLayerControl select {
+    width: 180px;
+    max-width: 100%;
+  
+    padding: 6px 8px;
+  
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 13px;
+  
+    background: white;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+  }
+  
+  /* Selected-region statistics popup */
+  .selectedRegionCard {
+    position: absolute;
+  
+    left: 14px;
+    bottom: 14px;
+  
+    z-index: 40;
+  
+    box-sizing: border-box;
+    width: 340px;
+    max-width: calc(100% - 28px);
+    max-height: 55%;
+  
+    overflow-x: hidden;
+    overflow-y: auto;
+  
+    padding: 16px;
+  
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+  
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Header containing the name and close button */
+  .selectedRegionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  
+    margin-bottom: 14px;
+  }
+  
+  .selectedRegionHeader h2 {
+    min-width: 0;
+    margin: 0;
+  
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 24px;
+    line-height: 1.2;
+  
+    overflow-wrap: anywhere;
+  }
+  
+  .selectedRegionHeader button {
+    flex: 0 0 auto;
+  
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+  
+    cursor: pointer;
+    background: #f3f4f6;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+  }
+  
+  /* Remove the browser's default dl/dd indentation */
+  .selectedRegionCard dl {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  
+    margin: 0;
+    padding: 0;
+  }
+  
+  .selectedRegionCard dl > div {
+    display: grid;
+    grid-template-columns: 115px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+  
+    margin: 0;
+    padding: 0;
+  }
+  
+  .selectedRegionCard dt {
+    margin: 0;
+    padding: 0;
+  
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  
+  .selectedRegionCard dd {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
