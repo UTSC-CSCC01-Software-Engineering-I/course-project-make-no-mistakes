@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { io } from 'socket.io-client'
 
-import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
+import { fetchProposal } from '../utils/proposalsApi'
+import { shortUser, formatDate } from '../utils/format'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -144,9 +145,10 @@ function ViewProposalPage() {
   const { proposalId } = useParams()
   const mapComponentRef = useRef(null)
 
-  const proposal = proposals.find(
-    (item) => String(item.id) === String(proposalId)
-  )
+  const [proposal, setProposal] = useState(null)
+
+  // loading | ready | notfound | error
+  const [proposalStatus, setProposalStatus] = useState('loading')
 
   const [liveComments, setLiveComments] = useState([])
   const [newCommentText, setNewCommentText] = useState('')
@@ -156,7 +158,7 @@ function ViewProposalPage() {
   const [accessToken, setAccessToken] = useState(() =>
     readAccessToken()
   )
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+  const [likes, setLikes] = useState(0)
   const [isLineStringClosed, setIsLineStringClosed] = useState(false)
   const [validationError, setValidationError] = useState(null)
 
@@ -164,8 +166,30 @@ function ViewProposalPage() {
   const isLoggedIn = Boolean(accessToken && currentUserId)
 
   useEffect(() => {
-    setLikes(proposal?.postLikes ?? 0)
+    setLikes(proposal?.likes ?? 0)
   }, [proposal])
+
+  useEffect(() => {
+    if (!proposalId) return undefined
+
+    let active = true
+    setProposalStatus('loading')
+
+    fetchProposal(proposalId)
+      .then((data) => {
+        if (!active) return
+        setProposal(data)
+        setProposalStatus('ready')
+      })
+      .catch((error) => {
+        if (!active) return
+        setProposalStatus(error.status === 404 ? 'notfound' : 'error')
+      })
+
+    return () => {
+      active = false
+    }
+  }, [proposalId])
 
   useEffect(() => {
     function synchronizeAuthentication() {
@@ -509,7 +533,15 @@ function ViewProposalPage() {
     mapComponentRef.current?.simplifyDrawing()
   }
 
-  if (!proposal) {
+  if (proposalStatus === 'loading') {
+    return (
+      <main className="proposalNotFound">
+        <p>Loading proposal…</p>
+      </main>
+    )
+  }
+
+  if (proposalStatus !== 'ready' || !proposal) {
     return (
       <main className="proposalNotFound">
         <p>Error: Proposal not found.</p>
@@ -540,8 +572,8 @@ function ViewProposalPage() {
             <span className="proposalHeaderText">{likes} likes</span>
           </div>
 
-          <span className="proposalHeaderText">{proposal.postUser}</span>
-          <span className="proposalHeaderText">{proposal.postDate}</span>
+          <span className="proposalHeaderText">{shortUser(proposal.user_id)}</span>
+          <span className="proposalHeaderText">{formatDate(proposal.created_at)}</span>
         </div>
 
         <div className="horizontalCommentHeaderBox">

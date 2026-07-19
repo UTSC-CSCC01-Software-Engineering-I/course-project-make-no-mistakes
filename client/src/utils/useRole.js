@@ -5,7 +5,7 @@ import { getToken, isTokenValid } from '/src/utils/authToken'
 // Fetches the logged-in user's role (publicuser/commissioner) from the backend.
 // role is null while loading, when logged out, or if the lookup fails
 //
-// AI-assisted code (claude)
+// AI-assisted (claude)
 export default function useRole() {
 
 	const [role, setRole] = useState(null);

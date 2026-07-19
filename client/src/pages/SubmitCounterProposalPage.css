@@ -258,6 +258,19 @@
     background-color: #e2d1ff;
 }
 
+.cpSubmitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.CounterProposalFormError {
+    color: #a11212;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+}
+
 @media (max-width: 1024px) {
     .cpContainer {
         grid-template-columns: 1fr;

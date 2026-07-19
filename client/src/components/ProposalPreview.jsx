@@ -3,6 +3,7 @@ import './ProposalPreview.css'
 import { NavLink } from 'react-router'
 import thumbsUpIcon from '../assets/thumbsUp.png'
 import commentIcon from '../assets/greencomment.png'
+import proposalPlaceholder from '../assets/proposalPlaceholder.svg'
 
 function ProposalPreview({
     proposalId,
@@ -41,7 +42,7 @@ function ProposalPreview({
             <NavLink to={`/view/${proposalId}`} className="proposalPreviewLink">
                 <img
                     className="proposalPreviewImage"
-                    src={previewURL}
+                    src={previewURL || proposalPlaceholder}
                     alt="Preview thumbnail of the proposal"
                 />
             </NavLink>

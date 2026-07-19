@@ -1,3 +1,5 @@
+// AI-assisted (claude)
+//
 // Backend-only tool for creating commissioner accounts directly.
 // Not exposed over HTTP — requires shell access to the server and the service-role key in .env.
 //
@@ -31,7 +33,6 @@ async function main() {
 
 	const userId = data.user.id;
 
-	// AI-assisted code
 	// createUser has no top-level role option, so mirror the role in
 	// app_metadata via a second call (kept for parity with clients that read
 	// it off the JWT)

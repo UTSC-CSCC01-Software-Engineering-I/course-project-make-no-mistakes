@@ -15,6 +15,13 @@
     align-items: start;
 }
 
+.browsePageMessage {
+    font-family: Verdana;
+    color: #3a6d5a;
+    font-size: 16px;
+    margin-top: 16px;
+}
+
 .browsePageHeader {
     margin-bottom: 30px;
 }

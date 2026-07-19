@@ -3,7 +3,7 @@
 -- counter_proposal) in one table so future submission types don't require a
 -- schema fork.
 --
--- AI-assisted code
+-- AI-assisted code (claude)
 
 create extension if not exists pgcrypto;   -- gen_random_uuid()
 create extension if not exists postgis;    -- optional geometry escape hatch, see note below
