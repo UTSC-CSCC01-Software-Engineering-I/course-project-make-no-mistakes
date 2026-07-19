@@ -5,6 +5,9 @@ import { io } from 'socket.io-client'
 import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
+import { SOCKET_URL } from '../config/api'
+import { PROVINCE_MAP_DATA } from '../config/mapData'
+
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -13,6 +16,7 @@ import commentIcon from '../assets/greencomment.png'
 const DISTANCE_THRESHOLD = 50
 const AUTH_TOKEN_STORAGE_KEY = 'sb_token'
 const LEGACY_AUTH_TOKEN_STORAGE_KEY = 'token'
+const LOGIN_PATH = '/login'
 
 function readAccessToken() {
   return (
@@ -25,7 +29,6 @@ function clearAccessToken() {
   localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
   localStorage.removeItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
 }
-const LOGIN_PATH = '/login'
 
 function getUserIdFromAccessToken(accessToken) {
   if (!accessToken) return null
@@ -41,11 +44,6 @@ function getUserIdFromAccessToken(accessToken) {
       .padEnd(Math.ceil(payload.length / 4) * 4, '=')
 
     const decodedPayload = JSON.parse(atob(normalizedPayload))
-    const isExpired =
-      typeof decodedPayload.exp === 'number' &&
-      decodedPayload.exp * 1000 <= Date.now()
-
-    if (isExpired) return null
 
     return decodedPayload.sub || null
   } catch (error) {
@@ -58,6 +56,7 @@ function getDistanceInMeters(coord1, coord2) {
   const [lon1, lat1] = coord1
   const [lon2, lat2] = coord2
   const earthRadius = 6371e3
+
   const latitude1 = (lat1 * Math.PI) / 180
   const latitude2 = (lat2 * Math.PI) / 180
   const latitudeDifference = ((lat2 - lat1) * Math.PI) / 180
@@ -90,7 +89,9 @@ function isPointInPolygon(point, polygonCoordinates) {
       yi > y !== yj > y &&
       x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
 
-    if (intersects) inside = !inside
+    if (intersects) {
+      inside = !inside
+    }
   }
 
   return inside
@@ -100,7 +101,9 @@ function getPolygonAreaOverlapPercentage(polygonA, polygonB) {
   const coordinatesA = polygonA.geometry.coordinates[0]
   const coordinatesB = polygonB.geometry.coordinates
 
-  if (!coordinatesA || !coordinatesB) return 0
+  if (!coordinatesA || !coordinatesB) {
+    return 0
+  }
 
   let minX = Infinity
   let maxX = -Infinity
@@ -117,6 +120,7 @@ function getPolygonAreaOverlapPercentage(polygonA, polygonB) {
   const gridResolution = 12
   const stepX = (maxX - minX) / (gridResolution - 1)
   const stepY = (maxY - minY) / (gridResolution - 1)
+
   let pointsInA = 0
   let pointsInBoth = 0
 
@@ -127,7 +131,12 @@ function getPolygonAreaOverlapPercentage(polygonA, polygonB) {
         minY + yIndex * stepY,
       ]
 
-      if (isPointInPolygon(samplePoint, polygonA.geometry.coordinates)) {
+      if (
+        isPointInPolygon(
+          samplePoint,
+          polygonA.geometry.coordinates
+        )
+      ) {
         pointsInA += 1
 
         if (isPointInPolygon(samplePoint, coordinatesB)) {
@@ -138,6 +147,78 @@ function getPolygonAreaOverlapPercentage(polygonA, polygonB) {
   }
 
   return pointsInA === 0 ? 0 : pointsInBoth / pointsInA
+}
+
+function SelectedRegionCard({
+  selectedRegion,
+  fallbackProvinceLabel,
+  onClose,
+}) {
+  if (!selectedRegion) {
+    return null
+  }
+
+  const hasLandArea = Number.isFinite(selectedRegion.landArea)
+
+  return (
+    <section
+      className="selectedRegionCard"
+      aria-live="polite"
+      aria-label="Selected region details"
+    >
+      <div className="selectedRegionHeader">
+        <h2>{selectedRegion.name || 'Unknown region'}</h2>
+
+        <button
+          type="button"
+          aria-label="Close region details"
+          onClick={onClose}
+        >
+          ×
+        </button>
+      </div>
+
+      <dl>
+        <div>
+          <dt>Province</dt>
+          <dd>
+            {selectedRegion.provinceLabel ||
+              fallbackProvinceLabel ||
+              'Unavailable'}
+          </dd>
+        </div>
+
+        <div>
+          <dt>Geography</dt>
+          <dd>{selectedRegion.geographyLabel || 'Unavailable'}</dd>
+        </div>
+
+        <div>
+          <dt>Land area</dt>
+          <dd>
+            {hasLandArea
+              ? `${selectedRegion.landArea.toFixed(2)} km²`
+              : 'Unavailable'}
+          </dd>
+        </div>
+
+        <div>
+          <dt>Classification</dt>
+          <dd>{selectedRegion.classification || 'Unavailable'}</dd>
+        </div>
+
+        <div>
+          <dt>Type</dt>
+          <dd>{selectedRegion.regionType || 'Unavailable'}</dd>
+        </div>
+
+        <div>
+          <dt>DGUID</dt>
+          <dd>{selectedRegion.dguid || 'Unavailable'}</dd>
+        </div>
+      </dl>
+    </section>
+  )
 }
 
 function ViewProposalPage() {
@@ -153,12 +234,17 @@ function ViewProposalPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [deletingCommentId, setDeletingCommentId] = useState(null)
   const [commentNotice, setCommentNotice] = useState(null)
-  const [accessToken, setAccessToken] = useState(() =>
-    readAccessToken()
-  )
+  const [accessToken, setAccessToken] = useState(readAccessToken)
   const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+
   const [isLineStringClosed, setIsLineStringClosed] = useState(false)
   const [validationError, setValidationError] = useState(null)
+
+  const [province, setProvince] = useState('on')
+  const [boundaryLayer, setBoundaryLayer] = useState('none')
+  const [selectedRegion, setSelectedRegion] = useState(null)
+
+  const selectedProvinceData = PROVINCE_MAP_DATA[province]
 
   const currentUserId = getUserIdFromAccessToken(accessToken)
   const isLoggedIn = Boolean(accessToken && currentUserId)
@@ -169,16 +255,7 @@ function ViewProposalPage() {
 
   useEffect(() => {
     function synchronizeAuthentication() {
-      const storedToken = readAccessToken()
-      const storedUserId = getUserIdFromAccessToken(storedToken)
-
-      if (!storedToken || !storedUserId) {
-        clearAccessToken()
-        setAccessToken(null)
-        return
-      }
-
-      setAccessToken(storedToken)
+      setAccessToken(readAccessToken())
     }
 
     window.addEventListener('storage', synchronizeAuthentication)
@@ -202,7 +279,9 @@ function ViewProposalPage() {
   }, [isLoggedIn])
 
   useEffect(() => {
-    if (!isLoggedIn || !proposalId) return
+    if (!isLoggedIn || !proposalId) {
+      return
+    }
 
     const draftKey = `comment-draft-${proposalId}`
     const savedDraft = sessionStorage.getItem(draftKey)
@@ -214,7 +293,9 @@ function ViewProposalPage() {
   }, [isLoggedIn, proposalId])
 
   useEffect(() => {
-    if (!proposalId) return undefined
+    if (!proposalId) {
+      return undefined
+    }
 
     const controller = new AbortController()
 
@@ -223,14 +304,16 @@ function ViewProposalPage() {
     })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(`Unable to load comments (${response.status}).`)
+          throw new Error(
+            `Unable to load comments (${response.status}).`
+          )
         }
 
         return response.json()
       })
-      .then((comments) => {
-        if (Array.isArray(comments)) {
-          setLiveComments(comments)
+      .then((commentsResponse) => {
+        if (Array.isArray(commentsResponse)) {
+          setLiveComments(commentsResponse)
         }
       })
       .catch((error) => {
@@ -239,9 +322,7 @@ function ViewProposalPage() {
         }
       })
 
-    const socketUrl =
-      import.meta.env.VITE_API_URL || 'http://localhost:8080'
-    const socket = io(socketUrl)
+    const socket = io(SOCKET_URL)
 
     socket.on('comment_approved', (approvedComment) => {
       if (
@@ -252,7 +333,8 @@ function ViewProposalPage() {
 
       setLiveComments((currentComments) => {
         const alreadyExists = currentComments.some(
-          (comment) => String(comment.id) === String(approvedComment.id)
+          (comment) =>
+            String(comment.id) === String(approvedComment.id)
         )
 
         return alreadyExists
@@ -284,7 +366,9 @@ function ViewProposalPage() {
   }, [proposalId])
 
   function redirectToLogin(reason) {
-    const returnTo = `${window.location.pathname}${window.location.search}`
+    const returnTo =
+      `${window.location.pathname}${window.location.search}`
+
     const loginUrl = new URL(LOGIN_PATH, window.location.origin)
 
     loginUrl.searchParams.set('returnTo', returnTo)
@@ -301,9 +385,10 @@ function ViewProposalPage() {
 
     const content = newCommentText.trim()
 
-    if (!content || isSubmittingComment) return
+    if (!content || isSubmittingComment) {
+      return
+    }
 
-    // Defensive guard. Logged-out users never receive the form in the DOM.
     if (!accessToken) {
       redirectToLogin('authentication-required')
       return
@@ -315,10 +400,12 @@ function ViewProposalPage() {
     try {
       const response = await fetch('/api/comments', {
         method: 'POST',
+
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
+
         body: JSON.stringify({
           content,
           proposalId,
@@ -334,11 +421,17 @@ function ViewProposalPage() {
       }
 
       if (response.status === 401) {
-        sessionStorage.setItem(`comment-draft-${proposalId}`, content)
+        sessionStorage.setItem(
+          `comment-draft-${proposalId}`,
+          content
+        )
+
         clearAccessToken()
         setAccessToken(null)
+
         window.dispatchEvent(new Event('auth-changed'))
         redirectToLogin('session-expired')
+
         return
       }
 
@@ -351,6 +444,7 @@ function ViewProposalPage() {
 
       setNewCommentText('')
       sessionStorage.removeItem(`comment-draft-${proposalId}`)
+
       setCommentNotice({
         type: 'success',
         text:
@@ -359,9 +453,12 @@ function ViewProposalPage() {
       })
     } catch (error) {
       console.error('[COMMENTS POST ERROR]', error)
+
       setCommentNotice({
         type: 'error',
-        text: error.message || 'Unable to submit your comment.',
+        text:
+          error.message ||
+          'Unable to submit your comment.',
       })
     } finally {
       setIsSubmittingComment(false)
@@ -369,13 +466,17 @@ function ViewProposalPage() {
   }
 
   async function handleDeleteComment(commentId) {
-    if (!accessToken || !currentUserId || deletingCommentId) return
+    if (!accessToken || !currentUserId || deletingCommentId) {
+      return
+    }
 
     const shouldDelete = window.confirm(
       'Are you sure you want to delete this comment?'
     )
 
-    if (!shouldDelete) return
+    if (!shouldDelete) {
+      return
+    }
 
     setDeletingCommentId(commentId)
     setCommentNotice(null)
@@ -385,6 +486,7 @@ function ViewProposalPage() {
         `/api/comments/${encodeURIComponent(commentId)}`,
         {
           method: 'DELETE',
+
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -394,8 +496,10 @@ function ViewProposalPage() {
       if (response.status === 401) {
         clearAccessToken()
         setAccessToken(null)
+
         window.dispatchEvent(new Event('auth-changed'))
         redirectToLogin('session-expired')
+
         return
       }
 
@@ -426,9 +530,12 @@ function ViewProposalPage() {
       })
     } catch (error) {
       console.error('[COMMENTS DELETE ERROR]', error)
+
       setCommentNotice({
         type: 'error',
-        text: error.message || 'Unable to delete the comment.',
+        text:
+          error.message ||
+          'Unable to delete the comment.',
       })
     } finally {
       setDeletingCommentId(null)
@@ -475,10 +582,11 @@ function ViewProposalPage() {
         for (let j = 0; j < polygons.length; j += 1) {
           if (i === j) continue
 
-          const overlapPercentage = getPolygonAreaOverlapPercentage(
-            polygons[i],
-            polygons[j]
-          )
+          const overlapPercentage =
+            getPolygonAreaOverlapPercentage(
+              polygons[i],
+              polygons[j]
+            )
 
           if (overlapPercentage > overlapThreshold) {
             hasNestedPolygon = true
@@ -509,6 +617,29 @@ function ViewProposalPage() {
     mapComponentRef.current?.simplifyDrawing()
   }
 
+  function handleProvinceChange(event) {
+    const nextProvince = event.target.value
+
+    setProvince(nextProvince)
+    setBoundaryLayer('none')
+    setSelectedRegion(null)
+
+    mapComponentRef.current?.clearSelectedRegion?.()
+  }
+
+  function handleBoundaryLayerChange(event) {
+    setBoundaryLayer(event.target.value)
+    setSelectedRegion(null)
+
+    mapComponentRef.current?.clearSelectedRegion?.()
+  }
+
+  function handleCloseSelectedRegion() {
+    setSelectedRegion(null)
+
+    mapComponentRef.current?.clearSelectedRegion?.()
+  }
+
   if (!proposal) {
     return (
       <main className="proposalNotFound">
@@ -521,7 +652,9 @@ function ViewProposalPage() {
     <main className="proposalPage">
       <header className="proposalPageHeader">
         <div className="horizontalProposalHeaderBox">
-          <span className="proposalHeaderText">ID: {proposal.id}</span>
+          <span className="proposalHeaderText">
+            ID: {proposal.id}
+          </span>
 
           <div className="ratingBox">
             <button
@@ -537,18 +670,32 @@ function ViewProposalPage() {
               />
             </button>
 
-            <span className="proposalHeaderText">{likes} likes</span>
+            <span className="proposalHeaderText">
+              {likes} likes
+            </span>
           </div>
 
-          <span className="proposalHeaderText">{proposal.postUser}</span>
-          <span className="proposalHeaderText">{proposal.postDate}</span>
+          <span className="proposalHeaderText">
+            {proposal.postUser}
+          </span>
+
+          <span className="proposalHeaderText">
+            {proposal.postDate}
+          </span>
         </div>
 
         <div className="horizontalCommentHeaderBox">
-          <span className="commentHeaderText">Comments</span>
+          <span className="commentHeaderText">
+            Comments
+          </span>
 
           <div className="commentCountBox">
-            <img className="iconBox" src={commentIcon} alt="" />
+            <img
+              className="iconBox"
+              src={commentIcon}
+              alt=""
+            />
+
             <span className="smallerCommentHeaderText">
               {liveComments.length}
             </span>
@@ -557,7 +704,10 @@ function ViewProposalPage() {
       </header>
 
       <div className="proposalContentBox">
-        <section className="mapBox" aria-label="Proposal map">
+        <section
+          className="mapBox"
+          aria-label="Proposal map"
+        >
           <button
             className="simplifyButton"
             onClick={handleSimplifyClick}
@@ -567,35 +717,111 @@ function ViewProposalPage() {
           </button>
 
           {validationError ? (
-            <div className="validationBanner invalid" role="alert">
+            <div
+              className="validationBanner invalid"
+              role="alert"
+            >
               {validationError}
             </div>
           ) : isLineStringClosed ? (
-            <div className="validationBanner warning" role="status">
-              Closed polygon detected! Click &quot;Simplify&quot; to fuse
-              coordinates and save memory.
+            <div
+              className="validationBanner warning"
+              role="status"
+            >
+              Closed polygon detected! Click
+              &quot;Simplify&quot; to fuse coordinates and
+              save memory.
             </div>
           ) : (
-            <div className="validationBanner valid" role="status">
+            <div
+              className="validationBanner valid"
+              role="status"
+            >
               ✓ Census Boundaries Valid
             </div>
           )}
+
+          <div className="mapLayerControls">
+            <div className="mapLayerControl">
+              <label htmlFor="province-select">
+                Province
+              </label>
+
+              <select
+                id="province-select"
+                value={province}
+                onChange={handleProvinceChange}
+              >
+                {Object.entries(PROVINCE_MAP_DATA).map(
+                  ([provinceCode, provinceData]) => (
+                    <option
+                      key={provinceCode}
+                      value={provinceCode}
+                    >
+                      {provinceData.label}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            <div className="mapLayerControl">
+              <label htmlFor="boundary-layer-select">
+                Statistical layer
+              </label>
+
+              <select
+                id="boundary-layer-select"
+                value={boundaryLayer}
+                onChange={handleBoundaryLayerChange}
+              >
+                <option value="none">
+                  None
+                </option>
+
+                <option value="populationCentres">
+                  Population centres
+                </option>
+
+                {selectedProvinceData?.designatedPlaces && (
+                  <option value="designatedPlaces">
+                    Designated places
+                  </option>
+                )}
+              </select>
+            </div>
+          </div>
 
           <Map
             ref={mapComponentRef}
             mode="objection"
             onDrawChange={handleDrawChange}
+            province={province}
+            boundaryLayer={boundaryLayer}
+            onRegionSelect={setSelectedRegion}
+          />
+
+          <SelectedRegionCard
+            selectedRegion={selectedRegion}
+            fallbackProvinceLabel={selectedProvinceData?.label}
+            onClose={handleCloseSelectedRegion}
           />
         </section>
 
-        <aside className="commentBox" aria-label="Proposal comments">
+        <aside
+          className="commentBox"
+          aria-label="Proposal comments"
+        >
           <div className="addCommentSection">
             {isLoggedIn ? (
               <form
                 className="commentForm"
                 onSubmit={handleCommentSubmit}
               >
-                <label className="commentFormLabel" htmlFor="new-comment">
+                <label
+                  className="commentFormLabel"
+                  htmlFor="new-comment"
+                >
                   Add a comment
                 </label>
 
@@ -622,7 +848,8 @@ function ViewProposalPage() {
                     className="commentSubmitButton"
                     type="submit"
                     disabled={
-                      isSubmittingComment || !newCommentText.trim()
+                      isSubmittingComment ||
+                      !newCommentText.trim()
                     }
                   >
                     {isSubmittingComment
@@ -635,7 +862,9 @@ function ViewProposalPage() {
                   <p
                     className={`commentNotice ${commentNotice.type}`}
                     role={
-                      commentNotice.type === 'error' ? 'alert' : 'status'
+                      commentNotice.type === 'error'
+                        ? 'alert'
+                        : 'status'
                     }
                   >
                     {commentNotice.text}
@@ -647,11 +876,15 @@ function ViewProposalPage() {
                 className="commentLoginPrompt"
                 aria-labelledby="comment-login-heading"
               >
-                <h2 id="comment-login-heading">Join the discussion</h2>
+                <h2 id="comment-login-heading">
+                  Join the discussion
+                </h2>
+
                 <p>
-                  You must be logged in to post a comment. Approved
-                  comments remain visible to everyone.
+                  You must be logged in to post a comment.
+                  Approved comments remain visible to everyone.
                 </p>
+
                 <button
                   className="loginToCommentButton"
                   type="button"
@@ -665,7 +898,10 @@ function ViewProposalPage() {
             )}
           </div>
 
-          <section className="proposalCommentList" aria-live="polite">
+          <section
+            className="proposalCommentList"
+            aria-live="polite"
+          >
             {liveComments.length === 0 ? (
               <p className="emptyCommentMessage">
                 No approved comments yet.
@@ -673,26 +909,28 @@ function ViewProposalPage() {
             ) : (
               liveComments.map((comment) => {
                 const belongsToCurrentUser =
-                  isLoggedIn &&
-                  Boolean(currentUserId) &&
-                  comment.userId !== null &&
-                  comment.userId !== undefined &&
+                  currentUserId &&
                   String(comment.userId) === String(currentUserId)
 
                 return (
-                  <article className="proposalCommentItem" key={comment.id}>
+                  <article
+                    className="proposalCommentItem"
+                    key={comment.id}
+                  >
                     <ProposalComment
                       commentId={comment.id}
                       relatedRidings={comment.relatedRidings || []}
                       postUser={comment.authorName || 'Anonymous'}
                       postDate={
                         comment.createdAt
-                          ? new Date(comment.createdAt).toLocaleDateString()
+                          ? new Date(
+                              comment.createdAt
+                            ).toLocaleDateString()
                           : ''
                       }
                       postComment={comment.content}
-                      postLikes={comment.upvotes || 0}
-                      postDownvotes={comment.downvotes || 0}
+                      postLikes={comment.upvotes ?? 0}
+                      postDownvotes={comment.downvotes ?? 0}
                       isLoggedIn={isLoggedIn}
                     />
 
@@ -702,12 +940,16 @@ function ViewProposalPage() {
                           className="deleteCommentButton"
                           type="button"
                           disabled={
-                            String(deletingCommentId) === String(comment.id)
+                            String(deletingCommentId) ===
+                            String(comment.id)
                           }
-                          onClick={() => handleDeleteComment(comment.id)}
+                          onClick={() =>
+                            handleDeleteComment(comment.id)
+                          }
                           aria-label="Delete your comment"
                         >
-                          {String(deletingCommentId) === String(comment.id)
+                          {String(deletingCommentId) ===
+                          String(comment.id)
                             ? 'Deleting...'
                             : 'Delete'}
                         </button>
