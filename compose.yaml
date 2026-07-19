@@ -27,6 +27,7 @@ services:
       - ./client/.env
     environment:
       NODE_ENV: development
+      PROXY_TARGET: http://server:8080
 
 volumes:
   server_node_modules:
