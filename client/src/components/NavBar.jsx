@@ -5,11 +5,9 @@ import { useRoleContext } from '/src/utils/RoleProvider'
 import './NavBar.css'
 
 function NavBar() {
-  const navigate = useNavigate()
 
 	const navigate = useNavigate();
 
-<<<<<<< HEAD
 	const isLoggedIn = isTokenValid();
 	const { role, refreshRole } = useRoleContext();
 
