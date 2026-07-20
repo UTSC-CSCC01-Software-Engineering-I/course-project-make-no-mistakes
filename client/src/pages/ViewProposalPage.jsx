@@ -67,6 +67,48 @@ function SelectedRegionCard({
 
   const hasLandArea = Number.isFinite(selectedRegion.landArea)
 
+  const detailRows = [
+    {
+      label: 'Province',
+      value:
+        selectedRegion.provinceLabel ||
+        fallbackProvinceLabel ||
+        'Unavailable',
+    },
+    {
+      label: 'Geography',
+      value: selectedRegion.geographyLabel || 'Unavailable',
+    },
+    ...(hasLandArea
+      ? [
+          {
+            label: 'Land area',
+            value: `${selectedRegion.landArea.toFixed(2)} km²`,
+          },
+        ]
+      : []),
+    {
+      label:
+        selectedRegion.classificationLabel ||
+        'Classification',
+      value: selectedRegion.classification || 'Unavailable',
+    },
+    {
+      label: selectedRegion.typeLabel || 'Type',
+      value: selectedRegion.regionType || 'Unavailable',
+    },
+    {
+      label:
+        selectedRegion.identifierLabel ||
+        'DGUID',
+      value:
+        selectedRegion.identifier ||
+        selectedRegion.dguid ||
+        'Unavailable',
+    },
+    ...(selectedRegion.extraDetails || []),
+  ]
+
   return (
     <section
       className="selectedRegionCard"
@@ -86,43 +128,12 @@ function SelectedRegionCard({
       </div>
 
       <dl>
-        <div>
-          <dt>Province</dt>
-          <dd>
-            {selectedRegion.provinceLabel ||
-              fallbackProvinceLabel ||
-              'Unavailable'}
-          </dd>
-        </div>
-
-        <div>
-          <dt>Geography</dt>
-          <dd>{selectedRegion.geographyLabel || 'Unavailable'}</dd>
-        </div>
-
-        <div>
-          <dt>Land area</dt>
-          <dd>
-            {hasLandArea
-              ? `${selectedRegion.landArea.toFixed(2)} km²`
-              : 'Unavailable'}
-          </dd>
-        </div>
-
-        <div>
-          <dt>Classification</dt>
-          <dd>{selectedRegion.classification || 'Unavailable'}</dd>
-        </div>
-
-        <div>
-          <dt>Type</dt>
-          <dd>{selectedRegion.regionType || 'Unavailable'}</dd>
-        </div>
-
-        <div>
-          <dt>DGUID</dt>
-          <dd>{selectedRegion.dguid || 'Unavailable'}</dd>
-        </div>
+        {detailRows.map((detail) => (
+          <div key={detail.label}>
+            <dt>{detail.label}</dt>
+            <dd>{detail.value}</dd>
+          </div>
+        ))}
       </dl>
     </section>
   )
@@ -712,13 +723,21 @@ function ViewProposalPage() {
                   None
                 </option>
 
-                <option value="populationCentres">
-                  Population centres
-                </option>
+                {selectedProvinceData?.populationCentres && (
+                  <option value="populationCentres">
+                    Population centres
+                  </option>
+                )}
 
                 {selectedProvinceData?.designatedPlaces && (
                   <option value="designatedPlaces">
                     Designated places
+                  </option>
+                )}
+
+                {selectedProvinceData?.pollingDistricts && (
+                  <option value="pollingDistricts">
+                    Polling districts
                   </option>
                 )}
               </select>

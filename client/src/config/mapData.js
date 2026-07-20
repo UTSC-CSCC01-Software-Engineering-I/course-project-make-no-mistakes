@@ -7,6 +7,27 @@ const MAP_DATA_BASE_URL = SUPABASE_URL
   ? `${SUPABASE_URL}/storage/v1/object/public/map-data`
   : "/map-data";
 
+/*
+ * Provinces and territories whose polling-district GeoJSON
+ * files were successfully uploaded.
+ *
+ * Ontario and Quebec are intentionally excluded because their
+ * files are currently too large for your Supabase upload limit.
+ */
+const POLLING_DISTRICT_PROVINCES = new Set([
+  "ab",
+  "bc",
+  "mb",
+  "nb",
+  "nl",
+  "ns",
+  "nt",
+  "nu",
+  "pe",
+  "sk",
+  "yt",
+]);
+
 const PROVINCES = {
   ab: {
     label: "Alberta",
@@ -50,6 +71,20 @@ const PROVINCES = {
     hasDesignatedPlaces: true,
   },
 
+  nt: {
+    label: "Northwest Territories",
+    center: [-114.4, 62.5],
+    zoom: 4,
+    hasDesignatedPlaces: true,
+  },
+
+  nu: {
+    label: "Nunavut",
+    center: [-96.0, 64.3],
+    zoom: 3,
+    hasDesignatedPlaces: true,
+  },
+
   on: {
     label: "Ontario",
     center: [-79.3832, 43.6532],
@@ -77,26 +112,60 @@ const PROVINCES = {
     zoom: 5,
     hasDesignatedPlaces: true,
   },
+
+  yt: {
+    label: "Yukon",
+    center: [-135.0, 64.3],
+    zoom: 5,
+    hasDesignatedPlaces: true,
+  },
 };
+
+function mapDataUrl(provinceCode, filename) {
+  return (
+    `${MAP_DATA_BASE_URL}/${provinceCode}/` +
+    filename
+  );
+}
 
 export const PROVINCE_MAP_DATA =
   Object.fromEntries(
     Object.entries(PROVINCES).map(
-      ([provinceCode, province]) => [
-        provinceCode,
-        {
-          ...province,
+      ([provinceCode, province]) => {
+        const hasPollingDistricts =
+          POLLING_DISTRICT_PROVINCES.has(
+            provinceCode
+          );
 
-          populationCentres:
-            `${MAP_DATA_BASE_URL}/${provinceCode}/` +
-            `${provinceCode}_population_centres.geojson`,
+        return [
+          provinceCode,
+          {
+            label: province.label,
+            center: province.center,
+            zoom: province.zoom,
 
-          designatedPlaces:
-            province.hasDesignatedPlaces
-              ? `${MAP_DATA_BASE_URL}/${provinceCode}/` +
-                `${provinceCode}_designated_places.geojson`
-              : null,
-        },
-      ]
+            populationCentres: mapDataUrl(
+              provinceCode,
+              `${provinceCode}_population_centres.geojson`
+            ),
+
+            designatedPlaces:
+              province.hasDesignatedPlaces
+                ? mapDataUrl(
+                    provinceCode,
+                    `${provinceCode}_designated_places.geojson`
+                  )
+                : null,
+
+            pollingDistricts:
+              hasPollingDistricts
+                ? mapDataUrl(
+                    provinceCode,
+                    `fed2021_${provinceCode}_polling_districts.geojson`
+                  )
+                : null,
+          },
+        ];
+      }
     )
   );
