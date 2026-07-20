@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { io } from 'socket.io-client'
 
-import proposals from '../data/proposals.json'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
+import { fetchProposal } from '../utils/proposalsApi'
+import { shortUser, formatDate } from '../utils/format'
+import {
+  getDistanceInMeters,
+  getPolygonAreaOverlapPercentage,
+} from '../utils/boundaryUtils'
 import { SOCKET_URL } from '../config/api'
 import { PROVINCE_MAP_DATA } from '../config/mapData'
-
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -50,103 +54,6 @@ function getUserIdFromAccessToken(accessToken) {
     console.error('[AUTH TOKEN DECODE ERROR]', error)
     return null
   }
-}
-
-function getDistanceInMeters(coord1, coord2) {
-  const [lon1, lat1] = coord1
-  const [lon2, lat2] = coord2
-  const earthRadius = 6371e3
-
-  const latitude1 = (lat1 * Math.PI) / 180
-  const latitude2 = (lat2 * Math.PI) / 180
-  const latitudeDifference = ((lat2 - lat1) * Math.PI) / 180
-  const longitudeDifference = ((lon2 - lon1) * Math.PI) / 180
-
-  const haversine =
-    Math.sin(latitudeDifference / 2) ** 2 +
-    Math.cos(latitude1) *
-      Math.cos(latitude2) *
-      Math.sin(longitudeDifference / 2) ** 2
-
-  const angularDistance =
-    2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
-
-  return earthRadius * angularDistance
-}
-
-function isPointInPolygon(point, polygonCoordinates) {
-  const [x, y] = point
-  const ring = polygonCoordinates[0]
-  let inside = false
-
-  if (!ring) return false
-
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = ring[i]
-    const [xj, yj] = ring[j]
-
-    const intersects =
-      yi > y !== yj > y &&
-      x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
-
-    if (intersects) {
-      inside = !inside
-    }
-  }
-
-  return inside
-}
-
-function getPolygonAreaOverlapPercentage(polygonA, polygonB) {
-  const coordinatesA = polygonA.geometry.coordinates[0]
-  const coordinatesB = polygonB.geometry.coordinates
-
-  if (!coordinatesA || !coordinatesB) {
-    return 0
-  }
-
-  let minX = Infinity
-  let maxX = -Infinity
-  let minY = Infinity
-  let maxY = -Infinity
-
-  coordinatesA.forEach(([x, y]) => {
-    if (x < minX) minX = x
-    if (x > maxX) maxX = x
-    if (y < minY) minY = y
-    if (y > maxY) maxY = y
-  })
-
-  const gridResolution = 12
-  const stepX = (maxX - minX) / (gridResolution - 1)
-  const stepY = (maxY - minY) / (gridResolution - 1)
-
-  let pointsInA = 0
-  let pointsInBoth = 0
-
-  for (let xIndex = 0; xIndex < gridResolution; xIndex += 1) {
-    for (let yIndex = 0; yIndex < gridResolution; yIndex += 1) {
-      const samplePoint = [
-        minX + xIndex * stepX,
-        minY + yIndex * stepY,
-      ]
-
-      if (
-        isPointInPolygon(
-          samplePoint,
-          polygonA.geometry.coordinates
-        )
-      ) {
-        pointsInA += 1
-
-        if (isPointInPolygon(samplePoint, coordinatesB)) {
-          pointsInBoth += 1
-        }
-      }
-    }
-  }
-
-  return pointsInA === 0 ? 0 : pointsInBoth / pointsInA
 }
 
 function SelectedRegionCard({
@@ -225,9 +132,10 @@ function ViewProposalPage() {
   const { proposalId } = useParams()
   const mapComponentRef = useRef(null)
 
-  const proposal = proposals.find(
-    (item) => String(item.id) === String(proposalId)
-  )
+  const [proposal, setProposal] = useState(null)
+
+  // loading | ready | notfound | error
+  const [proposalStatus, setProposalStatus] = useState('loading')
 
   const [liveComments, setLiveComments] = useState([])
   const [newCommentText, setNewCommentText] = useState('')
@@ -250,8 +158,30 @@ function ViewProposalPage() {
   const isLoggedIn = Boolean(accessToken && currentUserId)
 
   useEffect(() => {
-    setLikes(proposal?.postLikes ?? 0)
+    setLikes(proposal?.likes ?? 0)
   }, [proposal])
+
+  useEffect(() => {
+    if (!proposalId) return undefined
+
+    let active = true
+    setProposalStatus('loading')
+
+    fetchProposal(proposalId)
+      .then((data) => {
+        if (!active) return
+        setProposal(data)
+        setProposalStatus('ready')
+      })
+      .catch((error) => {
+        if (!active) return
+        setProposalStatus(error.status === 404 ? 'notfound' : 'error')
+      })
+
+    return () => {
+      active = false
+    }
+  }, [proposalId])
 
   useEffect(() => {
     function synchronizeAuthentication() {
@@ -640,7 +570,15 @@ function ViewProposalPage() {
     mapComponentRef.current?.clearSelectedRegion?.()
   }
 
-  if (!proposal) {
+  if (proposalStatus === 'loading') {
+    return (
+      <main className="proposalNotFound">
+        <p>Loading proposal…</p>
+      </main>
+    )
+  }
+
+  if (proposalStatus !== 'ready' || !proposal) {
     return (
       <main className="proposalNotFound">
         <p>Error: Proposal not found.</p>
@@ -675,13 +613,8 @@ function ViewProposalPage() {
             </span>
           </div>
 
-          <span className="proposalHeaderText">
-            {proposal.postUser}
-          </span>
-
-          <span className="proposalHeaderText">
-            {proposal.postDate}
-          </span>
+          <span className="proposalHeaderText">{shortUser(proposal.user_id)}</span>
+          <span className="proposalHeaderText">{formatDate(proposal.created_at)}</span>
         </div>
 
         <div className="horizontalCommentHeaderBox">

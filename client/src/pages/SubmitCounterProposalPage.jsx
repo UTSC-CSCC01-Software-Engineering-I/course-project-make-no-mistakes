@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Map from '../components/Map';
+import { createProposal } from '../utils/proposalsApi';
 import './SubmitCounterProposalPage.css';
 
 function SubmitCounterProposalPage() {
+    const navigate = useNavigate();
     const [rationaleText, setRationaleText] = useState('');
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('Counter-proposal submitted successfully.');
-        setRationaleText('');
+        if (submitting) return;
+
+        setError('');
+        setSubmitting(true);
+
+        try {
+            const proposal = await createProposal({ body: rationaleText.trim() });
+            setRationaleText('');
+            navigate(`/view/${proposal.id}`);
+        } catch (err) {
+            if (err.status === 401) {
+                navigate('/login');
+                return;
+            }
+            setError(err.message || 'Failed to submit counter-proposal.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -83,8 +104,9 @@ function SubmitCounterProposalPage() {
                                     required
                                 ></textarea>
                             </div>
-                            <button type="submit" className="cpSubmitButton">
-                                Submit Counter-Proposal
+                            {error && <p className="CounterProposalFormError">{error}</p>}
+                            <button type="submit" className="cpSubmitButton" disabled={submitting}>
+                                {submitting ? 'Submitting…' : 'Submit Counter-Proposal'}
                             </button>
                         </form>
                     </div>

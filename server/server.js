@@ -22,9 +22,19 @@ global.io = io; // Makes it globally available for your AI Queue!
 const authRouter = require('./routes/auth.js');
 app.use("/auth", authRouter);
 
+// role router //////////////////////////////////////////////////
+const roleRouter = require('./routes/role.js');
+app.use("/role", roleRouter);
+
+// comment router ///////////////////////////////////////////////
 const commentsRouter = require('./routes/comments.js');
 app.use("/api/comments", commentsRouter);
 
+// counter-proposal router //////////////////////////////////////
+const proposalsRouter = require('./routes/proposals.js');
+app.use("/api/proposals", proposalsRouter);
+
+// page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");
 });

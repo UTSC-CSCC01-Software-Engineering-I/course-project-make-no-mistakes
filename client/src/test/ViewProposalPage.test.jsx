@@ -1,19 +1,18 @@
-import {
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import proposals from '../data/proposals.json'
-import comments from '../data/comments.json'
+import ViewProposalPage from "../pages/ViewProposalPage";
+import { fetchProposal } from "../utils/proposalsApi";
 
-let mockProposalId = String(proposals[0].id)
+const MOCK_PROPOSAL_ID = "0f8e2c34-9d1a-4b7e-8f2a-6c5d4e3b2a10";
 
-// The payload contains: { "sub": "test-user" }
-const TEST_ACCESS_TOKEN =
-  'test.eyJzdWIiOiJ0ZXN0LXVzZXIifQ.signature'
+const fakeProposal = {
+  id: MOCK_PROPOSAL_ID,
+  user_id: "a1b2c3d4-1111-2222-3333-444455556666",
+  submission_type: "counter_proposal",
+  body: "Counter proposal rationale.",
+  created_at: "2026-07-01T12:00:00.000Z",
+};
 
 jest.mock('../config/api', () => ({
   __esModule: true,
@@ -73,9 +72,14 @@ jest.mock('react-router', () => ({
   __esModule: true,
 
   useParams: () => ({
-    proposalId: mockProposalId,
+    proposalId: MOCK_PROPOSAL_ID,
   }),
 }))
+
+jest.mock("../utils/proposalsApi", () => ({
+  __esModule: true,
+  fetchProposal: jest.fn(),
+}));
 
 /*
  * Mock MapLibre and TerraDraw behavior.
@@ -139,374 +143,175 @@ jest.mock('../components/Map', () => {
   }
 })
 
-/*
- * This require must remain after all jest.mock calls.
- */
-const ViewProposalPage =
-  require('../pages/ViewProposalPage').default
+jest.mock("../components/ProposalComment", () => ({
+  __esModule: true,
+  default: ({ postComment }) => <div>{postComment}</div>,
+}));
 
-function createJsonResponse(body, status = 200) {
-  return {
-    ok: status >= 200 && status < 300,
-    status,
-    json: async () => body,
-  }
+function makeApiError(status) {
+  const error = new Error("Request failed.");
+  error.status = status;
+  return error;
 }
 
-function toApiComment(comment, index = 0) {
-  return {
-    id:
-      comment.id ??
-      comment.commentId ??
-      `comment-${index + 1}`,
-
-    proposalId: comment.proposalId,
-
-    userId:
-      comment.userId ??
-      `user-${index + 1}`,
-
-    authorName:
-      comment.authorName ??
-      comment.postUser ??
-      'Unknown',
-
-    createdAt:
-      comment.createdAt ??
-      comment.postDate ??
-      null,
-
-    content:
-      comment.content ??
-      comment.postComment ??
-      '',
-
-    upvotes:
-      comment.upvotes ??
-      comment.postLikes ??
-      0,
-
-    downvotes:
-      comment.downvotes ??
-      comment.postDownvotes ??
-      0,
-
-    relatedRidings:
-      comment.relatedRidings ??
-      [],
-
-    status:
-      comment.status ??
-      'approved',
-  }
+// AI-assisted (claude)
+function mockCommentsResponse(comments = []) {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => comments,
+  });
 }
 
-function renderViewProposalPage(proposalId) {
-  mockProposalId = String(proposalId)
-
-  return render(
-    <ViewProposalPage />
-  )
-}
-
+// AI-assisted (claude)
 beforeEach(() => {
-  localStorage.clear()
-  sessionStorage.clear()
-
-  global.fetch = jest.fn(
-    async (input, options = {}) => {
-      const url =
-        typeof input === 'string'
-          ? input
-          : input.url
-
-      const parsedUrl = new URL(
-        url,
-        'http://localhost'
-      )
-
-      const method = (
-        options.method ||
-        'GET'
-      ).toUpperCase()
-
-      if (
-        method === 'GET' &&
-        parsedUrl.pathname ===
-          '/api/comments'
-      ) {
-        const proposalId =
-          parsedUrl.searchParams.get(
-            'proposalId'
-          )
-
-        const matchingComments =
-          comments
-            .filter(
-              (comment) =>
-                String(
-                  comment.proposalId
-                ) ===
-                String(proposalId)
-            )
-            .map(toApiComment)
-
-        return createJsonResponse(
-          matchingComments
-        )
-      }
-
-      if (
-        method === 'PATCH' &&
-        parsedUrl.pathname.startsWith(
-          '/api/comments/'
-        ) &&
-        parsedUrl.pathname.endsWith(
-          '/vote'
-        )
-      ) {
-        const pathParts =
-          parsedUrl.pathname.split('/')
-
-        const commentId =
-          pathParts[
-            pathParts.length - 2
-          ]
-
-        const apiComments =
-          comments.map(toApiComment)
-
-        const originalComment =
-          apiComments.find(
-            (comment) =>
-              String(comment.id) ===
-              String(commentId)
-          )
-
-        const requestBody =
-          options.body
-            ? JSON.parse(options.body)
-            : {}
-
-        const isDownvote =
-          requestBody.action ===
-          'downvote'
-
-        return createJsonResponse({
-          ...originalComment,
-
-          id:
-            originalComment?.id ??
-            commentId,
-
-          upvotes:
-            (originalComment?.upvotes ??
-              0) +
-            (isDownvote ? 0 : 1),
-
-          downvotes:
-            (originalComment
-              ?.downvotes ?? 0) +
-            (isDownvote ? 1 : 0),
-        })
-      }
-
-      return createJsonResponse({})
-    }
-  )
-})
-
-afterEach(() => {
-  localStorage.clear()
-  sessionStorage.clear()
-  jest.clearAllMocks()
-})
+  jest.clearAllMocks();
+  localStorage.clear();
+  sessionStorage.clear();
+  mockCommentsResponse([]);
+});
 
 afterAll(() => {
   delete global.fetch
 })
 
-describe('ViewProposalPage', () => {
-  test('Proposal DNE', async () => {
-    renderViewProposalPage(
-      'not-a-real-id'
-    )
+// AI-assisted (claude)
+test("shows loading state while fetching", () => {
+  fetchProposal.mockReturnValue(new Promise(() => {}));
 
-    expect(
-      await screen.findByText(
-        'Error: Proposal not found.'
-      )
-    ).toBeInTheDocument()
-  })
+  render(<ViewProposalPage />);
 
-  test('Increment Likes (Post)', async () => {
-    const user = userEvent.setup()
-    const proposal = proposals[0]
+  expect(screen.getByText("Loading proposal…")).toBeInTheDocument();
+  expect(screen.queryByText(`ID: ${MOCK_PROPOSAL_ID}`)).not.toBeInTheDocument();
+});
 
-    renderViewProposalPage(
-      proposal.id
-    )
+// AI-assisted (claude)
+test("renders proposal header after successful fetch", async () => {
+  fetchProposal.mockResolvedValue(fakeProposal);
 
-    expect(
-      await screen.findByText(
-        `${proposal.postLikes} likes`
-      )
-    ).toBeInTheDocument()
+  render(<ViewProposalPage />);
 
-    const proposalLikeButton =
-      screen.getByRole('button', {
-        name: 'Like this proposal',
-      })
+  expect(await screen.findByText(`ID: ${MOCK_PROPOSAL_ID}`)).toBeInTheDocument();
+  expect(screen.getByText("User a1b2c3d4")).toBeInTheDocument();
+  expect(
+    screen.getByText(new Date(fakeProposal.created_at).toLocaleDateString())
+  ).toBeInTheDocument();
 
-    await user.click(
-      proposalLikeButton
-    )
+  expect(screen.getByText("0 likes")).toBeInTheDocument();
+});
 
-    expect(
-      await screen.findByText(
-        `${proposal.postLikes + 1} likes`
-      )
-    ).toBeInTheDocument()
-  })
+test("shows not-found message on 404", async () => {
+  fetchProposal.mockRejectedValue(makeApiError(404));
 
-  test('Increment Likes (Comment)', async () => {
-    const user = userEvent.setup()
-    const proposal = proposals[0]
+  render(<ViewProposalPage />);
 
-    localStorage.setItem(
-      'sb_token',
-      TEST_ACCESS_TOKEN
-    )
+  expect(
+    await screen.findByText("Error: Proposal not found.")
+  ).toBeInTheDocument();
+});
 
-    const firstCommentIndex =
-      comments.findIndex(
-        (comment) =>
-          String(
-            comment.proposalId
-          ) ===
-          String(proposal.id)
-      )
+test("shows not-found message on server error", async () => {
+  fetchProposal.mockRejectedValue(makeApiError(500));
 
-    expect(
-      firstCommentIndex
-    ).toBeGreaterThanOrEqual(0)
+  render(<ViewProposalPage />);
 
-    const firstComment =
-      toApiComment(
-        comments[firstCommentIndex],
-        firstCommentIndex
-      )
+  expect(
+    await screen.findByText("Error: Proposal not found.")
+  ).toBeInTheDocument();
+});
 
-    renderViewProposalPage(
-      proposal.id
-    )
+// Checking incrementation for the like button on the proposal post
+test("increments likes on click", async () => {
+  const user = userEvent.setup();
+  fetchProposal.mockResolvedValue(fakeProposal);
 
-    const commentText =
-      await screen.findByText(
-        firstComment.content
-      )
+  render(<ViewProposalPage />);
 
-    const commentArticle =
-      commentText.closest(
-        'article.proposalComment'
-      )
+  await screen.findByText("0 likes");
 
-    expect(
-      commentArticle
-    ).toBeInTheDocument()
+  await user.click(
+    screen.getByRole("button", { name: "Like this proposal" })
+  );
 
-    expect(
-      within(
-        commentArticle
-      ).getByText(
-        String(
-          firstComment.upvotes
-        ),
-        {
-          exact: true,
-        }
-      )
-    ).toBeInTheDocument()
+  expect(screen.getByText("1 likes")).toBeInTheDocument();
+});
 
-    const commentUpvoteButton =
-      within(
-        commentArticle
-      ).getByRole('button', {
-        name: 'Upvote comment',
-      })
+test("shows login prompt when logged out", async () => {
+  fetchProposal.mockResolvedValue(fakeProposal);
 
-    expect(
-      commentUpvoteButton
-    ).toBeEnabled()
+  render(<ViewProposalPage />);
 
-    await user.click(
-      commentUpvoteButton
-    )
+  expect(await screen.findByText("Join the discussion")).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Log in to Comment" })
+  ).toBeInTheDocument();
+  expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+});
 
-    await waitFor(() => {
-      expect(
-        within(
-          commentArticle
-        ).getByText(
-          String(
-            firstComment.upvotes +
-              1
-          ),
-          {
-            exact: true,
-          }
-        )
-      ).toBeInTheDocument()
+// AI-assisted (claude)
+test("renders comments from the API", async () => {
+  fetchProposal.mockResolvedValue(fakeProposal);
+  mockCommentsResponse([
+    { id: 1, content: "This is a great addition!" },
+    { id: 2, content: "Maybe we should add a border here..." },
+  ]);
+
+  render(<ViewProposalPage />);
+
+  expect(
+    await screen.findByText("This is a great addition!")
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("Maybe we should add a border here...")
+  ).toBeInTheDocument();
+  expect(screen.getByText("2")).toBeInTheDocument();
+});
+
+test("shows empty message when there are no comments", async () => {
+  fetchProposal.mockResolvedValue(fakeProposal);
+
+  render(<ViewProposalPage />);
+
+  expect(
+    await screen.findByText("No approved comments yet.")
+  ).toBeInTheDocument();
+});
+
+test('Displays selected region details', async () => {
+  const user = userEvent.setup()
+  fetchProposal.mockResolvedValue(fakeProposal)
+
+  render(<ViewProposalPage />)
+
+  await screen.findByText(`ID: ${MOCK_PROPOSAL_ID}`)
+
+  await user.click(
+    screen.getByRole('button', {
+      name: 'Select mock region',
     })
-  })
+  )
 
-  test('Displays selected region details', async () => {
-    const user = userEvent.setup()
-    const proposal = proposals[0]
+  expect(
+    screen.getByRole('heading', {
+      name: 'Toronto',
+    })
+  ).toBeInTheDocument()
 
-    renderViewProposalPage(
-      proposal.id
-    )
+  const selectedRegionCard =
+    screen.getByRole('region', {
+      name: 'Selected region details',
+    })
 
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Select mock region',
-      })
-    )
+  expect(
+    within(selectedRegionCard).getByText('Ontario', {
+      exact: true,
+    })
+  ).toBeInTheDocument()
 
-    expect(
-      screen.getByRole(
-        'heading',
-        {
-          name: 'Toronto',
-        }
-      )
-    ).toBeInTheDocument()
+  expect(
+    screen.getByText('123.45 km²')
+  ).toBeInTheDocument()
 
-    const selectedRegionCard =
-      screen.getByRole('region', {
-        name: 'Selected region details',
-      })
-
-    expect(
-      within(selectedRegionCard).getByText(
-        'Ontario',
-        {
-          exact: true,
-        }
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        '123.45 km²'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        'mock-dguid'
-      )
-    ).toBeInTheDocument()
-  })
+  expect(
+    screen.getByText('mock-dguid')
+  ).toBeInTheDocument()
 })

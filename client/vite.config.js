@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const proxyTarget = process.env.PROXY_TARGET || 'http://localhost:8080'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -12,14 +14,14 @@ export default defineConfig({
     proxy: {
       // Forward API requests to the server container
       '/api': {
-        target: 'http://server:8080',
+        target: proxyTarget,
         changeOrigin: true,
         secure: false,
       },
 
       // Forward authentication requests to the server container
       '/auth': {
-        target: 'http://server:8080',
+        target: proxyTarget,
         changeOrigin: true,
         secure: false,
       },
