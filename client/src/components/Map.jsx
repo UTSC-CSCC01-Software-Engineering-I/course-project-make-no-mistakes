@@ -366,7 +366,7 @@ const Map = forwardRef(({
             const snapshot = terraDraw.getSnapshot();
 
             const DISTANCE_THRESHOLD = 300;  
-            const GAP_SNAP_THRESHOLD = 300; 
+            const GAP_SNAP_THRESHOLD = 3000; 
             const BORDER_ALIGN_THRESHOLD = 40; 
 
             const anchorVertices = [];
