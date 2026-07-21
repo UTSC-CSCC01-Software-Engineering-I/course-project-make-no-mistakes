@@ -38,6 +38,9 @@ Class Diagram:
 "UI needs improvements; basic colors, navbar UX; it is out of order"
 - To improve on this feedback, the navigation bar has been rearranged, and colors are used to indicate the current screen.
 
+### Demo 2: 07/07/2026
+"Great job! The core functionality works well, and the app shows solid progress overall."
+
 ## (For Reference) Informal Set Up Guide:
 Please correct any inaccuracies below:
 
