@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Map from '../components/Map';
+import { createObjection } from '../utils/objectionsApi';
 import './SubmitObjectionPage.css';
 
 function SubmitObjectionPage() {
+    const navigate = useNavigate();
     const [objectionText, setObjectionText] = useState('');
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // put backend call later
-        setObjectionText('');
+        if (submitting) return;
+
+        setSubmitting(true);
+
+        try {
+            await createObjection({ body: objectionText.trim() });
+            setObjectionText('');
+
+            alert('Your boundary objection has been submitted for review.');
+            navigate('/', { replace: true });
+        } catch (err) {
+            if (err.status === 401) {
+                navigate('/login');
+                return;
+            }
+            alert(err.message || 'Failed to submit objection.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -63,8 +84,8 @@ function SubmitObjectionPage() {
                                 ></textarea>
                             </div>
                             
-                            <button type="submit" className="submitActionButton">
-                                Submit Objection
+                            <button type="submit" className="submitActionButton" disabled={submitting}>
+                                {submitting ? 'Submitting…' : 'Submit Objection'}
                             </button>
                         </form>
                     </div>
