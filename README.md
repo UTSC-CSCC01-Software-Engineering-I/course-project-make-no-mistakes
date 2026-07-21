@@ -11,7 +11,7 @@ Product name: CRMP
 Product summary:
 
 Screenshot of Main Screen (Browsing Page):
-![homescreen-image](images/homepageV2.png)
+![homescreen-image](images/homepageV3.png)
 
 ## Team Information
 
