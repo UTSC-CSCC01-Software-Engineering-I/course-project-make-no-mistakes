@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ViewProposalPage from "../pages/ViewProposalPage";
@@ -175,12 +175,15 @@ afterAll(() => {
 })
 
 // AI-assisted (claude)
-test("shows loading state while fetching", () => {
+test("shows loading state while fetching", async () => {
   fetchProposal.mockReturnValue(new Promise(() => {}));
 
   render(<ViewProposalPage />);
 
-  expect(screen.getByText("Loading proposal…")).toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.getByText("Loading proposal…")).toBeInTheDocument()
+  );
+
   expect(screen.queryByText(`ID: ${MOCK_PROPOSAL_ID}`)).not.toBeInTheDocument();
 });
 

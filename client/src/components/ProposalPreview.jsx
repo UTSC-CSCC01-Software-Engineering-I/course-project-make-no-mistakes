@@ -20,7 +20,7 @@ function ProposalPreview({
     // above is the user who posted it, followed by the date posted
     // inside of the box is an image preview for the proposal
     // below is the rating (percentage)
-    // next to the rating is the number of votes
+    // next to the rating is the number of likes
     // next to the rating is the number of comments
     <article className="proposalPreview">
         <header className="proposalPreviewHeader">
@@ -57,7 +57,7 @@ function ProposalPreview({
                         alt="Thumbs up Icon"
                     />
                     <span className="proposalPreviewHeaderText">
-                        {postRating}%, {postLikes} votes
+                        {postRating}%, {postLikes} likes
                     </span>
                 </div>
                 <div className="evenHorizontalBox">
