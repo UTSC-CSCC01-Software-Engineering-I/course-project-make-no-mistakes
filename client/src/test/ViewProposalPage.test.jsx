@@ -233,8 +233,8 @@ test("shows loading state while fetching", () => {
 
   /*
    * Keep the comments request pending as well. Otherwise its resolved
-   * promise can update liveComments after this synchronous test ends,
-   * which produces React's act(...) warning.
+   * promise could update liveComments after this synchronous test ends,
+   * which would produce React's act(...) warning.
    */
   global.fetch = jest.fn(
     () => new Promise(() => {})
