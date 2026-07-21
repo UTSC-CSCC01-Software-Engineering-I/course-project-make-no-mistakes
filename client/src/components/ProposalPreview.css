@@ -1,15 +1,23 @@
 .proposalPreview {
     width: 100%;
     border-radius: 12px;
-    border: 3px solid #317a51;
+    border: 1px solid #333333;
     overflow: hidden;
-    background-color: #87bd93;
+    background-color: #262626;
     margin: 0;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.proposalPreview:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .proposalPreviewHeader {
-    padding: 12px;
-    background-color: #87bd93;
+    padding: 14px 16px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333333;
 }
 
 .distEvenHorizontalBox {
@@ -27,10 +35,17 @@
 }
 
 .proposalPreviewHeaderText {
-    font-family: Verdana, sans-serif;
-    color: #1e5d2d;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
+}
+
+.userText {
+    color: #ffffff;
+}
+
+.dateText {
+    color: #a0a0a0;
+    font-weight: 500;
 }
 
 .proposalPreviewLink {
@@ -44,18 +59,30 @@
     width: 100%;
     height: 220px;
     object-fit: cover;
-
-    border-top: 3px solid #317a51;
-    border-bottom: 3px solid #317a51;
+    background-color: #1a1a1a;
 }
 
 .proposalPreviewMap {
-    border-top: 3px solid #317a51;
-    border-bottom: 3px solid #317a51;
+    background-color: #1a1a1a;
+    height: 220px;
+}
+
+.proposalPreviewFooter {
+    padding: 14px 16px;
+    background-color: #1a1a1a;
+    border-top: 1px solid #333333;
+}
+
+.proposalPreviewFooterText {
+    color: #a0a0a0;
+    font-weight: 500;
+    font-size: 13px;
 }
 
 .proposalPreviewIcon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
 }

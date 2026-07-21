@@ -70,7 +70,7 @@ function NavBar() {
 				) : (
 					<NavLink to="/login"
 					className={({ isActive }) =>
-						isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+						isActive ? "navBarLink activeNavBarLink loginButton" : "navBarLink loginButton"
 					}>
 					Login
 					</NavLink>

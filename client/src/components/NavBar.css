@@ -1,45 +1,70 @@
 .navBar {
   width: 100%;
-  min-height: 60px;
+  min-height: 70px;
   display: flex;
   align-items: center;
   flex-direction: row;
-  gap: 24px;
-  padding: 16px 24px;
+  gap: 32px;
+  padding: 0 32px;
   box-sizing: border-box;
-  background-color: #87bd93;
-  border-bottom: 3px solid #317a51;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333333;
+  font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .navBarR {
   margin-left: auto;
+  display: flex;
+  align-items: center;
 }
   
 .navBarLink {
-  color: #1e5d2d;
-  font-family: Verdana, sans-serif;
-  font-weight: 600;
-  font-size: 16px;
+  color: #f0f0f0;
+  font-weight: 500;
+  font-size: 15px;
   text-decoration: none;
+  transition: color 0.2s;
+  padding: 8px 0;
+}
+
+.navBarLink:hover {
+  color: #ff2a5f;
 }
 
 .activeNavBarLink {
-  color: #784490;
-  font-family: Verdana, sans-serif;
+  color: #ff2a5f;
   font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;
+  border-bottom: 2px solid #ff2a5f;
 }
 
-.logoutButton {
-	color: #1e5d2d;
-	font-family: Verdana, sans-serif;
-	font-weight: 600;
-	font-size: 16px;
-	text-decoration: none;
-	cursor: pointer;
-	background-color: transparent;
-	border: none;
-	margin: 0;
-	padding: 0;
+.logoutButton,
+.loginButton {
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #ff2a5f;
+  border: none;
+  border-radius: 25px;
+  margin: 0;
+  padding: 10px 24px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.logoutButton:hover,
+.loginButton:hover {
+  background-color: #e01a4f;
+  color: #ffffff;
+}
+
+.logoutButton:active,
+.loginButton:active {
+  transform: translateY(1px);
+}
+
+.activeNavBarLink.loginButton {
+  border-bottom: none;
+  background-color: #e01a4f;
 }

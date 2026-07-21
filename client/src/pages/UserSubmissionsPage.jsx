@@ -23,7 +23,7 @@ const fakeSubmissions = [
         date: '06/19/2026',
         riding: 'Toronto Centre, Ontario',
         content: 'Move the boundary to follow Yonge Street instead of Bay Street. This better reflects the historical divide and aligns with municipal wards.',
-        previewURL: 'https://placehold.co/500x280/87bd93/1e5d2d?text=Objection+Map',
+        previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Objection+Map',
         postRating: 85,
         postLikes: 120,
         postComments: 14
@@ -36,7 +36,7 @@ const fakeSubmissions = [
         date: '06/18/2026',
         riding: 'Ottawa West, Ontario',
         content: 'Alternative map grouping the northern suburbs with the rural district to balance the population quota while maintaining communities of interest.',
-        previewURL: 'https://placehold.co/500x280/87bd93/1e5d2d?text=Counter+Proposal+Map',
+        previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Counter+Proposal+Map',
         postRating: 60,
         postLikes: 45,
         postComments: 8
@@ -58,7 +58,7 @@ const fakeSubmissions = [
         date: '06/15/2026',
         riding: 'Hamilton Mountain, Ontario',
         content: 'Keep the escarpment as the hard southern boundary for the lower city ridings.',
-        previewURL: 'https://placehold.co/500x280/87bd93/1e5d2d?text=Escarpment+Boundary',
+        previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Escarpment+Boundary',
         postRating: 92,
         postLikes: 200,
         postComments: 30

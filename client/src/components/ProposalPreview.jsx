@@ -25,10 +25,10 @@ function ProposalPreview({
     <article className="proposalPreview">
         <header className="proposalPreviewHeader">
             <div className="distEvenHorizontalBox">
-                <span className="proposalPreviewHeaderText">
+                <span className="proposalPreviewHeaderText userText">
                     {postUser}
                 </span>
-                <span className="proposalPreviewHeaderText">
+                <span className="proposalPreviewHeaderText dateText">
                     {postDate}
                 </span>
             </div>
@@ -48,7 +48,7 @@ function ProposalPreview({
             </NavLink>
         )}
 
-        <footer className="proposalPreviewHeader">
+        <footer className="proposalPreviewFooter">
             <div className="distEvenHorizontalBox">
                 <div className="evenHorizontalBox">
                     <img
@@ -66,7 +66,7 @@ function ProposalPreview({
                         src={commentIcon}
                         alt="Comment Icon"
                     />
-                    <span className="proposalPreviewHeaderText">
+                    <span className="proposalPreviewFooterText">
                         {postComments}
                     </span>
                 </div>

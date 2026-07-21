@@ -61,7 +61,7 @@ export default function LoginPage() {
 			
 			<form onSubmit={handleLoginSubmit} className="loginForm">
 
-				<div>
+				<div className="credentialWrapper">
 					<CredentialInput
 						label="Email"
 						id="email-input"
@@ -73,7 +73,7 @@ export default function LoginPage() {
 					/>
 				</div>
 				
-				<div>
+				<div className="credentialWrapper">
 					<CredentialInput 
 						label="Password"
 						id="pwd-input"
