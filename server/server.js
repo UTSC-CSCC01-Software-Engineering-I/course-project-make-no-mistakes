@@ -34,6 +34,10 @@ app.use("/api/comments", commentsRouter);
 const proposalsRouter = require('./routes/proposals.js');
 app.use("/api/proposals", proposalsRouter);
 
+// riding objections router /////////////////////////////////////
+const objectionsRouter = require('./routes/objections.js');
+app.use("/api/objections", objectionsRouter);
+
 // page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");
