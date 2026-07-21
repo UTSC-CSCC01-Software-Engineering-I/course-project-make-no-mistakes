@@ -1,11 +1,12 @@
 .searchControls {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .searchOptionRow {
     display: flex;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .searchOptionMenu,
@@ -19,37 +20,40 @@
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    padding: 0 14px;
-    border: 3px solid #b3a5d8;
-    border-radius: 20px;
-    background-color: #faf1ff;
-    color: #332445;
+    padding: 0 20px;
+    border: 1px solid #333333;
+    border-radius: 25px;
+    background-color: #262626;
+    color: #f0f0f0;
     cursor: pointer;
-    font-family: Verdana;
-    font-size: 12px;
-    font-weight: 700;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
     list-style: none;
+    transition: all 0.2s;
 }
 
 .searchOptionToggle:hover,
 .filterButton:hover {
-    background-color: #e2d1ff;
+    background-color: rgba(255, 42, 95, 0.1);
+    border-color: #ff2a5f;
+    color: #ff2a5f;
 }
 
 .searchOptionPanel,
 .filterPanel {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     left: 0;
-    z-index: 3;
+    z-index: 10;
     display: grid;
-    gap: 8px;
+    gap: 12px;
     min-width: 180px;
-    padding: 12px;
-    border: 3px solid #b3a5d8;
-    border-radius: 14px;
-    background-color: #faf1ff;
-    box-shadow: 0 8px 18px rgba(51, 36, 69, 0.14);
+    padding: 16px;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    background-color: #262626;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .filterPanel {
@@ -62,59 +66,82 @@
 .filterOptionItem {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #332445;
-    font-family: Verdana;
-    font-size: 12px;
-    font-weight: 600;
+    gap: 10px;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.searchOptionItem:hover,
+.filterOptionItem:hover {
+    color: #ff2a5f;
+}
+
+.searchOptionItem input[type="radio"],
+.filterOptionItem input[type="radio"] {
+    accent-color: #ff2a5f;
     cursor: pointer;
 }
 
 .searchBar {
     display: flex;
     width: 100%;
-    align-content: center;
-    gap: 10px;
+    align-items: center;
+    gap: 12px;
 }
   
 .searchBarInput {
     flex: 1;
-    padding: 10px;
-    border: 3px solid #b3a5d8;
-    background-color: #faf1ff;
-    border-radius: 20px;
-    font-size: 16px;
-    width: auto;
-    font-family: Verdana;
-    color: #332445;
+    padding: 12px 20px;
+    border: 1px solid #333333;
+    background-color: #262626;
+    border-radius: 25px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #ffffff;
     font-weight: 500;
-    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
 .searchBarInput::placeholder {
-    color: #332445;
-    opacity: 0.5;
+    color: #a0a0a0;
 }
-    
-  
+
+.searchBarInput:focus {
+    border-color: #ff2a5f;
+}
+
 .searchBarButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    border: 3px solid #b3a5d8;
-    border-radius: 20px;
-    background-color: #faf1ff;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background-color: #ff2a5f;
     cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    flex-shrink: 0;
 }
   
 .searchBarButton:hover {
-    background-color: #e2d1ff;
+    background-color: #e01a4f;
+}
+
+.searchBarButton:active {
+    transform: scale(0.95);
 }
   
 .searchBarIcon {
-    width: 100%;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
+    filter: brightness(0) invert(1);
 }
 
 @media (max-width: 640px) {
@@ -124,10 +151,17 @@
 
     .searchBarInput {
         flex-basis: 100%;
+        order: 1;
+    }
+
+    .searchBarButton {
+        order: 2;
+        margin-left: auto;
     }
 
     .filterMenu {
         flex: 1;
+        order: 3;
     }
 
     .filterButton {

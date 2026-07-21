@@ -1,68 +1,130 @@
 .registrationPage {
-	width: 100%;
-	min-height: 100vh;
-	background-color: #d8f3ef;
-	padding: 24px;
-	box-sizing: border-box;
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    background-color: #1a1a1a;
+    padding: 60px 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .registrationPageHeader {
-	margin: 0 auto 30px auto;
-	text-align: center;
+    margin: 0 auto 32px auto;
+    text-align: center;
 }
 
 .registrationPageHeader h1 {
-	font-family: Verdana;
-	color: #3a6d5a;
-	font-weight: 600;
-	font-size: 30px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 32px;
+    margin: 0;
 }
 
 .registrationForm {
-	width: 30%;
-	max-width: 500px;
-	border-radius: 12px;
-	border: 3px solid #317a51;
-	background-color: #87bd93;
-	margin: auto;
-	padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    border: 1px solid #333333;
+    background-color: #262626;
+    padding: 32px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.credentialWrapper {
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .credentialField {
-	margin: 15px 0;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
 }
 
 .credentialField label {
-	width: 100px;
-	float: left;
+    width: auto;
+    float: none;
+    color: #f0f0f0;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 8px;
 }
 
+/* Removing the old colon after the label */
 .credentialField label::after {
-	content: ": "
+    content: "";
+}
+
+/* Styling the generic input rendered inside CredentialInput */
+.credentialField input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.credentialField input:focus {
+    border-color: #ff2a5f;
 }
 
 .registrationButtonWrapper {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;	
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 28px;
 }
 
 .registrationButton {
-	font-size: medium;
-	border-radius: 10px;
-	margin: 0;
-	padding: 5px;
+    width: 100%;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 600;
+    background-color: #ff2a5f;
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.registrationButton:hover {
+    background-color: #e01a4f;
+}
+
+.registrationButton:active {
+    transform: translateY(1px);
 }
 
 .loginRedirectWrapper {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #333333;
 }
 
 .loginRedirect {
-      margin-top: 20px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #a0a0a0;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.loginRedirect:hover {
+    color: #ff2a5f;
 }

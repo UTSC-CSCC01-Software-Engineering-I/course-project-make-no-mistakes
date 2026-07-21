@@ -1,36 +1,45 @@
 .proposalComment {
     padding: 16px;
     overflow: hidden;
-    font-family: Verdana, sans-serif;
-    background: #ffffff;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
+    background: #262626;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    margin-bottom: 16px;
   }
   
-  /* Restores the purple header strip on every comment card. */
   .proposalComment .commentHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin: -16px -16px 0;
-    padding: 10px 16px;
-    background-color: #d3c3e2;
-    border-bottom: 1px solid #b39bc7;
+    padding: 12px 16px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333333;
   }
   
   .proposalComment .commentHeaderText {
-    color: #604472;
-    font-size: 13px;
-    font-weight: 700;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .proposalComment .commentDateText {
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 500;
   }
   
   .proposalComment .commentSubHeader {
-    margin-top: 12px;
+    margin-top: 14px;
   }
   
   .proposalComment .commentSubHeaderText {
-    color: #716879;
+    color: #a0a0a0;
     font-size: 12px;
     line-height: 1.4;
+    font-weight: 500;
   }
   
   .proposalComment .commentBody {
@@ -39,9 +48,9 @@
   
   .proposalComment .commentBodyText {
     margin: 0;
-    color: #2f2a33;
+    color: #d0d0d0;
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.6;
     overflow-wrap: anywhere;
   }
   
@@ -49,19 +58,24 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-top: 12px;
+    margin-top: 16px;
   }
   
   .proposalComment .commentVoteControls {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
+    background-color: #1a1a1a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #333333;
   }
   
   .proposalComment .voteCount {
     min-width: 18px;
-    color: #5f5864;
-    font-size: 12px;
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: 600;
     text-align: center;
   }
   
@@ -72,35 +86,42 @@
     flex: 0 0 30px;
     align-items: center;
     justify-content: center;
-    padding: 3px;
+    padding: 4px;
     background: transparent;
     border: 0;
-    border-radius: 5px;
+    border-radius: 50%;
     cursor: pointer;
+    transition: background-color 0.2s;
   }
   
   .proposalComment .likeButtonWrapper:hover:not(:disabled) {
-    background: rgba(91, 79, 138, 0.1);
+    background: rgba(255, 42, 95, 0.15);
   }
   
-  /* Keep icons visible while making logged-out voting look unavailable. */
   .proposalComment .likeButtonWrapper:disabled {
     cursor: not-allowed;
-    opacity: 0.48;
+    opacity: 0.3;
   }
   
   .proposalComment .likeButtonWrapper:focus-visible {
-    outline: 3px solid rgba(91, 79, 138, 0.3);
+    outline: 2px solid #ff2a5f;
     outline-offset: 2px;
   }
   
   .proposalComment img.likeButton {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     max-width: none;
     object-fit: contain;
     visibility: visible;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  .proposalComment .likeButtonWrapper:hover img.likeButton {
+    filter: invert(33%) sepia(85%) saturate(3015%) hue-rotate(331deg) brightness(101%) contrast(106%);
+    opacity: 1;
   }
   
   .proposalComment img.downvoteIcon {

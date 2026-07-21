@@ -92,7 +92,7 @@ function ProposalComment({
     <article className="proposalComment">
       <header className="commentHeader">
         <span className="commentHeaderText">{postUser}</span>
-        <time className="commentHeaderText">{postDate}</time>
+        <time className="commentDateText">{postDate}</time>
       </header>
 
       {relatedRidings.length > 0 && (

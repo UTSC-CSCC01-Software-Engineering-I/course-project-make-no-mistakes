@@ -54,8 +54,7 @@ export default function RegisterPage() {
 
 			<form onSubmit={handleRegisterSubmit} className='registrationForm'>
 
-				<div>
-				
+				<div className="credentialWrapper">
 					<CredentialInput 
 						label='Email'
 						id='email-input'
@@ -63,14 +62,11 @@ export default function RegisterPage() {
 						name='emailEntry'
 						value={credentialEntry.emailEntry}
 						onChange={handleInputChange}
-
 						className='credentialField'
 					/>
-
 				</div>
 
-				<div>
-					
+				<div className="credentialWrapper">
 					<CredentialInput 
 						label='Password'
 						id='pwd-input'
@@ -78,7 +74,6 @@ export default function RegisterPage() {
 						name='pwdEntry'
 						value={credentialEntry.pwdEntry}
 						onChange={handleInputChange}
-
 						className='credentialField'
 					/>
 				</div>

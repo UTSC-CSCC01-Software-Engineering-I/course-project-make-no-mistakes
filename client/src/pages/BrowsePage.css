@@ -1,25 +1,26 @@
 .browsePage {
     width: 100%;
     min-height: 100vh;
-    background-color: #d8f3ef;
-    padding: 24px;
+    background-color: #1a1a1a;
+    padding: 32px 24px;
     box-sizing: border-box;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .proposalPreviewGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 24px;
-
     width: 100%;
     align-items: start;
 }
 
 .browsePageMessage {
-    font-family: Verdana;
-    color: #3a6d5a;
+    color: #a0a0a0;
     font-size: 16px;
+    font-weight: 500;
     margin-top: 16px;
+    text-align: center;
 }
 
 .browsePageHeader {
@@ -27,16 +28,16 @@
 }
 
 .browsePageHeader h1 {
-    font-family: Verdana;
-    color: #3a6d5a;
-    font-weight: 600;
-    font-size: 30px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 32px;
+    margin: 0;
 }
 
 .browsePageNoResults {
     margin-top: 24px;
-    color: #315d4d;
-    font-family: Verdana;
+    color: #ff2a5f;
     font-size: 18px;
     font-weight: 500;
+    text-align: center;
 }

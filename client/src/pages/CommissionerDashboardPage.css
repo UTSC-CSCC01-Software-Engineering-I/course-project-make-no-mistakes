@@ -1,9 +1,10 @@
 .commissionerDashboardPage {
     width: 100%;
     min-height: 100vh;
-    background-color: #d8f3ef;
-    padding: 24px;
+    background-color: #1a1a1a;
+    padding: 32px;
     box-sizing: border-box;
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
 .commissionerDashboardHeader {
@@ -12,16 +13,14 @@
 }
 
 .commissionerDashboardHeader h1 {
-    font-family: Verdana;
-    color: #3a6d5a;
-    font-weight: 600;
+    color: #ffffff;
+    font-weight: 700;
     font-size: 30px;
     margin: 0 0 12px;
 }
 
 .commissionerDashboardHeader h2 {
-    font-family: Verdana;
-    color: #1e5d2d;
+    color: #a0a0a0;
     font-weight: 600;
     font-size: 18px;
     margin: 0;
@@ -31,42 +30,46 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .dashboardInternalNav a {
-    border: 3px solid #b3a5d8;
-    border-radius: 20px;
-    background-color: #faf1ff;
-    color: #332445;
-    font-family: Verdana;
-    font-size: 12px;
+    border: 1px solid #333333;
+    border-radius: 25px;
+    background-color: transparent;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 600;
-    padding: 10px 16px;
+    padding: 10px 20px;
     text-decoration: none;
+    transition: all 0.2s;
 }
 
 .dashboardInternalNav a:hover {
-    background-color: #e2d1ff;
+    background-color: rgba(255, 42, 95, 0.1);
+    border-color: #ff2a5f;
+    color: #ff2a5f;
 }
 
 .dashboardSection {
     width: 100%;
-    border: 3px solid #317a51;
+    border: 1px solid #333333;
     border-radius: 12px;
-    background-color: #87bd93;
-    padding: 24px;
+    background-color: #262626;
+    padding: 32px;
     margin-bottom: 24px;
     box-sizing: border-box;
     text-align: left;
 }
 
 .dashboardSection h2 {
-    font-family: Verdana;
-    color: #1e5d2d;
+    color: #ffffff;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 20px;
     margin: 0;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 16px;
 }
 
 .dashboardSectionHeader {
@@ -74,71 +77,85 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 16px;
+}
+
+.dashboardSectionHeader h2 {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .dashboardOverviewGrid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-top: 18px;
+    gap: 20px;
+    margin-top: 24px;
 }
 
 .dashboardStatisticCard {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 8px;
-    border: 3px solid #317a51;
+    border: 1px solid #333333;
     border-radius: 12px;
-    background-color: #d8f3ef;
-    padding: 18px;
+    background-color: #1a1a1a;
+    padding: 24px;
     box-sizing: border-box;
+    transition: transform 0.2s;
+}
+
+.dashboardStatisticCard:hover {
+    transform: translateY(-4px);
 }
 
 .dashboardStatisticValue {
-    font-family: Verdana;
-    color: #3a6d5a;
-    font-weight: 600;
-    font-size: 30px;
+    color: #ff2a5f;
+    font-weight: 700;
+    font-size: 36px;
 }
 
 .dashboardStatisticLabel {
-    font-family: Verdana;
-    color: #1e5d2d;
+    color: #a0a0a0;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
+    text-align: center;
 }
 
 .dashboardTableContainer {
     width: 100%;
     overflow-x: auto;
-    margin-top: 18px;
+    margin-top: 24px;
+    border: 1px solid #333333;
+    border-radius: 12px;
 }
 
 .dashboardSubmissionsTable {
     width: 100%;
     min-width: 720px;
     border-collapse: collapse;
-    border: 3px solid #317a51;
-    background-color: #d8f3ef;
+    background-color: #1a1a1a;
 }
 
 .dashboardSubmissionsTable th,
 .dashboardSubmissionsTable td {
-    padding: 14px;
-    border-bottom: 2px solid #317a51;
-    font-family: Verdana;
-    color: #1e5d2d;
-    font-size: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #333333;
+    font-family: inherit;
+    font-size: 13px;
     text-align: left;
 }
 
 .dashboardSubmissionsTable th {
-    background-color: #faf1ff;
-    color: #332445;
+    background-color: #1a1a1a;
+    color: #a0a0a0;
     font-weight: 600;
 }
 
 .dashboardSubmissionsTable td {
+    color: #f0f0f0;
     font-weight: 500;
 }
 
@@ -149,18 +166,18 @@
 .dashboardSubmissionCards {
     display: grid;
     gap: 16px;
-    margin-top: 18px;
+    margin-top: 24px;
 }
 
 .dashboardSubmissionCard {
     display: grid;
     grid-template-columns: 1.2fr 1.4fr auto;
     align-items: center;
-    gap: 16px;
-    border: 3px solid #317a51;
+    gap: 20px;
+    border: 1px solid #333333;
     border-radius: 12px;
-    background-color: #d8f3ef;
-    padding: 16px;
+    background-color: #1a1a1a;
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -170,19 +187,15 @@
     gap: 6px;
 }
 
-.dashboardSubmissionReference,
-.dashboardSubmissionMeta {
-    font-family: Verdana;
-    color: #1e5d2d;
-}
-
 .dashboardSubmissionReference {
-    font-size: 14px;
+    color: #ffffff;
+    font-size: 15px;
     font-weight: 600;
 }
 
 .dashboardSubmissionMeta {
-    font-size: 12px;
+    color: #a0a0a0;
+    font-size: 13px;
     font-weight: 500;
 }
 
@@ -190,38 +203,40 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    margin-top: 18px;
+    margin-top: 24px;
 }
 
 .dashboardTextAction {
     border: none;
     background: none;
-    color: #1e5d2d;
+    color: #ff2a5f;
     cursor: pointer;
-    font-family: Verdana;
-    font-size: 12px;
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 600;
     padding: 0;
+    transition: color 0.2s;
 }
 
 .dashboardTextAction:hover {
-    color: #332445;
+    color: #e01a4f;
 }
 
 .dashboardActionButton {
-    border: 3px solid #b3a5d8;
-    border-radius: 20px;
-    background-color: #faf1ff;
-    color: #332445;
+    border: none;
+    border-radius: 25px;
+    background-color: #ff2a5f;
+    color: #ffffff;
     cursor: pointer;
-    font-family: Verdana;
-    font-size: 12px;
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 600;
-    padding: 12px 18px;
+    padding: 12px 24px;
+    transition: background-color 0.2s;
 }
 
 .dashboardActionButton:hover {
-    background-color: #e2d1ff;
+    background-color: #e01a4f;
 }
 
 @media (max-width: 900px) {

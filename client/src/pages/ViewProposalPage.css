@@ -1,749 +1,773 @@
 :root {
-    /* Change this value if your main navigation bar has a different height. */
-    --nav-bar-height: 48px;
+  /* Change this value if your main navigation bar has a different height. */
+  --nav-bar-height: 48px;
+  --bg-color: #1a1a1a;
+  --card-bg: #262626;
+  --border-color: #3a3a3a;
+  --text-main: #f0f0f0;
+  --text-muted: #a0a0a0;
+  --accent: #ff2a5f;
+  --accent-hover: #e01a4f;
+  --font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+}
+
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+.proposalPage {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: calc(100dvh - var(--nav-bar-height));
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-color);
+  font-family: var(--font-family);
+}
+
+.proposalNotFound {
+  display: grid;
+  min-height: calc(100dvh - var(--nav-bar-height));
+  place-items: center;
+  padding: 24px;
+  font-family: var(--font-family);
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+
+.proposalPageHeader {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: stretch;
+}
+
+.horizontalProposalHeaderBox {
+  display: flex;
+  width: 70%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 16px;
+  padding: 8px 12px;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.horizontalCommentHeaderBox {
+  display: flex;
+  width: 30%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background-color: var(--card-bg);
+  border-bottom: 2px solid var(--accent);
+  border-left: 1px solid var(--border-color);
+}
+
+.proposalHeaderText,
+.commentHeaderText,
+.smallerCommentHeaderText {
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+}
+
+.proposalHeaderText {
+  color: var(--text-main);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.commentHeaderText {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.smallerCommentHeaderText {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.prettierButton {
+  display: inline-grid;
+  place-items: center;
+  padding: 3px;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.prettierButton:hover {
+  background: rgba(255, 42, 95, 0.15);
+}
+
+.prettierButton:focus-visible,
+.simplifyButton:focus-visible,
+.commentSubmitButton:focus-visible,
+.loginToCommentButton:focus-visible,
+.commentTextArea:focus-visible,
+.deleteCommentButton:focus-visible,
+.selectedRegionHeader button:focus-visible,
+.mapLayerControl select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ratingBox,
+.commentCountBox {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconBox {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  background-color: transparent;
+  filter: brightness(0) invert(1);
+}
+
+.proposalContentBox {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mapBox {
+  position: relative;
+  display: flex;
+  width: 70%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #1a1a1a;
+}
+
+.mapBox .mapContainer {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.mapImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.commentBox {
+  display: flex;
+  width: 30%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  border-left: 1px solid var(--border-color);
+}
+
+.addCommentSection {
+  flex: 0 0 auto;
+  padding: 14px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commentFormLabel {
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.commentTextArea {
+  width: 100%;
+  min-height: 72px;
+  max-height: 96px;
+  resize: none;
+  padding: 9px 11px;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 14px;
+  line-height: 1.4;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.commentTextArea::placeholder {
+  color: var(--text-muted);
+}
+
+.commentFormFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.commentCharacterCount {
+  color: var(--text-muted);
+  font-family: var(--font-family);
+  font-size: 12px;
+}
+
+.commentSubmitButton,
+.loginToCommentButton {
+  padding: 9px 16px;
+  color: #ffffff;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--accent);
+  border: 0;
+  border-radius: 25px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.commentSubmitButton:hover:not(:disabled),
+.loginToCommentButton:hover {
+  background: var(--accent-hover);
+}
+
+.commentSubmitButton:active:not(:disabled),
+.loginToCommentButton:active {
+  transform: translateY(1px);
+}
+
+.commentSubmitButton:disabled {
+  color: #888888;
+  background: #333333;
+  cursor: not-allowed;
+}
+
+.commentNotice {
+  margin: 2px 0 0;
+  padding: 8px 9px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  line-height: 1.35;
+  border-radius: 6px;
+}
+
+.commentNotice.success {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid #4ade80;
+}
+
+.commentNotice.error {
+  color: var(--accent);
+  background: rgba(255, 42, 95, 0.1);
+  border: 1px solid var(--accent);
+}
+
+.commentLoginPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.commentLoginPrompt h2 {
+  margin: 0;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 16px;
+}
+
+.commentLoginPrompt p {
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-family);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.proposalCommentList {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.emptyCommentMessage {
+  margin: 0;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-family: var(--font-family);
+  font-size: 14px;
+  text-align: center;
+}
+
+.simplifyButton {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 10;
+  transform: translateX(-50%);
+  padding: 7px 16px;
+  color: #ffffff;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.simplifyButton:hover {
+  background-color: #333333;
+}
+
+.validationBanner {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  z-index: 10;
+  width: auto;
+  max-width: 90%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.validationBanner.invalid {
+  color: var(--accent);
+  background-color: rgba(255, 42, 95, 0.1);
+  border: 1px solid var(--accent);
+}
+
+.validationBanner.warning {
+  color: #ffcc00;
+  background-color: rgba(255, 204, 0, 0.1);
+  border: 1px solid #ffcc00;
+}
+
+.validationBanner.valid {
+  color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.1);
+  border: 1px solid #4ade80;
+}
+
+/* Owner-only actions rendered by ViewProposalPage.jsx */
+.proposalCommentItem {
+  position: relative;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.commentOwnerActions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 12px;
+}
+
+.deleteCommentButton {
+  padding: 7px 14px;
+  color: var(--accent);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-color);
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteCommentButton:hover:not(:disabled) {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.deleteCommentButton:disabled {
+  color: #666666;
+  background: #2a2a2a;
+  border-color: #444444;
+  cursor: not-allowed;
+}
+
+/* Province and layer selectors */
+.mapLayerControls {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: auto;
+  top: auto;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: calc(100% - 28px);
+  padding: 12px 14px;
+  font-family: var(--font-family);
+  background: rgba(38, 38, 38, 0.95);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mapLayerControl {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mapLayerControl label {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.mapLayerControl select {
+  width: 180px;
+  max-width: 100%;
+  padding: 6px 10px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  background: var(--bg-color);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+/* Selected-region statistics popup */
+.selectedRegionCard {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 40;
+  box-sizing: border-box;
+  width: 340px;
+  max-width: calc(100% - 28px);
+  max-height: 55%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  line-height: 1.4;
+  background: rgba(38, 38, 38, 0.95);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Header containing the name and close button */
+.selectedRegionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.selectedRegionHeader h2 {
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 20px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.selectedRegionHeader button {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: 20px;
+  line-height: 28px;
+  cursor: pointer;
+  background: var(--bg-color);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.selectedRegionHeader button:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Remove the browser's default dl/dd indentation */
+.selectedRegionCard dl {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+}
+
+.selectedRegionCard dl > div {
+  display: grid;
+  grid-template-columns: 115px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+}
+
+.selectedRegionCard dt {
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.selectedRegionCard dd {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Reduce vertical space on shorter desktop screens. */
+@media (max-height: 750px) and (min-width: 901px) {
+  .horizontalProposalHeaderBox,
+  .horizontalCommentHeaderBox {
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
-  
-  * {
-    box-sizing: border-box;
+
+  .addCommentSection {
+    padding: 10px 12px;
   }
-  
-  body {
-    margin: 0;
+
+  .commentForm {
+    gap: 6px;
   }
-  
-  button,
-  textarea,
-  select {
-    font: inherit;
+
+  .commentTextArea {
+    min-height: 58px;
+    max-height: 68px;
+    padding: 7px 9px;
+    font-size: 13px;
   }
-  
-  .proposalPage {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+
+  .commentSubmitButton,
+  .loginToCommentButton {
+    padding: 7px 16px;
+    font-size: 13px;
+  }
+
+  .commentLoginPrompt {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 900px) {
+  .proposalPageHeader {
+    flex-direction: column;
+  }
+
+  .horizontalProposalHeaderBox,
+  .horizontalCommentHeaderBox {
     width: 100%;
-    height: calc(100dvh - var(--nav-bar-height));
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .horizontalProposalHeaderBox {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .proposalContentBox {
+    display: grid;
+    grid-template-rows: minmax(0, 55fr) minmax(0, 45fr);
+    height: auto;
     min-height: 0;
     overflow: hidden;
-    background: #ffffff;
   }
-  
-  .proposalNotFound {
-    display: grid;
-    min-height: calc(100dvh - var(--nav-bar-height));
-    place-items: center;
-    padding: 24px;
-    font-family: Verdana, sans-serif;
-  }
-  
-  .proposalPageHeader {
-    display: flex;
+
+  .mapBox,
+  .commentBox {
     width: 100%;
-    min-height: 48px;
-    flex: 0 0 auto;
-    align-items: stretch;
+    height: auto;
+    min-height: 0;
   }
-  
-  .horizontalProposalHeaderBox {
-    display: flex;
-    width: 70%;
-    min-width: 0;
-    align-items: center;
-    justify-content: space-evenly;
-    gap: 16px;
-    padding: 8px 12px;
-    background-color: #daede1;
-    border-right: 1px solid #5b4f8a;
-    border-bottom: 2px solid #709a8e;
+
+  .commentBox {
+    border-top: 1px solid var(--border-color);
+    border-left: 0;
   }
-  
+
+  .addCommentSection {
+    padding: 10px 12px;
+  }
+
+  .commentTextArea {
+    min-height: 56px;
+    max-height: 64px;
+  }
+}
+
+@media (max-width: 560px) {
+  .horizontalProposalHeaderBox,
   .horizontalCommentHeaderBox {
-    display: flex;
-    width: 30%;
-    min-width: 0;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 14px;
-    background-color: #d3c3e2;
-    border-bottom: 2px solid #635173;
-    border-left: 1px solid #5b4f8a;
+    gap: 8px;
+    padding: 6px 10px;
   }
-  
+
   .proposalHeaderText,
   .commentHeaderText,
   .smallerCommentHeaderText {
-    min-width: 0;
-    font-family: Verdana, sans-serif;
-    font-size: 16px;
+    font-size: 13px;
   }
-  
-  .proposalHeaderText {
-    color: #39765e;
-    font-weight: 500;
-    overflow-wrap: anywhere;
+
+  .iconBox {
+    width: 20px;
+    height: 20px;
   }
-  
-  .commentHeaderText {
-    color: #76538f;
-    font-weight: 700;
+
+  .addCommentSection {
+    padding: 8px 10px;
   }
-  
-  .smallerCommentHeaderText {
-    color: #76538f;
-    font-weight: 500;
-  }
-  
-  .prettierButton {
-    display: inline-grid;
-    place-items: center;
-    padding: 3px;
-    background: transparent;
-    border: 0;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .prettierButton:hover {
-    background: rgba(73, 141, 114, 0.12);
-  }
-  
-  .prettierButton:focus-visible,
-  .simplifyButton:focus-visible,
-  .commentSubmitButton:focus-visible,
-  .loginToCommentButton:focus-visible,
-  .commentTextArea:focus-visible,
-  .deleteCommentButton:focus-visible,
-  .selectedRegionHeader button:focus-visible,
-  .mapLayerControl select:focus-visible {
-    outline: 3px solid rgba(91, 79, 138, 0.35);
-    outline-offset: 2px;
-  }
-  
-  .ratingBox,
-  .commentCountBox {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
+
+  .commentForm {
     gap: 6px;
   }
-  
-  .iconBox {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    background-color: transparent;
-  }
-  
-  .proposalContentBox {
-    display: flex;
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    overflow: hidden;
-  }
-  
-  .mapBox {
-    position: relative;
-    display: flex;
-    width: 70%;
-    height: auto;
-    min-width: 0;
-    min-height: 0;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background-color: rgb(246, 255, 243);
-  }
-  
-  .mapBox .mapContainer {
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    min-height: 0;
-  }
-  
-  .mapImage {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-  
-  .commentBox {
-    display: flex;
-    width: 30%;
-    height: auto;
-    min-width: 0;
-    min-height: 0;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: #ffffff;
-    border-left: 2px solid #87bd93;
-  }
-  
-  .addCommentSection {
-    flex: 0 0 auto;
-    padding: 14px;
-    background: #faf8fc;
-    border-bottom: 2px solid #ece7f1;
-  }
-  
-  .commentForm {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
+
   .commentFormLabel {
-    color: #4e3d5d;
-    font-family: Verdana, sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-  }
-  
-  .commentTextArea {
-    width: 100%;
-    min-height: 72px;
-    max-height: 96px;
-    resize: none;
-    padding: 9px 11px;
-    color: #2d2732;
-    font-family: Verdana, sans-serif;
-    font-size: 14px;
-    line-height: 1.4;
-    background: #ffffff;
-    border: 1px solid #bcb2c5;
-    border-radius: 8px;
-  }
-  
-  .commentTextArea::placeholder {
-    color: #827989;
-  }
-  
-  .commentFormFooter {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  
-  .commentCharacterCount {
-    color: #746c79;
-    font-family: Verdana, sans-serif;
     font-size: 12px;
   }
-  
+
+  .commentTextArea {
+    min-height: 50px;
+    max-height: 56px;
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .commentFormFooter {
+    gap: 8px;
+  }
+
   .commentSubmitButton,
   .loginToCommentButton {
-    padding: 9px 14px;
-    color: #ffffff;
-    font-family: Verdana, sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    background: #39765e;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      transform 0.1s ease;
-  }
-  
-  .commentSubmitButton:hover:not(:disabled),
-  .loginToCommentButton:hover {
-    background: #2b604b;
-  }
-  
-  .commentSubmitButton:active:not(:disabled),
-  .loginToCommentButton:active {
-    transform: translateY(1px);
-  }
-  
-  .commentSubmitButton:disabled {
-    color: #6f6f6f;
-    background: #d2d2d2;
-    cursor: not-allowed;
-  }
-  
-  .commentNotice {
-    margin: 2px 0 0;
-    padding: 8px 9px;
-    font-family: Verdana, sans-serif;
+    padding: 7px 14px;
     font-size: 12px;
-    line-height: 1.35;
-    border-radius: 6px;
   }
-  
-  .commentNotice.success {
-    color: #246b3c;
-    background: #e8f6ed;
-    border: 1px solid #a8d9b8;
+
+  .validationBanner {
+    top: 52px;
+    width: calc(100% - 24px);
+    max-width: none;
+    padding: 7px 10px;
+    font-size: 11px;
   }
-  
-  .commentNotice.error {
-    color: #982d2d;
-    background: #fcebea;
-    border: 1px solid #e5aaaa;
-  }
-  
-  .commentLoginPrompt {
-    display: flex;
+
+  .mapLayerControls {
+    right: 8px;
+    bottom: 8px;
+    max-width: calc(100% - 16px);
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: stretch;
+    gap: 6px;
+    padding: 7px 8px;
   }
-  
-  .commentLoginPrompt h2 {
-    margin: 0;
-    color: #4e3d5d;
-    font-family: Verdana, sans-serif;
+
+  .mapLayerControl label {
+    font-size: 10px;
+  }
+
+  .mapLayerControl select {
+    width: 150px;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .selectedRegionCard {
+    left: 8px;
+    bottom: 8px;
+    width: min(280px, calc(100% - 16px));
+    max-height: 60%;
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .selectedRegionHeader {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .selectedRegionHeader h2 {
     font-size: 16px;
   }
-  
-  .commentLoginPrompt p {
-    margin: 0;
-    color: #5f5864;
-    font-family: Verdana, sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-  
-  .proposalCommentList {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-  
-  .emptyCommentMessage {
-    margin: 0;
-    padding: 24px 16px;
-    color: #6b6570;
-    font-family: Verdana, sans-serif;
-    font-size: 14px;
-    text-align: center;
-  }
-  
-  .simplifyButton {
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    z-index: 10;
-    transform: translateX(-50%);
-    padding: 7px 13px;
-    color: #ffffff;
-    font-family: Verdana, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    background-color: #5b4f8a;
-    border: 0;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .simplifyButton:hover {
-    background-color: #443a6b;
-  }
-  
-  .validationBanner {
-    position: absolute;
-    top: 60px;
-    left: 50%;
-    z-index: 10;
-    width: auto;
-    max-width: 90%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    font-family: Verdana, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    pointer-events: none;
-  }
-  
-  .validationBanner.invalid {
-    color: #a82e2e;
-    background-color: #fce8e6;
-    border: 2px solid #ea9a9a;
-  }
-  
-  .validationBanner.warning {
-    color: #806500;
-    background-color: #ffeeb2;
-    border: 2px solid #dfb300;
-  }
-  
-  .validationBanner.valid {
-    color: #247d41;
-    background-color: #e6fced;
-    border: 2px solid #9aeaae;
-  }
-  
-  /* Owner-only actions rendered by ViewProposalPage.jsx */
-  .proposalCommentItem {
-    position: relative;
-    border-bottom: 1px solid #ece7f1;
-  }
-  
-  .commentOwnerActions {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 16px 12px;
-  }
-  
-  .deleteCommentButton {
-    padding: 7px 12px;
-    color: #982d2d;
-    font-family: Verdana, sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    background: #ffffff;
-    border: 1px solid #d7a0a0;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .deleteCommentButton:hover:not(:disabled) {
-    background: #fcebea;
-    border-color: #bd6f6f;
-  }
-  
-  .deleteCommentButton:disabled {
-    color: #8a8383;
-    background: #eeeeee;
-    border-color: #d0cccc;
-    cursor: not-allowed;
-  }
-  
-  .proposalPageHeader > .horizontalCommentHeaderBox {
-    background-color: #d3c3e2;
-    border-bottom-color: #635173;
-  }
-  
-  /* Province and layer selectors */
-  .mapLayerControls {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    left: auto;
-    top: auto;
-    z-index: 30;
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    max-width: calc(100% - 28px);
-    padding: 9px 11px;
-    font-family: Verdana, Arial, sans-serif;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid #d1d5db;
-    border-radius: 7px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-  }
-  
-  .mapLayerControl {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .mapLayerControl label {
-    margin: 0;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  
-  .mapLayerControl select {
-    width: 180px;
-    max-width: 100%;
-    padding: 6px 8px;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 13px;
-    background: #ffffff;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-  }
-  
-  /* Selected-region statistics popup */
-  .selectedRegionCard {
-    position: absolute;
-    left: 14px;
-    bottom: 14px;
-    z-index: 40;
-    box-sizing: border-box;
-    width: 340px;
-    max-width: calc(100% - 28px);
-    max-height: 55%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 16px;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.4;
-    background: rgba(255, 255, 255, 0.97);
-    border: 1px solid #d1d5db;
-    border-radius: 9px;
-    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
-  }
-  
-  /* Header containing the name and close button */
-  .selectedRegionHeader {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-  
-  .selectedRegionHeader h2 {
-    min-width: 0;
-    margin: 0;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 24px;
-    line-height: 1.2;
-    overflow-wrap: anywhere;
-  }
-  
+
   .selectedRegionHeader button {
-    flex: 0 0 auto;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 20px;
-    line-height: 28px;
-    cursor: pointer;
-    background: #f3f4f6;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+    line-height: 22px;
   }
-  
-  /* Remove the browser's default dl/dd indentation */
+
   .selectedRegionCard dl {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin: 0;
-    padding: 0;
+    gap: 6px;
   }
-  
+
   .selectedRegionCard dl > div {
-    display: grid;
-    grid-template-columns: 115px minmax(0, 1fr);
-    gap: 10px;
-    align-items: start;
-    margin: 0;
-    padding: 0;
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 6px;
   }
-  
-  .selectedRegionCard dt {
-    margin: 0;
-    padding: 0;
-    font-weight: 600;
-    overflow-wrap: anywhere;
-  }
-  
-  .selectedRegionCard dd {
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-  
-  /* Reduce vertical space on shorter desktop screens. */
-  @media (max-height: 750px) and (min-width: 901px) {
-    .horizontalProposalHeaderBox,
-    .horizontalCommentHeaderBox {
-      padding-top: 6px;
-      padding-bottom: 6px;
-    }
-  
-    .addCommentSection {
-      padding: 10px 12px;
-    }
-  
-    .commentForm {
-      gap: 6px;
-    }
-  
-    .commentTextArea {
-      min-height: 58px;
-      max-height: 68px;
-      padding: 7px 9px;
-      font-size: 13px;
-    }
-  
-    .commentSubmitButton,
-    .loginToCommentButton {
-      padding: 7px 12px;
-      font-size: 13px;
-    }
-  
-    .commentLoginPrompt {
-      gap: 6px;
-    }
-  }
-  
-  @media (max-width: 900px) {
-    .proposalPageHeader {
-      flex-direction: column;
-    }
-  
-    .horizontalProposalHeaderBox,
-    .horizontalCommentHeaderBox {
-      width: 100%;
-      border-right: 0;
-      border-left: 0;
-    }
-  
-    .horizontalProposalHeaderBox {
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-  
-    .proposalContentBox {
-      display: grid;
-      grid-template-rows: minmax(0, 55fr) minmax(0, 45fr);
-      height: auto;
-      min-height: 0;
-      overflow: hidden;
-    }
-  
-    .mapBox,
-    .commentBox {
-      width: 100%;
-      height: auto;
-      min-height: 0;
-    }
-  
-    .commentBox {
-      border-top: 2px solid #87bd93;
-      border-left: 0;
-    }
-  
-    .addCommentSection {
-      padding: 10px 12px;
-    }
-  
-    .commentTextArea {
-      min-height: 56px;
-      max-height: 64px;
-    }
-  }
-  
-  @media (max-width: 560px) {
-    .horizontalProposalHeaderBox,
-    .horizontalCommentHeaderBox {
-      gap: 8px;
-      padding: 6px 10px;
-    }
-  
-    .proposalHeaderText,
-    .commentHeaderText,
-    .smallerCommentHeaderText {
-      font-size: 13px;
-    }
-  
-    .iconBox {
-      width: 20px;
-      height: 20px;
-    }
-  
-    .addCommentSection {
-      padding: 8px 10px;
-    }
-  
-    .commentForm {
-      gap: 6px;
-    }
-  
-    .commentFormLabel {
-      font-size: 12px;
-    }
-  
-    .commentTextArea {
-      min-height: 50px;
-      max-height: 56px;
-      padding: 7px 9px;
-      font-size: 12px;
-    }
-  
-    .commentFormFooter {
-      gap: 8px;
-    }
-  
-    .commentSubmitButton,
-    .loginToCommentButton {
-      padding: 7px 10px;
-      font-size: 12px;
-    }
-  
-    .validationBanner {
-      top: 52px;
-      width: calc(100% - 24px);
-      max-width: none;
-      padding: 7px 10px;
-      font-size: 11px;
-    }
-  
-    .mapLayerControls {
-      right: 8px;
-      bottom: 8px;
-      max-width: calc(100% - 16px);
-      flex-direction: column;
-      align-items: stretch;
-      gap: 6px;
-      padding: 7px 8px;
-    }
-  
-    .mapLayerControl label {
-      font-size: 10px;
-    }
-  
-    .mapLayerControl select {
-      width: 150px;
-      padding: 4px 6px;
-      font-size: 11px;
-    }
-  
-    .selectedRegionCard {
-      left: 8px;
-      bottom: 8px;
-      width: min(280px, calc(100% - 16px));
-      max-height: 60%;
-      padding: 10px;
-      font-size: 11px;
-    }
-  
-    .selectedRegionHeader {
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-  
-    .selectedRegionHeader h2 {
-      font-size: 16px;
-    }
-  
-    .selectedRegionHeader button {
-      width: 26px;
-      height: 26px;
-      font-size: 16px;
-      line-height: 22px;
-    }
-  
-    .selectedRegionCard dl {
-      gap: 6px;
-    }
-  
-    .selectedRegionCard dl > div {
-      grid-template-columns: 82px minmax(0, 1fr);
-      gap: 6px;
-    }
-  }
+}

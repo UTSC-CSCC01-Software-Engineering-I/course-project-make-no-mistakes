@@ -118,7 +118,7 @@ function SearchBar({
                     <img
                         className="searchBarIcon"
                         src={searchIcon}
-                        alt=""
+                        alt="Search"
                     />
                 </button>
 
