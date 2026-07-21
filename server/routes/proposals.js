@@ -7,6 +7,30 @@ const { parseVoteValue, castVote } = require('../services/voteService.js');
 
 const proposalsRouter = express.Router();
 
+async function addCurrentUserVoteToComments(req, comments) {
+  const authUser = await resolveAuthUser(req);
+  if (!authUser || comments.length === 0) {
+    return comments.map((comment) => ({
+      ...comment.toJSON(),
+      currentUserVote: null,
+    }));
+  }
+
+  const commentIds = comments.map((comment) => comment.id);
+  const votes = await Vote.findAll({
+    where: {
+      UserId: authUser.id,
+      CommentId: { [Op.in]: commentIds },
+    },
+  });
+  const voteByCommentId = new Map(votes.map((vote) => [String(vote.CommentId), vote.value]));
+
+  return comments.map((comment) => ({
+    ...comment.toJSON(),
+    currentUserVote: voteByCommentId.get(String(comment.id)) ?? null,
+  }));
+}
+
 function parsePositiveInt(value, fallback) {
   const n = Number.parseInt(value, 10);
   return Number.isFinite(n) && n >= 0 ? n : fallback;
@@ -93,6 +117,29 @@ proposalsRouter.get('/:id', async (req, res) => {
   }
 });
 
+proposalsRouter.get('/:id/map', async (req, res) => {
+  try {
+    const proposal = await Proposal.findByPk(req.params.id, {
+      attributes: ['id', 'title', 'previewURL', 'mapData', 'updatedAt'],
+    });
+    if (!proposal) {
+      return res.status(404).json({ error: 'Proposal not found' });
+    }
+
+    res.set('Cache-Control', 'private, max-age=60');
+    res.json({
+      id: proposal.id,
+      title: proposal.title,
+      previewURL: proposal.previewURL,
+      mapData: proposal.mapData || null,
+      updatedAt: proposal.updatedAt,
+    });
+  } catch (error) {
+    console.error('[PROPOSAL MAP GET ERROR]', error);
+    res.status(500).json({ error: 'Failed to fetch proposal map' });
+  }
+});
+
 proposalsRouter.get('/:proposalId/comments', async (req, res) => {
   try {
     const comments = await Comment.findAll({
@@ -102,8 +149,9 @@ proposalsRouter.get('/:proposalId/comments', async (req, res) => {
       },
       order: [['createdAt', 'ASC']],
     });
+    const payload = await addCurrentUserVoteToComments(req, comments);
     res.set('Cache-Control', 'no-store');
-    res.json(comments);
+    res.json(payload);
   } catch (error) {
     console.error('[PROPOSAL COMMENTS GET ERROR]', error);
     res.status(500).json({ error: 'Failed to fetch comments' });
@@ -136,7 +184,7 @@ proposalsRouter.post('/:proposalId/comments', isAuthenticated, async (req, res) 
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('comment:created', {
+      io.to(`proposal:${comment.proposalId}`).emit('comment:created', {
         id: comment.id,
         proposalId: comment.proposalId,
         status: comment.status,
@@ -191,7 +239,7 @@ proposalsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('proposal:voteUpdated', payload);
+      io.to(`proposal:${proposal.id}`).emit('proposal:voteUpdated', payload);
     }
 
     res.json(payload);

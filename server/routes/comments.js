@@ -1,10 +1,38 @@
 const express = require('express');
-const { Comment } = require('../models/index.js');
+const { Op } = require('sequelize');
+const { Comment, Vote } = require('../models/index.js');
 const { addCommentToQueue } = require('../worker/commentWorker.js');
-const { isAuthenticated } = require('../middleware/auth.js');
+const { isAuthenticated, resolveAuthUser } = require('../middleware/auth.js');
 const { parseVoteValue, castVote } = require('../services/voteService.js');
 
 const commentsRouter = express.Router();
+
+function serializeComment(comment) {
+  return typeof comment.toJSON === 'function' ? comment.toJSON() : comment;
+}
+
+async function addCurrentUserVote(req, comments) {
+  const authUser = await resolveAuthUser(req);
+  if (!authUser || comments.length === 0) {
+    return comments.map((comment) => ({
+      ...serializeComment(comment),
+      currentUserVote: null,
+    }));
+  }
+
+  const votes = await Vote.findAll({
+    where: {
+      UserId: authUser.id,
+      CommentId: { [Op.in]: comments.map((comment) => comment.id) },
+    },
+  });
+  const voteByCommentId = new Map(votes.map((vote) => [String(vote.CommentId), vote.value]));
+
+  return comments.map((comment) => ({
+    ...serializeComment(comment),
+    currentUserVote: voteByCommentId.get(String(comment.id)) ?? null,
+  }));
+}
 
 commentsRouter.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -22,7 +50,7 @@ commentsRouter.get('/', async (req, res) => {
       where: { proposalId: String(proposalId), status: 'approved' },
       order: [['createdAt', 'ASC']],
     });
-    res.json(comments);
+    res.json(await addCurrentUserVote(req, comments));
   } catch (error) {
     console.error('[ROUTE ERROR]', error);
     res.status(500).json({ error: 'Failed to fetch comments' });
@@ -52,7 +80,7 @@ commentsRouter.post('/', isAuthenticated, async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('comment:created', {
+      io.to(`proposal:${comment.proposalId}`).emit('comment:created', {
         id: comment.id,
         proposalId: comment.proposalId,
         status: comment.status,
@@ -84,7 +112,10 @@ commentsRouter.delete('/:id', isAuthenticated, async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('comment:deleted', { id: comment.id, proposalId: comment.proposalId });
+      io.to(`proposal:${comment.proposalId}`).emit('comment:deleted', {
+        id: comment.id,
+        proposalId: comment.proposalId,
+      });
     }
 
     res.status(204).end();
@@ -129,8 +160,7 @@ commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
 
     const io = req.app.get('io');
     if (io) {
-      io.emit('comment:voteUpdated', payload);
-      io.emit('comment:voted', payload); // legacy alias
+      io.to(`proposal:${comment.proposalId}`).emit('comment:voteUpdated', payload);
     }
 
     res.json(payload);

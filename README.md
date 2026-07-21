@@ -3,6 +3,7 @@
 1. [Product Information](#product-information)
 2. [Team Information](#team-information)
 3. [Design Documents](#design-documents)
+4. [Releases](#releases)
 
 ## Product Information
 
@@ -37,6 +38,11 @@ Class Diagram:
 ### Demo 1: 06/23/2026
 "UI needs improvements; basic colors, navbar UX; it is out of order"
 - To improve on this feedback, the navigation bar has been rearranged, and colors are used to indicate the current screen.
+
+## Releases
+
+- [Version 0.10.0 Release](https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes/wiki/Version-0.10.0-Release)
+- [Repository copy of the Version 0.10.0 release notes](docs/releases/version-0.10.0.md)
 
 ## Local development (database-backed API)
 
@@ -80,15 +86,15 @@ If `DATABASE_URL` is empty, the server falls back to local SQLite (dev only).
 ### 2. Install dependencies
 
 ```bash
-cd server && npm install
-cd ../client && npm install
+cd server && pnpm install
+cd ../client && pnpm install
 ```
 
 ### 3. Seed temporary JSON into the database (once; safe to re-run)
 
 ```bash
 cd server
-npm run seed
+pnpm seed
 ```
 
 Uses `DATABASE_URL` when present. Imports proposals/comments fixtures and sample
@@ -99,14 +105,37 @@ submissions without duplicating existing rows.
 ```bash
 # Terminal 1 — API + Socket.io on :8080
 cd server
-npm run dev
+pnpm dev
 
 # Terminal 2 — Vite React app on :5173 (proxies /api and /auth → :8080)
 cd client
-npm run dev
+pnpm dev
 ```
 
 Open http://localhost:5173
+
+### Run the three-container stack
+
+The stack keeps Supabase external and runs three local services: `gateway`,
+`client`, and `server`. Docker DNS lets the gateway reach the other containers
+at `client:80` and `server:8080`.
+
+The container server converts the configured direct Supabase URI to the
+IPv4-compatible Supavisor session-pooler endpoint. The original database
+password remains only in `DATABASE_URL`.
+
+```bash
+docker compose up --build
+```
+
+Open `https://localhost`. The included certificate is self-signed for local
+development, so the browser will show a one-time warning. Port 80 redirects to
+443. For deployment, mount a trusted certificate over
+`/etc/nginx/certs/fullchain.pem` and `/etc/nginx/certs/privkey.pem`.
+
+Socket.IO uses the same public origin and is upgraded by the gateway. Comment
+events are scoped to proposal rooms, while submission/map events are sent only
+to the authenticated owner's room.
 
 ### API overview
 

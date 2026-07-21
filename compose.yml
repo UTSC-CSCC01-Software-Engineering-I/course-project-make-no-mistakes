@@ -1,0 +1,68 @@
+name: crmp
+
+services:
+  server:
+    build:
+      context: ./server
+    hostname: crmp-server
+    env_file:
+      - ./server/.env
+    environment:
+      PORT: 8080
+      REQUIRE_DATABASE_URL: "true"
+      SUPABASE_POOLER_HOST: aws-1-us-east-2.pooler.supabase.com
+      SUPABASE_POOLER_PORT: "5432"
+      HTTPS_KEY_PATH: ""
+      HTTPS_CERT_PATH: ""
+      CLIENT_ORIGINS: https://localhost,http://localhost
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      crmp:
+        aliases:
+          - api
+
+  client:
+    build:
+      context: ./client
+    hostname: crmp-client
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      crmp:
+        aliases:
+          - web
+
+  gateway:
+    build:
+      context: ./gateway
+    hostname: crmp-gateway
+    depends_on:
+      server:
+        condition: service_healthy
+      client:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      crmp:
+        aliases:
+          - gateway
+
+networks:
+  crmp:
+    driver: bridge

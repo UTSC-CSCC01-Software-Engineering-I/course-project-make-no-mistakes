@@ -1,11 +1,15 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
+const { resolveDatabaseUrl } = require('../lib/databaseUrl.js');
 
 function createSequelize() {
-  if (process.env.DATABASE_URL) {
+  const databaseUrl = resolveDatabaseUrl();
+  if (databaseUrl) {
     console.log(
-      '[db] Using Postgres via DATABASE_URL (data Supabase project — not auth)'
+      process.env.SUPABASE_POOLER_HOST
+        ? '[db] Using Postgres via Supabase session pooler'
+        : '[db] Using Postgres via DATABASE_URL (data Supabase project — not auth)'
     );
-    return new Sequelize(process.env.DATABASE_URL, {
+    return new Sequelize(databaseUrl, {
       dialect: 'postgres',
       logging: false,
       dialectOptions: {
@@ -15,6 +19,10 @@ function createSequelize() {
         },
       },
     });
+  }
+
+  if (process.env.REQUIRE_DATABASE_URL === 'true') {
+    throw new Error('DATABASE_URL is required in the container environment');
   }
 
   console.log(

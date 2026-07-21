@@ -1,15 +1,37 @@
 import React, { useState } from 'react';
 import Map from '../components/Map';
+import { apiService } from '../apiService';
 import './SubmitCounterProposalPage.css';
 
 function SubmitCounterProposalPage() {
     const [rationaleText, setRationaleText] = useState('');
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const [mapData, setMapData] = useState({ type: 'FeatureCollection', features: [] });
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('Counter-proposal submitted successfully.');
-        setRationaleText('');
+        if (!localStorage.getItem('sb_token')) {
+            alert('Please log in before submitting a map.');
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const submission = await apiService.createSubmission({
+                type: 'counterproposal',
+                content: rationaleText.trim(),
+                riding: 'Toronto Centre / Spadina—Fort York',
+                mapData,
+            });
+            alert(`Counter-proposal ${submission.referenceNumber} submitted successfully.`);
+            setRationaleText('');
+            setMapData({ type: 'FeatureCollection', features: [] });
+        } catch (error) {
+            alert(error.message || 'Counter-proposal submission failed.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -29,7 +51,11 @@ function SubmitCounterProposalPage() {
                         <button className="cpToolButton assignB">Assign to Riding B</button>
                         <button className="cpToolButton cpUndo">Undo</button>
                     </div>
-                    <Map mode="counterproposal" onMapClick={setSelectedPoint} />
+                    <Map
+                        mode="counterproposal"
+                        onMapClick={setSelectedPoint}
+                        onDrawChange={setMapData}
+                    />
                 </section>
                 
                 <section className="cpPanelSection">
@@ -83,8 +109,8 @@ function SubmitCounterProposalPage() {
                                     required
                                 ></textarea>
                             </div>
-                            <button type="submit" className="cpSubmitButton">
-                                Submit Counter-Proposal
+                            <button type="submit" className="cpSubmitButton" disabled={submitting}>
+                                {submitting ? 'Submitting...' : 'Submit Counter-Proposal'}
                             </button>
                         </form>
                     </div>

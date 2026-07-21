@@ -1,9 +1,9 @@
 import { useParams } from 'react-router'
 import { useState, useEffect, useRef } from 'react'
-import { io } from 'socket.io-client'
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
 import { apiService } from '../apiService'
+import { createSocket } from '../socket'
 import './ViewProposalPage.css'
 
 import thumbsUpIcon from '../assets/thumbsUp.png'
@@ -155,11 +155,8 @@ function ViewProposalPage() {
         if (!cancelled) setCommentsLoading(false)
       })
 
-    // Socket connects directly to the API host (Vite proxies REST only).
-    const SOCKET_URL =
-      (typeof process !== 'undefined' && process.env && process.env.VITE_API_URL) ||
-      'http://localhost:8080';
-    const socket = io(SOCKET_URL);
+    const socket = createSocket()
+    socket.emit('proposal:join', proposalId)
 
     socket.on('comment_approved', (newComment) => {
       if (String(newComment.proposalId) === String(proposalId)) {
@@ -211,6 +208,7 @@ function ViewProposalPage() {
 
     return () => {
       cancelled = true
+      socket.emit('proposal:leave', proposalId)
       socket.disconnect()
     }
   }, [proposalId])
@@ -435,6 +433,7 @@ function ViewProposalPage() {
           <Map
             ref={mapComponentRef}
             mode="objection"
+            initialData={proposal.mapData}
             onDrawChange={handleDrawChange} 
           />
         </div>
@@ -485,6 +484,7 @@ function ViewProposalPage() {
                   postComment={comment.content}
                   postLikes={comment.upvotes || 0}
                   postDownvotes={comment.downvotes || 0}
+                  initialUserVote={comment.currentUserVote ?? null}
                   onDelete={(deletedId) => {
                     setLiveComments(prev => prev.filter(c => c.id !== deletedId));
                   }}

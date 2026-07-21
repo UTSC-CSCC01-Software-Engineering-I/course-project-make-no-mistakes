@@ -1,21 +1,11 @@
 const supabase = require('../lib/supabase');
 const { findOrCreateLocalUser } = require('../models/index.js');
 
-/**
- * Soft token verify — never sends a response.
- * Returns local user context or null.
- */
-async function resolveAuthUser(req) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
+async function authenticateToken(token) {
+  if (!token) return null;
 
-  const token = authHeader.split(' ')[1];
   const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data?.user) {
-    return null;
-  }
+  if (error || !data?.user) return null;
 
   const authUser = data.user;
   const role = authUser.user_metadata?.role || 'citizen';
@@ -34,6 +24,19 @@ async function resolveAuthUser(req) {
     role: localUser.role || role,
     localUser,
   };
+}
+
+/**
+ * Soft token verify — never sends a response.
+ * Returns local user context or null.
+ */
+async function resolveAuthUser(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  return authenticateToken(authHeader.slice('Bearer '.length));
 }
 
 /**
@@ -74,4 +77,4 @@ function requireCommissioner(req, res, next) {
   return next();
 }
 
-module.exports = { isAuthenticated, requireCommissioner, resolveAuthUser };
+module.exports = { authenticateToken, isAuthenticated, requireCommissioner, resolveAuthUser };

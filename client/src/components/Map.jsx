@@ -47,12 +47,17 @@ function getDistanceInMeters(coord1, coord2) {
     return R * c; 
 }
 
-const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, onMapClick, onDrawChange }, ref) => {
+const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, initialData = null, onMapClick, onDrawChange }, ref) => {
     const mapContainer = useRef(null);
     const mapRef = useRef(null);
     const drawControlRef = useRef(null);
     const selectionMarkerRef = useRef(null);
     const modeSettings = MODE_SETTINGS[mode] || MODE_SETTINGS.view;
+    const initialDataRef = useRef(initialData);
+
+    useEffect(() => {
+        initialDataRef.current = initialData;
+    }, [initialData]);
 
     const onDrawChangeRef = useRef(onDrawChange);
     useEffect(() => {
@@ -233,6 +238,10 @@ const Map = forwardRef(({ mode = "view", center = DEFAULT_CENTER, zoom = 8, onMa
         map.once('load', () => {
             const terraDraw = drawControl.getTerraDrawInstance();
             if (terraDraw) {
+                if (initialDataRef.current?.type === 'FeatureCollection') {
+                    terraDraw.addFeatures(initialDataRef.current.features || []);
+                }
+
                 terraDraw.on('change', () => {
                     if (onDrawChangeRef.current) {
                         onDrawChangeRef.current({

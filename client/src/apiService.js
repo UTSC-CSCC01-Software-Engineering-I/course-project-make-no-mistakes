@@ -147,5 +147,16 @@ export const apiService = (function () {
         .then(checkStatus)
         .then(parseJson);
     },
+
+    updateSubmissionMap: function (submissionId, mapData) {
+      return fetch(`/api/users/me/submissions/${encodeURIComponent(submissionId)}/map`, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ mapData }),
+      })
+        .then(checkStatus)
+        .then(parseJson);
+    },
   };
 })();

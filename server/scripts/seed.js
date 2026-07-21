@@ -86,11 +86,19 @@ const SAMPLE_SUBMISSIONS = [
 
 async function seed() {
   const usingPostgres = Boolean(process.env.DATABASE_URL);
+  const allowSqliteSeed = process.env.ALLOW_SQLITE_SEED === 'true';
   console.log(
     usingPostgres
       ? '[seed] DATABASE_URL present — seeding data Supabase Postgres'
       : '[seed] DATABASE_URL missing — seeding local SQLite'
   );
+
+  if (!usingPostgres && !allowSqliteSeed) {
+    throw new Error(
+      'DATABASE_URL is missing. Refusing to seed SQLite by accident. ' +
+        'Set DATABASE_URL for Supabase Postgres, or set ALLOW_SQLITE_SEED=true for local-only seeding.'
+    );
+  }
 
   await syncModels();
 

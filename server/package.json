@@ -1,6 +1,7 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "0.10.0",
+  "packageManager": "pnpm@10.31.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -15,8 +16,8 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^11.3.0",
-      "onFail": "download"
+      "version": "10.31.0",
+      "onFail": "error"
     }
   },
   "dependencies": {

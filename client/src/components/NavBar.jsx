@@ -10,6 +10,8 @@ function NavBar() {
 
 	function handleLogout() {
 		localStorage.removeItem('sb_token');
+		localStorage.removeItem('user_id');
+		localStorage.removeItem('user_email');
 		navigate('/login', { replace: true });
 		window.location.reload();
 	}

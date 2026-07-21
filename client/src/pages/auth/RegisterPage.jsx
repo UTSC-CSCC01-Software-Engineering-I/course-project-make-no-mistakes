@@ -33,7 +33,7 @@ export default function RegisterPage() {
 		
 		try {
 
-			const response = await axios.post('http://localhost:8080/auth/register', credentialEntry);
+			const response = await axios.post('/auth/register', credentialEntry);
 
 			alert(response.data.message);
 

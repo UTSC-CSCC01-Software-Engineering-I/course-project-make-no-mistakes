@@ -1,15 +1,37 @@
 import React, { useState } from 'react';
 import Map from '../components/Map';
+import { apiService } from '../apiService';
 import './SubmitObjectionPage.css';
 
 function SubmitObjectionPage() {
     const [objectionText, setObjectionText] = useState('');
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const [mapData, setMapData] = useState({ type: 'FeatureCollection', features: [] });
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // put backend call later
-        setObjectionText('');
+        if (!localStorage.getItem('sb_token')) {
+            alert('Please log in before submitting a map.');
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const submission = await apiService.createSubmission({
+                type: 'objection',
+                content: objectionText.trim(),
+                riding: 'Toronto Centre / Spadina—Fort York',
+                mapData,
+            });
+            alert(`Objection ${submission.referenceNumber} submitted successfully.`);
+            setObjectionText('');
+            setMapData({ type: 'FeatureCollection', features: [] });
+        } catch (error) {
+            alert(error.message || 'Objection submission failed.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -23,7 +45,11 @@ function SubmitObjectionPage() {
             
             <div className="submitContainer">
                 <section className="mapSection">
-                    <Map mode="objection" onMapClick={setSelectedPoint} />
+                    <Map
+                        mode="objection"
+                        onMapClick={setSelectedPoint}
+                        onDrawChange={setMapData}
+                    />
                 </section>
                 
                 <section className="formSection">
@@ -63,8 +89,8 @@ function SubmitObjectionPage() {
                                 ></textarea>
                             </div>
                             
-                            <button type="submit" className="submitActionButton">
-                                Submit Objection
+                            <button type="submit" className="submitActionButton" disabled={submitting}>
+                                {submitting ? 'Submitting...' : 'Submit Objection'}
                             </button>
                         </form>
                     </div>

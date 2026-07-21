@@ -31,7 +31,7 @@ export default function LoginPage() {
 		e.preventDefault();
 
 		try {
-			const response = await axios.post('http://localhost:8080/auth/login', credentialEntry);
+			const response = await axios.post('/auth/login', credentialEntry);
 			const { token, user } = response.data;
 		
 			// Save BOTH the token and the user ID

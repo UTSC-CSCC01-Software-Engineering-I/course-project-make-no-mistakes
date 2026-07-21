@@ -4,6 +4,7 @@ import SearchBar from '../components/SearchBar';
 import ProposalPreview from '../components/ProposalPreview';
 import Map from '../components/Map';
 import { apiService } from '../apiService';
+import { createSocket } from '../socket';
 import './UserSubmissionsPage.css';
 
 function UserSubmissionsPage() {
@@ -50,6 +51,26 @@ function UserSubmissionsPage() {
         return () => {
             cancelled = true;
         };
+    }, []);
+
+    useEffect(() => {
+        if (!localStorage.getItem('sb_token')) return undefined;
+
+        const socket = createSocket();
+        const mergeSubmission = (incoming) => {
+            setSubmissions((current) => {
+                const exists = current.some((submission) => submission.id === incoming.id);
+                if (!exists) return [incoming, ...current];
+                return current.map((submission) =>
+                    submission.id === incoming.id ? { ...submission, ...incoming } : submission
+                );
+            });
+        };
+
+        socket.on('submission:created', mergeSubmission);
+        socket.on('map:updated', mergeSubmission);
+
+        return () => socket.disconnect();
     }, []);
 
     const filteredSubmissions = submissions.filter((sub) => sub.type === activeTab);
@@ -121,7 +142,7 @@ function UserSubmissionsPage() {
                                                 postLikes={sub.postVotes}
                                                 postComments={sub.postComments}
                                             >
-                                                <Map mode="view" />
+                                                <Map mode="view" initialData={sub.mapData} />
                                             </ProposalPreview>
                                         </div>
                                     )}

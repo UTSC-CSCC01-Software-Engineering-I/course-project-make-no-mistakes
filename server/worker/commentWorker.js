@@ -35,12 +35,20 @@ const processQueue = async () => {
       if (isRelevant) {
         comment.status = 'approved';
         await comment.save();
-        if (global.io) global.io.emit('comment_approved', comment);
+        if (global.io) {
+          global.io.to(`proposal:${comment.proposalId}`).emit('comment_approved', comment);
+        }
       } else {
         comment.status = 'rejected';
         comment.rejectionReason = "AI Rejected: Please include keywords like change, mapping, or boundary.";
         await comment.save();
-        if (global.io) global.io.emit('comment_rejected', { id: comment.id, reason: comment.rejectionReason });
+        if (global.io) {
+          global.io.to(`user:${comment.userId}`).emit('comment_rejected', {
+            id: comment.id,
+            proposalId: comment.proposalId,
+            reason: comment.rejectionReason,
+          });
+        }
       }
     }
   } catch (error) {
