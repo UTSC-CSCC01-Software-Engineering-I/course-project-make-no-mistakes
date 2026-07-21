@@ -142,6 +142,40 @@
     font-weight: 500;
 }
 
+.dashboardHeatBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-weight: 700;
+}
+
+.heatHigh {
+    background-color: #317a51;
+    color: #d8f3ef;
+}
+
+.heatLow {
+    background-color: #faf1ff;
+    color: #332445;
+}
+
+.dashboardVolumeCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboardVolumeBar {
+    display: inline-block;
+    height: 10px;
+    max-width: 160px;
+    border-radius: 999px;
+    background-color: #317a51;
+}
+
 .dashboardSubmissionsTable tr:last-child td {
     border-bottom: none;
 }
