@@ -1,4 +1,9 @@
-* {
+:root {
+    /* Change this value if your main navigation bar has a different height. */
+    --nav-bar-height: 48px;
+  }
+  
+  * {
     box-sizing: border-box;
   }
   
@@ -7,18 +12,24 @@
   }
   
   button,
-  textarea {
+  textarea,
+  select {
     font: inherit;
   }
   
   .proposalPage {
-    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100%;
+    height: calc(100dvh - var(--nav-bar-height));
+    min-height: 0;
+    overflow: hidden;
     background: #ffffff;
   }
   
   .proposalNotFound {
     display: grid;
-    min-height: 100vh;
+    min-height: calc(100dvh - var(--nav-bar-height));
     place-items: center;
     padding: 24px;
     font-family: Verdana, sans-serif;
@@ -28,16 +39,18 @@
     display: flex;
     width: 100%;
     min-height: 48px;
+    flex: 0 0 auto;
     align-items: stretch;
   }
   
   .horizontalProposalHeaderBox {
     display: flex;
     width: 70%;
+    min-width: 0;
     align-items: center;
     justify-content: space-evenly;
     gap: 16px;
-    padding: 12px;
+    padding: 8px 12px;
     background-color: #daede1;
     border-right: 1px solid #5b4f8a;
     border-bottom: 2px solid #709a8e;
@@ -46,10 +59,11 @@
   .horizontalCommentHeaderBox {
     display: flex;
     width: 30%;
+    min-width: 0;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 18px;
+    padding: 8px 14px;
     background-color: #d3c3e2;
     border-bottom: 2px solid #635173;
     border-left: 1px solid #5b4f8a;
@@ -58,6 +72,7 @@
   .proposalHeaderText,
   .commentHeaderText,
   .smallerCommentHeaderText {
+    min-width: 0;
     font-family: Verdana, sans-serif;
     font-size: 16px;
   }
@@ -65,6 +80,7 @@
   .proposalHeaderText {
     color: #39765e;
     font-weight: 500;
+    overflow-wrap: anywhere;
   }
   
   .commentHeaderText {
@@ -95,7 +111,10 @@
   .simplifyButton:focus-visible,
   .commentSubmitButton:focus-visible,
   .loginToCommentButton:focus-visible,
-  .commentTextArea:focus-visible {
+  .commentTextArea:focus-visible,
+  .deleteCommentButton:focus-visible,
+  .selectedRegionHeader button:focus-visible,
+  .mapLayerControl select:focus-visible {
     outline: 3px solid rgba(91, 79, 138, 0.35);
     outline-offset: 2px;
   }
@@ -103,6 +122,7 @@
   .ratingBox,
   .commentCountBox {
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     gap: 6px;
   }
@@ -117,7 +137,7 @@
   .proposalContentBox {
     display: flex;
     width: 100%;
-    height: calc(100vh - 48px);
+    height: auto;
     min-height: 0;
     overflow: hidden;
   }
@@ -126,7 +146,9 @@
     position: relative;
     display: flex;
     width: 70%;
-    height: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -136,6 +158,8 @@
   .mapBox .mapContainer {
     width: 100%;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
   }
   
   .mapImage {
@@ -147,16 +171,18 @@
   .commentBox {
     display: flex;
     width: 30%;
-    height: 100%;
+    height: auto;
     min-width: 0;
+    min-height: 0;
     flex-direction: column;
-    overflow-y: auto;
+    overflow: hidden;
     background-color: #ffffff;
     border-left: 2px solid #87bd93;
   }
   
   .addCommentSection {
-    padding: 18px;
+    flex: 0 0 auto;
+    padding: 14px;
     background: #faf8fc;
     border-bottom: 2px solid #ece7f1;
   }
@@ -164,7 +190,7 @@
   .commentForm {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
   
   .commentFormLabel {
@@ -176,13 +202,14 @@
   
   .commentTextArea {
     width: 100%;
-    min-height: 104px;
-    resize: vertical;
-    padding: 11px 12px;
+    min-height: 72px;
+    max-height: 96px;
+    resize: none;
+    padding: 9px 11px;
     color: #2d2732;
     font-family: Verdana, sans-serif;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.4;
     background: #ffffff;
     border: 1px solid #bcb2c5;
     border-radius: 8px;
@@ -207,7 +234,7 @@
   
   .commentSubmitButton,
   .loginToCommentButton {
-    padding: 10px 16px;
+    padding: 9px 14px;
     color: #ffffff;
     font-family: Verdana, sans-serif;
     font-size: 14px;
@@ -239,10 +266,10 @@
   
   .commentNotice {
     margin: 2px 0 0;
-    padding: 9px 10px;
+    padding: 8px 9px;
     font-family: Verdana, sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
+    font-size: 12px;
+    line-height: 1.35;
     border-radius: 6px;
   }
   
@@ -262,7 +289,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
   
   .commentLoginPrompt h2 {
@@ -277,11 +304,15 @@
     color: #5f5864;
     font-family: Verdana, sans-serif;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.4;
   }
   
   .proposalCommentList {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   
   .emptyCommentMessage {
@@ -352,82 +383,6 @@
     border: 2px solid #9aeaae;
   }
   
-  @media (max-width: 900px) {
-    .proposalPageHeader {
-      flex-direction: column;
-    }
-  
-    .horizontalProposalHeaderBox,
-    .horizontalCommentHeaderBox {
-      width: 100%;
-      border-right: 0;
-      border-left: 0;
-    }
-  
-    .horizontalProposalHeaderBox {
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-  
-    .proposalContentBox {
-      height: auto;
-      min-height: calc(100vh - 96px);
-      flex-direction: column;
-      overflow: visible;
-    }
-  
-    .mapBox,
-    .commentBox {
-      width: 100%;
-    }
-  
-    .mapBox {
-      height: 55vh;
-      min-height: 420px;
-    }
-  
-    .commentBox {
-      height: auto;
-      min-height: 45vh;
-      border-top: 2px solid #87bd93;
-      border-left: 0;
-    }
-  }
-  
-  @media (max-width: 560px) {
-    .horizontalProposalHeaderBox,
-    .horizontalCommentHeaderBox {
-      padding: 10px 12px;
-    }
-  
-    .proposalHeaderText,
-    .commentHeaderText,
-    .smallerCommentHeaderText {
-      font-size: 14px;
-    }
-  
-    .addCommentSection {
-      padding: 14px;
-    }
-  
-    .commentFormFooter {
-      align-items: stretch;
-      flex-direction: column;
-    }
-  
-    .commentSubmitButton,
-    .loginToCommentButton {
-      width: 100%;
-    }
-  
-    .validationBanner {
-      width: calc(100% - 24px);
-      max-width: none;
-      padding: 9px 12px;
-      font-size: 12px;
-    }
-  }
-  
   /* Owner-only actions rendered by ViewProposalPage.jsx */
   .proposalCommentItem {
     position: relative;
@@ -464,45 +419,25 @@
     cursor: not-allowed;
   }
   
-  .deleteCommentButton:focus-visible {
-    outline: 3px solid rgba(152, 45, 45, 0.25);
-    outline-offset: 2px;
-  }
-  
   .proposalPageHeader > .horizontalCommentHeaderBox {
     background-color: #d3c3e2;
     border-bottom-color: #635173;
-  }
-
-  .mapBox {
-    position: relative;
-    min-width: 0;
-    overflow: hidden;
   }
   
   /* Province and layer selectors */
   .mapLayerControls {
     position: absolute;
-  
-    /* Bottom-right */
     right: 14px;
     bottom: 14px;
-  
-    /* Explicitly cancel old positioning */
     left: auto;
     top: auto;
-  
     z-index: 30;
-  
     display: flex;
     align-items: flex-end;
     gap: 10px;
-  
     max-width: calc(100% - 28px);
     padding: 9px 11px;
-  
     font-family: Verdana, Arial, sans-serif;
-  
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid #d1d5db;
     border-radius: 7px;
@@ -511,9 +446,9 @@
   
   .mapLayerControl {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: 4px;
-    min-width: 0;
   }
   
   .mapLayerControl label {
@@ -527,13 +462,10 @@
   .mapLayerControl select {
     width: 180px;
     max-width: 100%;
-  
     padding: 6px 8px;
-  
     font-family: Verdana, Arial, sans-serif;
     font-size: 13px;
-  
-    background: white;
+    background: #ffffff;
     border: 1px solid #9ca3af;
     border-radius: 4px;
   }
@@ -541,26 +473,19 @@
   /* Selected-region statistics popup */
   .selectedRegionCard {
     position: absolute;
-  
     left: 14px;
     bottom: 14px;
-  
     z-index: 40;
-  
     box-sizing: border-box;
     width: 340px;
     max-width: calc(100% - 28px);
     max-height: 55%;
-  
     overflow-x: hidden;
     overflow-y: auto;
-  
     padding: 16px;
-  
     font-family: Verdana, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.4;
-  
     background: rgba(255, 255, 255, 0.97);
     border: 1px solid #d1d5db;
     border-radius: 9px;
@@ -573,32 +498,26 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-  
     margin-bottom: 14px;
   }
   
   .selectedRegionHeader h2 {
     min-width: 0;
     margin: 0;
-  
     font-family: Verdana, Arial, sans-serif;
     font-size: 24px;
     line-height: 1.2;
-  
     overflow-wrap: anywhere;
   }
   
   .selectedRegionHeader button {
     flex: 0 0 auto;
-  
     width: 32px;
     height: 32px;
     padding: 0;
-  
     font-family: Verdana, Arial, sans-serif;
     font-size: 20px;
     line-height: 28px;
-  
     cursor: pointer;
     background: #f3f4f6;
     border: 1px solid #9ca3af;
@@ -610,7 +529,6 @@
     display: flex;
     flex-direction: column;
     gap: 9px;
-  
     margin: 0;
     padding: 0;
   }
@@ -620,7 +538,6 @@
     grid-template-columns: 115px minmax(0, 1fr);
     gap: 10px;
     align-items: start;
-  
     margin: 0;
     padding: 0;
   }
@@ -628,7 +545,6 @@
   .selectedRegionCard dt {
     margin: 0;
     padding: 0;
-  
     font-weight: 600;
     overflow-wrap: anywhere;
   }
@@ -637,7 +553,197 @@
     min-width: 0;
     margin: 0;
     padding: 0;
-  
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+  
+  /* Reduce vertical space on shorter desktop screens. */
+  @media (max-height: 750px) and (min-width: 901px) {
+    .horizontalProposalHeaderBox,
+    .horizontalCommentHeaderBox {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+  
+    .addCommentSection {
+      padding: 10px 12px;
+    }
+  
+    .commentForm {
+      gap: 6px;
+    }
+  
+    .commentTextArea {
+      min-height: 58px;
+      max-height: 68px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+  
+    .commentSubmitButton,
+    .loginToCommentButton {
+      padding: 7px 12px;
+      font-size: 13px;
+    }
+  
+    .commentLoginPrompt {
+      gap: 6px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .proposalPageHeader {
+      flex-direction: column;
+    }
+  
+    .horizontalProposalHeaderBox,
+    .horizontalCommentHeaderBox {
+      width: 100%;
+      border-right: 0;
+      border-left: 0;
+    }
+  
+    .horizontalProposalHeaderBox {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+  
+    .proposalContentBox {
+      display: grid;
+      grid-template-rows: minmax(0, 55fr) minmax(0, 45fr);
+      height: auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+  
+    .mapBox,
+    .commentBox {
+      width: 100%;
+      height: auto;
+      min-height: 0;
+    }
+  
+    .commentBox {
+      border-top: 2px solid #87bd93;
+      border-left: 0;
+    }
+  
+    .addCommentSection {
+      padding: 10px 12px;
+    }
+  
+    .commentTextArea {
+      min-height: 56px;
+      max-height: 64px;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .horizontalProposalHeaderBox,
+    .horizontalCommentHeaderBox {
+      gap: 8px;
+      padding: 6px 10px;
+    }
+  
+    .proposalHeaderText,
+    .commentHeaderText,
+    .smallerCommentHeaderText {
+      font-size: 13px;
+    }
+  
+    .iconBox {
+      width: 20px;
+      height: 20px;
+    }
+  
+    .addCommentSection {
+      padding: 8px 10px;
+    }
+  
+    .commentForm {
+      gap: 6px;
+    }
+  
+    .commentFormLabel {
+      font-size: 12px;
+    }
+  
+    .commentTextArea {
+      min-height: 50px;
+      max-height: 56px;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+  
+    .commentFormFooter {
+      gap: 8px;
+    }
+  
+    .commentSubmitButton,
+    .loginToCommentButton {
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+  
+    .validationBanner {
+      top: 52px;
+      width: calc(100% - 24px);
+      max-width: none;
+      padding: 7px 10px;
+      font-size: 11px;
+    }
+  
+    .mapLayerControls {
+      right: 8px;
+      bottom: 8px;
+      max-width: calc(100% - 16px);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      padding: 7px 8px;
+    }
+  
+    .mapLayerControl label {
+      font-size: 10px;
+    }
+  
+    .mapLayerControl select {
+      width: 150px;
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+  
+    .selectedRegionCard {
+      left: 8px;
+      bottom: 8px;
+      width: min(280px, calc(100% - 16px));
+      max-height: 60%;
+      padding: 10px;
+      font-size: 11px;
+    }
+  
+    .selectedRegionHeader {
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+  
+    .selectedRegionHeader h2 {
+      font-size: 16px;
+    }
+  
+    .selectedRegionHeader button {
+      width: 26px;
+      height: 26px;
+      font-size: 16px;
+      line-height: 22px;
+    }
+  
+    .selectedRegionCard dl {
+      gap: 6px;
+    }
+  
+    .selectedRegionCard dl > div {
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 6px;
+    }
   }
