@@ -25,7 +25,7 @@ const fakeSubmissions = [
         content: 'Move the boundary to follow Yonge Street instead of Bay Street. This better reflects the historical divide and aligns with municipal wards.',
         previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Objection+Map',
         postRating: 85,
-        postVotes: 120,
+        postLikes: 120,
         postComments: 14
     },
     {
@@ -38,7 +38,7 @@ const fakeSubmissions = [
         content: 'Alternative map grouping the northern suburbs with the rural district to balance the population quota while maintaining communities of interest.',
         previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Counter+Proposal+Map',
         postRating: 60,
-        postVotes: 45,
+        postLikes: 45,
         postComments: 8
     },
     {
@@ -60,7 +60,7 @@ const fakeSubmissions = [
         content: 'Keep the escarpment as the hard southern boundary for the lower city ridings.',
         previewURL: 'https://placehold.co/500x280/262626/ffffff?text=Escarpment+Boundary',
         postRating: 92,
-        postVotes: 200,
+        postLikes: 200,
         postComments: 30
     }
 ];
@@ -149,7 +149,7 @@ function UserSubmissionsPage() {
                                                 postDate={sub.date}
                                                 previewURL={sub.previewURL}
                                                 postRating={sub.postRating}
-                                                postVotes={sub.postVotes}
+                                                postLikes={sub.postLikes}
                                                 postComments={sub.postComments}
                                             >
                                                 <Map mode="view" />
