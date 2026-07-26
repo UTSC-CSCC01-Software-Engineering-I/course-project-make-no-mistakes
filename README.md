@@ -42,48 +42,25 @@ Class Diagram:
 "Great job! The core functionality works well, and the app shows solid progress overall."
 
 ## (For Reference) Informal Set Up Guide:
-Please correct any inaccuracies below:
+If you will be viewing the project using Docker, make sure that you have it installed before starting:
 
-### With VS Code: (Inside a folder for this project)
-- git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
-
-### (For a new branch)
-- git switch -c feature/branchName
-
-- git switch remote/branch (use after fetching, git will automatically create local branch with same name and track the remote branch)
-
-### Checking Frontend Preview (must navigate to 'client/' directory first):
-- npm run build
-- npm run preview
-- npm dev
-	* can use this during development; changes to files will automatically refresh frontend
-
-### Running the backend (must navigate to 'server/' directory first):
-- npm start
-- npm dev
-	* can use this during development; changes to files will automatically refresh backend
-		* note that if the backend refreshes, the frontend must be restarted (run 'build + preview' or 'dev' again)
-
-NOTE: backend must be started first, in a separate terminal session, before starting the frontend
-
-NOTE: pnpm (aliased by 'pn') can be used in place of npm for the above commands
-
-e.g.
+### With VS Code and Docker: (Inside a folder for this project)
+- To clone:
 ```bash
-# Session 1
-.../course-project-make-no-mistakes/server> npm dev
-
-
-# Session 2
-.../course-project-make-no-mistakes/client> npm dev
+git clone https://github.com/UTSC-CSCC01-Software-Engineering-I/course-project-make-no-mistakes
 ```
-
-### Committing Changes:
-- git add .
-- git commit -m "message"
-- git push
-
-### If it's a new branch, need to do:
-- git push -u origin branchName
-
-- git push -u origin HEAD (if pushing the branch that you're currently on, for the first time)
+- From there, you may use Docker for a fresh rebuild:
+```bash
+docker compose build --no-cache
+docker compose up
+```
+- If you want to start without rebuilding, you just need to do:
+```bash
+docker compose up
+```
+- After this, it's possible to access the project using the link: http://localhost:5173/
+- To check test cases, navigate to the client or server folder, and do:
+```bash
+pnpm test
+```
+- This would run all tests for that side
