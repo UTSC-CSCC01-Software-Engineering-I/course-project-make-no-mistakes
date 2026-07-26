@@ -75,37 +75,55 @@ function SelectedRegionCard({
         fallbackProvinceLabel ||
         'Unavailable',
     },
+
     {
       label: 'Geography',
-      value: selectedRegion.geographyLabel || 'Unavailable',
+      value:
+        selectedRegion.geographyLabel ||
+        'Unavailable',
     },
+
     ...(hasLandArea
       ? [
           {
             label: 'Land area',
-            value: `${selectedRegion.landArea.toFixed(2)} km²`,
+            value:
+              `${selectedRegion.landArea.toFixed(2)} km²`,
           },
         ]
       : []),
+
     {
       label:
         selectedRegion.classificationLabel ||
         'Classification',
-      value: selectedRegion.classification || 'Unavailable',
+
+      value:
+        selectedRegion.classification ||
+        'Unavailable',
     },
+
     {
-      label: selectedRegion.typeLabel || 'Type',
-      value: selectedRegion.regionType || 'Unavailable',
+      label:
+        selectedRegion.typeLabel ||
+        'Type',
+
+      value:
+        selectedRegion.regionType ||
+        'Unavailable',
     },
+
     {
       label:
         selectedRegion.identifierLabel ||
         'DGUID',
+
       value:
         selectedRegion.identifier ||
         selectedRegion.dguid ||
         'Unavailable',
     },
+
     ...(selectedRegion.extraDetails || []),
   ]
 
@@ -116,7 +134,9 @@ function SelectedRegionCard({
       aria-label="Selected region details"
     >
       <div className="selectedRegionHeader">
-        <h2>{selectedRegion.name || 'Unknown region'}</h2>
+        <h2>
+          {selectedRegion.name || 'Unknown region'}
+        </h2>
 
         <button
           type="button"
@@ -128,8 +148,8 @@ function SelectedRegionCard({
       </div>
 
       <dl>
-        {detailRows.map((detail) => (
-          <div key={detail.label}>
+        {detailRows.map((detail, index) => (
+          <div key={`${detail.label}-${index}`}>
             <dt>{detail.label}</dt>
             <dd>{detail.value}</dd>
           </div>
@@ -146,47 +166,97 @@ function ViewProposalPage() {
   const [proposal, setProposal] = useState(null)
 
   // loading | ready | notfound | error
-  const [proposalStatus, setProposalStatus] = useState('loading')
+  const [proposalStatus, setProposalStatus] =
+    useState('loading')
 
-  const [liveComments, setLiveComments] = useState([])
-  const [newCommentText, setNewCommentText] = useState('')
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
-  const [deletingCommentId, setDeletingCommentId] = useState(null)
-  const [commentNotice, setCommentNotice] = useState(null)
-  const [accessToken, setAccessToken] = useState(readAccessToken)
-  const [likes, setLikes] = useState(proposal?.postLikes ?? 0)
+  const [liveComments, setLiveComments] =
+    useState([])
 
-  const [isLineStringClosed, setIsLineStringClosed] = useState(false)
-  const [validationError, setValidationError] = useState(null)
+  const [newCommentText, setNewCommentText] =
+    useState('')
 
-  const [province, setProvince] = useState('on')
-  const [boundaryLayer, setBoundaryLayer] = useState('none')
-  const [selectedRegion, setSelectedRegion] = useState(null)
+  const [
+    isSubmittingComment,
+    setIsSubmittingComment,
+  ] = useState(false)
 
-  const selectedProvinceData = PROVINCE_MAP_DATA[province]
+  const [
+    deletingCommentId,
+    setDeletingCommentId,
+  ] = useState(null)
 
-  const currentUserId = getUserIdFromAccessToken(accessToken)
-  const isLoggedIn = Boolean(accessToken && currentUserId)
+  const [commentNotice, setCommentNotice] =
+    useState(null)
+
+  const [accessToken, setAccessToken] =
+    useState(readAccessToken)
+
+  const [likes, setLikes] =
+    useState(proposal?.postLikes ?? 0)
+
+  const [
+    isLineStringClosed,
+    setIsLineStringClosed,
+  ] = useState(false)
+
+  const [
+    validationError,
+    setValidationError,
+  ] = useState(null)
+
+  const [province, setProvince] =
+    useState('on')
+
+  const [boundaryLayer, setBoundaryLayer] =
+    useState('none')
+
+  const [selectedRegion, setSelectedRegion] =
+    useState(null)
+
+  const selectedProvinceData =
+    PROVINCE_MAP_DATA[province]
+
+  const currentUserId =
+    getUserIdFromAccessToken(accessToken)
+
+  const isLoggedIn =
+    Boolean(
+      accessToken &&
+      currentUserId
+    )
 
   useEffect(() => {
     setLikes(proposal?.likes ?? 0)
   }, [proposal])
 
   useEffect(() => {
-    if (!proposalId) return undefined
+    if (!proposalId) {
+      return undefined
+    }
 
     let active = true
+
     setProposalStatus('loading')
 
     fetchProposal(proposalId)
       .then((data) => {
-        if (!active) return
+        if (!active) {
+          return
+        }
+
         setProposal(data)
         setProposalStatus('ready')
       })
       .catch((error) => {
-        if (!active) return
-        setProposalStatus(error.status === 404 ? 'notfound' : 'error')
+        if (!active) {
+          return
+        }
+
+        setProposalStatus(
+          error.status === 404
+            ? 'notfound'
+            : 'error'
+        )
       })
 
     return () => {
@@ -199,16 +269,38 @@ function ViewProposalPage() {
       setAccessToken(readAccessToken())
     }
 
-    window.addEventListener('storage', synchronizeAuthentication)
-    window.addEventListener('auth-changed', synchronizeAuthentication)
-    window.addEventListener('focus', synchronizeAuthentication)
+    window.addEventListener(
+      'storage',
+      synchronizeAuthentication
+    )
+
+    window.addEventListener(
+      'auth-changed',
+      synchronizeAuthentication
+    )
+
+    window.addEventListener(
+      'focus',
+      synchronizeAuthentication
+    )
 
     synchronizeAuthentication()
 
     return () => {
-      window.removeEventListener('storage', synchronizeAuthentication)
-      window.removeEventListener('auth-changed', synchronizeAuthentication)
-      window.removeEventListener('focus', synchronizeAuthentication)
+      window.removeEventListener(
+        'storage',
+        synchronizeAuthentication
+      )
+
+      window.removeEventListener(
+        'auth-changed',
+        synchronizeAuthentication
+      )
+
+      window.removeEventListener(
+        'focus',
+        synchronizeAuthentication
+      )
     }
   }, [])
 
@@ -220,16 +312,25 @@ function ViewProposalPage() {
   }, [isLoggedIn])
 
   useEffect(() => {
-    if (!isLoggedIn || !proposalId) {
+    if (
+      !isLoggedIn ||
+      !proposalId
+    ) {
       return
     }
 
-    const draftKey = `comment-draft-${proposalId}`
-    const savedDraft = sessionStorage.getItem(draftKey)
+    const draftKey =
+      `comment-draft-${proposalId}`
+
+    const savedDraft =
+      sessionStorage.getItem(draftKey)
 
     if (savedDraft) {
       setNewCommentText(savedDraft)
-      sessionStorage.removeItem(draftKey)
+
+      sessionStorage.removeItem(
+        draftKey
+      )
     }
   }, [isLoggedIn, proposalId])
 
@@ -238,11 +339,15 @@ function ViewProposalPage() {
       return undefined
     }
 
-    const controller = new AbortController()
+    const controller =
+      new AbortController()
 
-    fetch(`/api/comments?proposalId=${encodeURIComponent(proposalId)}`, {
-      signal: controller.signal,
-    })
+    fetch(
+      `/api/comments?proposalId=${encodeURIComponent(proposalId)}`,
+      {
+        signal: controller.signal,
+      }
+    )
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(
@@ -253,52 +358,87 @@ function ViewProposalPage() {
         return response.json()
       })
       .then((commentsResponse) => {
-        if (Array.isArray(commentsResponse)) {
-          setLiveComments(commentsResponse)
+        if (
+          Array.isArray(
+            commentsResponse
+          )
+        ) {
+          setLiveComments(
+            commentsResponse
+          )
         }
       })
       .catch((error) => {
-        if (error.name !== 'AbortError') {
-          console.error('[COMMENTS GET ERROR]', error)
+        if (
+          error.name !==
+          'AbortError'
+        ) {
+          console.error(
+            '[COMMENTS GET ERROR]',
+            error
+          )
         }
       })
 
-    const socket = io(SOCKET_URL)
+    const socket =
+      io(SOCKET_URL)
 
-    socket.on('comment_approved', (approvedComment) => {
-      if (
-        String(approvedComment.proposalId) !== String(proposalId)
-      ) {
-        return
-      }
+    socket.on(
+      'comment_approved',
+      (approvedComment) => {
+        if (
+          String(
+            approvedComment.proposalId
+          ) !== String(proposalId)
+        ) {
+          return
+        }
 
-      setLiveComments((currentComments) => {
-        const alreadyExists = currentComments.some(
-          (comment) =>
-            String(comment.id) === String(approvedComment.id)
+        setLiveComments(
+          (currentComments) => {
+            const alreadyExists =
+              currentComments.some(
+                (comment) =>
+                  String(
+                    comment.id
+                  ) ===
+                  String(
+                    approvedComment.id
+                  )
+              )
+
+            return alreadyExists
+              ? currentComments
+              : [
+                  ...currentComments,
+                  approvedComment,
+                ]
+          }
         )
-
-        return alreadyExists
-          ? currentComments
-          : [...currentComments, approvedComment]
-      })
-    })
-
-    socket.on('comment_rejected', (data) => {
-      if (
-        data?.proposalId &&
-        String(data.proposalId) !== String(proposalId)
-      ) {
-        return
       }
+    )
 
-      setCommentNotice({
-        type: 'error',
-        text: data?.reason
-          ? `Your comment was not approved: ${data.reason}`
-          : 'Your comment was not approved.',
-      })
-    })
+    socket.on(
+      'comment_rejected',
+      (data) => {
+        if (
+          data?.proposalId &&
+          String(
+            data.proposalId
+          ) !== String(proposalId)
+        ) {
+          return
+        }
+
+        setCommentNotice({
+          type: 'error',
+
+          text: data?.reason
+            ? `Your comment was not approved: ${data.reason}`
+            : 'Your comment was not approved.',
+        })
+      }
+    )
 
     return () => {
       controller.abort()
@@ -310,28 +450,47 @@ function ViewProposalPage() {
     const returnTo =
       `${window.location.pathname}${window.location.search}`
 
-    const loginUrl = new URL(LOGIN_PATH, window.location.origin)
+    const loginUrl =
+      new URL(
+        LOGIN_PATH,
+        window.location.origin
+      )
 
-    loginUrl.searchParams.set('returnTo', returnTo)
+    loginUrl.searchParams.set(
+      'returnTo',
+      returnTo
+    )
 
     if (reason) {
-      loginUrl.searchParams.set('reason', reason)
+      loginUrl.searchParams.set(
+        'reason',
+        reason
+      )
     }
 
-    window.location.assign(loginUrl.toString())
+    window.location.assign(
+      loginUrl.toString()
+    )
   }
 
   async function handleCommentSubmit(event) {
     event.preventDefault()
 
-    const content = newCommentText.trim()
+    const content =
+      newCommentText.trim()
 
-    if (!content || isSubmittingComment) {
+    if (
+      !content ||
+      isSubmittingComment
+    ) {
       return
     }
 
     if (!accessToken) {
-      redirectToLogin('authentication-required')
+      redirectToLogin(
+        'authentication-required'
+      )
+
       return
     }
 
@@ -339,29 +498,41 @@ function ViewProposalPage() {
     setCommentNotice(null)
 
     try {
-      const response = await fetch('/api/comments', {
-        method: 'POST',
+      const response =
+        await fetch(
+          '/api/comments',
+          {
+            method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
+            headers: {
+              'Content-Type':
+                'application/json',
 
-        body: JSON.stringify({
-          content,
-          proposalId,
-        }),
-      })
+              Authorization:
+                `Bearer ${accessToken}`,
+            },
+
+            body:
+              JSON.stringify({
+                content,
+                proposalId,
+              }),
+          }
+        )
 
       let responseBody = null
 
       try {
-        responseBody = await response.json()
+        responseBody =
+          await response.json()
       } catch {
         responseBody = null
       }
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         sessionStorage.setItem(
           `comment-draft-${proposalId}`,
           content
@@ -370,8 +541,15 @@ function ViewProposalPage() {
         clearAccessToken()
         setAccessToken(null)
 
-        window.dispatchEvent(new Event('auth-changed'))
-        redirectToLogin('session-expired')
+        window.dispatchEvent(
+          new Event(
+            'auth-changed'
+          )
+        )
+
+        redirectToLogin(
+          'session-expired'
+        )
 
         return
       }
@@ -384,19 +562,27 @@ function ViewProposalPage() {
       }
 
       setNewCommentText('')
-      sessionStorage.removeItem(`comment-draft-${proposalId}`)
+
+      sessionStorage.removeItem(
+        `comment-draft-${proposalId}`
+      )
 
       setCommentNotice({
         type: 'success',
+
         text:
           responseBody?.message ||
           'Your comment was submitted for review.',
       })
     } catch (error) {
-      console.error('[COMMENTS POST ERROR]', error)
+      console.error(
+        '[COMMENTS POST ERROR]',
+        error
+      )
 
       setCommentNotice({
         type: 'error',
+
         text:
           error.message ||
           'Unable to submit your comment.',
@@ -406,14 +592,21 @@ function ViewProposalPage() {
     }
   }
 
-  async function handleDeleteComment(commentId) {
-    if (!accessToken || !currentUserId || deletingCommentId) {
+  async function handleDeleteComment(
+    commentId
+  ) {
+    if (
+      !accessToken ||
+      !currentUserId ||
+      deletingCommentId
+    ) {
       return
     }
 
-    const shouldDelete = window.confirm(
-      'Are you sure you want to delete this comment?'
-    )
+    const shouldDelete =
+      window.confirm(
+        'Are you sure you want to delete this comment?'
+      )
 
     if (!shouldDelete) {
       return
@@ -423,23 +616,35 @@ function ViewProposalPage() {
     setCommentNotice(null)
 
     try {
-      const response = await fetch(
-        `/api/comments/${encodeURIComponent(commentId)}`,
-        {
-          method: 'DELETE',
+      const response =
+        await fetch(
+          `/api/comments/${encodeURIComponent(commentId)}`,
+          {
+            method: 'DELETE',
 
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+            headers: {
+              Authorization:
+                `Bearer ${accessToken}`,
+            },
+          }
+        )
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         clearAccessToken()
         setAccessToken(null)
 
-        window.dispatchEvent(new Event('auth-changed'))
-        redirectToLogin('session-expired')
+        window.dispatchEvent(
+          new Event(
+            'auth-changed'
+          )
+        )
+
+        redirectToLogin(
+          'session-expired'
+        )
 
         return
       }
@@ -448,7 +653,8 @@ function ViewProposalPage() {
         let responseBody = null
 
         try {
-          responseBody = await response.json()
+          responseBody =
+            await response.json()
         } catch {
           responseBody = null
         }
@@ -459,21 +665,33 @@ function ViewProposalPage() {
         )
       }
 
-      setLiveComments((currentComments) =>
-        currentComments.filter(
-          (comment) => String(comment.id) !== String(commentId)
-        )
+      setLiveComments(
+        (currentComments) =>
+          currentComments.filter(
+            (comment) =>
+              String(
+                comment.id
+              ) !==
+              String(
+                commentId
+              )
+          )
       )
 
       setCommentNotice({
         type: 'success',
-        text: 'Your comment was deleted.',
+        text:
+          'Your comment was deleted.',
       })
     } catch (error) {
-      console.error('[COMMENTS DELETE ERROR]', error)
+      console.error(
+        '[COMMENTS DELETE ERROR]',
+        error
+      )
 
       setCommentNotice({
         type: 'error',
+
         text:
           error.message ||
           'Unable to delete the comment.',
@@ -484,44 +702,89 @@ function ViewProposalPage() {
   }
 
   function incrementLikes() {
-    setLikes((currentLikes) => currentLikes + 1)
+    setLikes(
+      (currentLikes) =>
+        currentLikes + 1
+    )
   }
 
-  function handleDrawChange(geoJsonData) {
-    let foundClosedLineString = false
-    let hasStrayLines = false
-    let hasNestedPolygon = false
+  function handleDrawChange(
+    geoJsonData
+  ) {
+    let foundClosedLineString =
+      false
+
+    let hasStrayLines =
+      false
+
+    let hasNestedPolygon =
+      false
 
     if (geoJsonData?.features) {
       const polygons = []
 
-      for (const feature of geoJsonData.features) {
-        if (feature.geometry.type === 'LineString') {
+      for (
+        const feature of
+        geoJsonData.features
+      ) {
+        if (
+          feature.geometry.type ===
+          'LineString'
+        ) {
           hasStrayLines = true
 
-          const coordinates = feature.geometry.coordinates
+          const coordinates =
+            feature.geometry
+              .coordinates
 
-          if (coordinates.length >= 3) {
-            const firstPoint = coordinates[0]
-            const lastPoint = coordinates[coordinates.length - 1]
+          if (
+            coordinates.length >=
+            3
+          ) {
+            const firstPoint =
+              coordinates[0]
+
+            const lastPoint =
+              coordinates[
+                coordinates.length -
+                  1
+              ]
 
             if (
-              getDistanceInMeters(firstPoint, lastPoint) <=
+              getDistanceInMeters(
+                firstPoint,
+                lastPoint
+              ) <=
               DISTANCE_THRESHOLD
             ) {
-              foundClosedLineString = true
+              foundClosedLineString =
+                true
             }
           }
-        } else if (feature.geometry.type === 'Polygon') {
+        } else if (
+          feature.geometry.type ===
+          'Polygon'
+        ) {
           polygons.push(feature)
         }
       }
 
-      const overlapThreshold = 0.25
+      const overlapThreshold =
+        0.25
 
-      for (let i = 0; i < polygons.length; i += 1) {
-        for (let j = 0; j < polygons.length; j += 1) {
-          if (i === j) continue
+      for (
+        let i = 0;
+        i < polygons.length;
+        i += 1
+      ) {
+        for (
+          let j = 0;
+          j < polygons.length;
+          j += 1
+        ) {
+          if (i === j) {
+            continue
+          }
 
           const overlapPercentage =
             getPolygonAreaOverlapPercentage(
@@ -529,23 +792,34 @@ function ViewProposalPage() {
               polygons[j]
             )
 
-          if (overlapPercentage > overlapThreshold) {
-            hasNestedPolygon = true
+          if (
+            overlapPercentage >
+            overlapThreshold
+          ) {
+            hasNestedPolygon =
+              true
+
             break
           }
         }
 
-        if (hasNestedPolygon) break
+        if (hasNestedPolygon) {
+          break
+        }
       }
     }
 
-    setIsLineStringClosed(foundClosedLineString)
+    setIsLineStringClosed(
+      foundClosedLineString
+    )
 
     if (hasStrayLines) {
       setValidationError(
         'Invalid: Stray lines detected. All census boundaries must be closed polygons.'
       )
-    } else if (hasNestedPolygon) {
+    } else if (
+      hasNestedPolygon
+    ) {
       setValidationError(
         'Invalid: Overlapping boundary detected. Census tracts cannot overlap by more than 25%.'
       )
@@ -555,44 +829,67 @@ function ViewProposalPage() {
   }
 
   function handleSimplifyClick() {
-    mapComponentRef.current?.simplifyDrawing()
+    mapComponentRef.current
+      ?.simplifyDrawing()
   }
 
-  function handleProvinceChange(event) {
-    const nextProvince = event.target.value
+  function handleProvinceChange(
+    event
+  ) {
+    const nextProvince =
+      event.target.value
 
     setProvince(nextProvince)
     setBoundaryLayer('none')
     setSelectedRegion(null)
 
-    mapComponentRef.current?.clearSelectedRegion?.()
+    mapComponentRef.current
+      ?.clearSelectedRegion?.()
   }
 
-  function handleBoundaryLayerChange(event) {
-    setBoundaryLayer(event.target.value)
+  function handleBoundaryLayerChange(
+    event
+  ) {
+    setBoundaryLayer(
+      event.target.value
+    )
+
     setSelectedRegion(null)
 
-    mapComponentRef.current?.clearSelectedRegion?.()
+    mapComponentRef.current
+      ?.clearSelectedRegion?.()
   }
 
   function handleCloseSelectedRegion() {
     setSelectedRegion(null)
 
-    mapComponentRef.current?.clearSelectedRegion?.()
+    mapComponentRef.current
+      ?.clearSelectedRegion?.()
   }
 
-  if (proposalStatus === 'loading') {
+  if (
+    proposalStatus ===
+    'loading'
+  ) {
     return (
       <main className="proposalNotFound">
-        <p>Loading proposal…</p>
+        <p>
+          Loading proposal…
+        </p>
       </main>
     )
   }
 
-  if (proposalStatus !== 'ready' || !proposal) {
+  if (
+    proposalStatus !==
+      'ready' ||
+    !proposal
+  ) {
     return (
       <main className="proposalNotFound">
-        <p>Error: Proposal not found.</p>
+        <p>
+          Error: Proposal not found.
+        </p>
       </main>
     )
   }
@@ -624,8 +921,17 @@ function ViewProposalPage() {
             </span>
           </div>
 
-          <span className="proposalHeaderText">{shortUser(proposal.user_id)}</span>
-          <span className="proposalHeaderText">{formatDate(proposal.created_at)}</span>
+          <span className="proposalHeaderText">
+            {shortUser(
+              proposal.user_id
+            )}
+          </span>
+
+          <span className="proposalHeaderText">
+            {formatDate(
+              proposal.created_at
+            )}
+          </span>
         </div>
 
         <div className="horizontalCommentHeaderBox">
@@ -654,7 +960,9 @@ function ViewProposalPage() {
         >
           <button
             className="simplifyButton"
-            onClick={handleSimplifyClick}
+            onClick={
+              handleSimplifyClick
+            }
             type="button"
           >
             Simplify
@@ -672,8 +980,9 @@ function ViewProposalPage() {
               className="validationBanner warning"
               role="status"
             >
-              Closed polygon detected! Click
-              &quot;Simplify&quot; to fuse coordinates and
+              Closed polygon detected!
+              Click &quot;Simplify&quot;
+              to fuse coordinates and
               save memory.
             </div>
           ) : (
@@ -694,15 +1003,28 @@ function ViewProposalPage() {
               <select
                 id="province-select"
                 value={province}
-                onChange={handleProvinceChange}
+                onChange={
+                  handleProvinceChange
+                }
               >
-                {Object.entries(PROVINCE_MAP_DATA).map(
-                  ([provinceCode, provinceData]) => (
+                {Object.entries(
+                  PROVINCE_MAP_DATA
+                ).map(
+                  ([
+                    provinceCode,
+                    provinceData,
+                  ]) => (
                     <option
-                      key={provinceCode}
-                      value={provinceCode}
+                      key={
+                        provinceCode
+                      }
+                      value={
+                        provinceCode
+                      }
                     >
-                      {provinceData.label}
+                      {
+                        provinceData.label
+                      }
                     </option>
                   )
                 )}
@@ -716,32 +1038,40 @@ function ViewProposalPage() {
 
               <select
                 id="boundary-layer-select"
-                value={boundaryLayer}
-                onChange={handleBoundaryLayerChange}
+                value={
+                  boundaryLayer
+                }
+                onChange={
+                  handleBoundaryLayerChange
+                }
               >
                 <option value="none">
                   None
                 </option>
 
-                {selectedProvinceData?.populationCentres && (
+                {selectedProvinceData
+                  ?.populationCentres && (
                   <option value="populationCentres">
                     Population centres
                   </option>
                 )}
 
-                {selectedProvinceData?.designatedPlaces && (
+                {selectedProvinceData
+                  ?.designatedPlaces && (
                   <option value="designatedPlaces">
                     Designated places
                   </option>
                 )}
 
-                {selectedProvinceData?.pollingDistricts && (
+                {selectedProvinceData
+                  ?.pollingDistricts && (
                   <option value="pollingDistricts">
                     Polling districts
                   </option>
                 )}
 
-                {selectedProvinceData?.federalDistricts && (
+                {selectedProvinceData
+                  ?.federalDistricts && (
                   <option value="federalDistricts">
                     Federal ridings
                   </option>
@@ -753,16 +1083,29 @@ function ViewProposalPage() {
           <Map
             ref={mapComponentRef}
             mode="objection"
-            onDrawChange={handleDrawChange}
+            onDrawChange={
+              handleDrawChange
+            }
             province={province}
-            boundaryLayer={boundaryLayer}
-            onRegionSelect={setSelectedRegion}
+            boundaryLayer={
+              boundaryLayer
+            }
+            onRegionSelect={
+              setSelectedRegion
+            }
           />
 
           <SelectedRegionCard
-            selectedRegion={selectedRegion}
-            fallbackProvinceLabel={selectedProvinceData?.label}
-            onClose={handleCloseSelectedRegion}
+            selectedRegion={
+              selectedRegion
+            }
+            fallbackProvinceLabel={
+              selectedProvinceData
+                ?.label
+            }
+            onClose={
+              handleCloseSelectedRegion
+            }
           />
         </section>
 
@@ -774,7 +1117,9 @@ function ViewProposalPage() {
             {isLoggedIn ? (
               <form
                 className="commentForm"
-                onSubmit={handleCommentSubmit}
+                onSubmit={
+                  handleCommentSubmit
+                }
               >
                 <label
                   className="commentFormLabel"
@@ -786,11 +1131,20 @@ function ViewProposalPage() {
                 <textarea
                   id="new-comment"
                   className="commentTextArea"
-                  value={newCommentText}
-                  onChange={(event) => {
-                    setNewCommentText(event.target.value)
-                    setCommentNotice(null)
-                  }}
+                  value={
+                    newCommentText
+                  }
+                  onChange={
+                    (event) => {
+                      setNewCommentText(
+                        event.target.value
+                      )
+
+                      setCommentNotice(
+                        null
+                      )
+                    }
+                  }
                   placeholder="Write your objection or comment here..."
                   rows={4}
                   maxLength={2000}
@@ -799,7 +1153,10 @@ function ViewProposalPage() {
 
                 <div className="commentFormFooter">
                   <span className="commentCharacterCount">
-                    {newCommentText.length}/2000
+                    {
+                      newCommentText.length
+                    }
+                    /2000
                   </span>
 
                   <button
@@ -818,14 +1175,19 @@ function ViewProposalPage() {
 
                 {commentNotice && (
                   <p
-                    className={`commentNotice ${commentNotice.type}`}
+                    className={
+                      `commentNotice ${commentNotice.type}`
+                    }
                     role={
-                      commentNotice.type === 'error'
+                      commentNotice.type ===
+                      'error'
                         ? 'alert'
                         : 'status'
                     }
                   >
-                    {commentNotice.text}
+                    {
+                      commentNotice.text
+                    }
                   </p>
                 )}
               </form>
@@ -839,15 +1201,20 @@ function ViewProposalPage() {
                 </h2>
 
                 <p>
-                  You must be logged in to post a comment.
-                  Approved comments remain visible to everyone.
+                  You must be logged in
+                  to post a comment.
+                  Approved comments
+                  remain visible to
+                  everyone.
                 </p>
 
                 <button
                   className="loginToCommentButton"
                   type="button"
                   onClick={() =>
-                    redirectToLogin('authentication-required')
+                    redirectToLogin(
+                      'authentication-required'
+                    )
                   }
                 >
                   Log in to Comment
@@ -860,62 +1227,101 @@ function ViewProposalPage() {
             className="proposalCommentList"
             aria-live="polite"
           >
-            {liveComments.length === 0 ? (
+            {liveComments.length ===
+            0 ? (
               <p className="emptyCommentMessage">
-                No approved comments yet.
+                No approved comments
+                yet.
               </p>
             ) : (
-              liveComments.map((comment) => {
-                const belongsToCurrentUser =
-                  currentUserId &&
-                  String(comment.userId) === String(currentUserId)
+              liveComments.map(
+                (comment) => {
+                  const belongsToCurrentUser =
+                    currentUserId &&
+                    String(
+                      comment.userId
+                    ) ===
+                      String(
+                        currentUserId
+                      )
 
-                return (
-                  <article
-                    className="proposalCommentItem"
-                    key={comment.id}
-                  >
-                    <ProposalComment
-                      commentId={comment.id}
-                      relatedRidings={comment.relatedRidings || []}
-                      postUser={comment.authorName || 'Anonymous'}
-                      postDate={
-                        comment.createdAt
-                          ? new Date(
-                              comment.createdAt
-                            ).toLocaleDateString()
-                          : ''
+                  return (
+                    <article
+                      className="proposalCommentItem"
+                      key={
+                        comment.id
                       }
-                      postComment={comment.content}
-                      postLikes={comment.upvotes ?? 0}
-                      postDownvotes={comment.downvotes ?? 0}
-                      isLoggedIn={isLoggedIn}
-                    />
+                    >
+                      <ProposalComment
+                        commentId={
+                          comment.id
+                        }
+                        relatedRidings={
+                          comment.relatedRidings ||
+                          []
+                        }
+                        postUser={
+                          comment.authorName ||
+                          'Anonymous'
+                        }
+                        postDate={
+                          comment.createdAt
+                            ? new Date(
+                                comment.createdAt
+                              ).toLocaleDateString()
+                            : ''
+                        }
+                        postComment={
+                          comment.content
+                        }
+                        postLikes={
+                          comment.upvotes ??
+                          0
+                        }
+                        postDownvotes={
+                          comment.downvotes ??
+                          0
+                        }
+                        isLoggedIn={
+                          isLoggedIn
+                        }
+                      />
 
-                    {belongsToCurrentUser && (
-                      <div className="commentOwnerActions">
-                        <button
-                          className="deleteCommentButton"
-                          type="button"
-                          disabled={
-                            String(deletingCommentId) ===
-                            String(comment.id)
-                          }
-                          onClick={() =>
-                            handleDeleteComment(comment.id)
-                          }
-                          aria-label="Delete your comment"
-                        >
-                          {String(deletingCommentId) ===
-                          String(comment.id)
-                            ? 'Deleting...'
-                            : 'Delete'}
-                        </button>
-                      </div>
-                    )}
-                  </article>
-                )
-              })
+                      {belongsToCurrentUser && (
+                        <div className="commentOwnerActions">
+                          <button
+                            className="deleteCommentButton"
+                            type="button"
+                            disabled={
+                              String(
+                                deletingCommentId
+                              ) ===
+                              String(
+                                comment.id
+                              )
+                            }
+                            onClick={() =>
+                              handleDeleteComment(
+                                comment.id
+                              )
+                            }
+                            aria-label="Delete your comment"
+                          >
+                            {String(
+                              deletingCommentId
+                            ) ===
+                            String(
+                              comment.id
+                            )
+                              ? 'Deleting...'
+                              : 'Delete'}
+                          </button>
+                        </div>
+                      )}
+                    </article>
+                  )
+                }
+              )
             )}
           </section>
         </aside>

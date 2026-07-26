@@ -14,8 +14,11 @@ export const FED_PROFILES_2011_URL =
 
 /*
  * Statistics Canada province and territory identifiers.
- * Each value matches one of the split federal-riding files
- * uploaded to map-data/federal/.
+ *
+ * Each value matches one of the federal-riding GeoJSON files
+ * uploaded to:
+ *
+ * map-data/federal/<PRUID>.json
  */
 const FEDERAL_RIDING_PRUID_BY_PROVINCE = {
   nl: "10",
@@ -38,7 +41,10 @@ const FEDERAL_RIDING_PRUID_BY_PROVINCE = {
  * files were successfully uploaded.
  *
  * Ontario and Quebec are intentionally excluded because their
- * files are currently too large for the Supabase upload limit.
+ * polling-district files are currently too large for the
+ * Supabase upload limit.
+ *
+ * Federal-riding files remain available for Ontario and Quebec.
  */
 const POLLING_DISTRICT_PROVINCES = new Set([
   "ab",
