@@ -7,7 +7,10 @@ import "@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./Map.css";
 
-import { PROVINCE_MAP_DATA } from "../config/mapData";
+import {
+    PROVINCE_MAP_DATA,
+    FED_PROFILES_2011_URL,
+} from "../config/mapData";
 
 const MODE_SETTINGS = {
     view: { className: "mapContainerView", interactive: true },
@@ -36,65 +39,121 @@ const OPEN_STREET_MAP_STYLE = {
 
 
 function getBoundaryLayerConfig(province) {
-    const provinceData = PROVINCE_MAP_DATA[province];
+    const provinceData =
+        PROVINCE_MAP_DATA[province];
 
     return {
-        populationCentres: provinceData?.populationCentres
-            ? {
-                sourceId: `${province}-population-centres`,
-                fillLayerId: `${province}-population-centres-fill`,
-                outlineLayerId: `${province}-population-centres-outline`,
-                dataUrl: provinceData.populationCentres,
-                idProperty: "DGUID",
-                nameProperty: "PCNAME",
-                classificationProperty: "PCCLASS",
-                typeProperty: "PCTYPE",
-                geographyLabel: "Population centre",
-                identifierLabel: "DGUID",
-                fillColor: "#2563eb",
-                outlineColor: "#1d4ed8",
-                fillOpacity: 0.3,
-                lineWidth: 2,
-            }
-            : null,
+        populationCentres:
+            provinceData?.populationCentres
+                ? {
+                      sourceId:
+                          `${province}-population-centres`,
+                      fillLayerId:
+                          `${province}-population-centres-fill`,
+                      outlineLayerId:
+                          `${province}-population-centres-outline`,
+                      dataUrl:
+                          provinceData.populationCentres,
+                      idProperty: "DGUID",
+                      nameProperty: "PCNAME",
+                      classificationProperty:
+                          "PCCLASS",
+                      typeProperty: "PCTYPE",
+                      geographyLabel:
+                          "Population centre",
+                      identifierLabel: "DGUID",
+                      fillColor: "#2563eb",
+                      outlineColor: "#1d4ed8",
+                      fillOpacity: 0.3,
+                      lineWidth: 2,
+                  }
+                : null,
 
-        designatedPlaces: provinceData?.designatedPlaces
-            ? {
-                sourceId: `${province}-designated-places`,
-                fillLayerId: `${province}-designated-places-fill`,
-                outlineLayerId: `${province}-designated-places-outline`,
-                dataUrl: provinceData.designatedPlaces,
-                idProperty: "DGUID",
-                nameProperty: "DPLNAME",
-                classificationProperty: "DPLTYPE",
-                typeProperty: "DPLTYPE",
-                geographyLabel: "Designated place",
-                identifierLabel: "DGUID",
-                fillColor: "#16a34a",
-                outlineColor: "#15803d",
-                fillOpacity: 0.3,
-                lineWidth: 2,
-            }
-            : null,
+        designatedPlaces:
+            provinceData?.designatedPlaces
+                ? {
+                      sourceId:
+                          `${province}-designated-places`,
+                      fillLayerId:
+                          `${province}-designated-places-fill`,
+                      outlineLayerId:
+                          `${province}-designated-places-outline`,
+                      dataUrl:
+                          provinceData.designatedPlaces,
+                      idProperty: "DGUID",
+                      nameProperty: "DPLNAME",
+                      classificationProperty:
+                          "DPLTYPE",
+                      typeProperty: "DPLTYPE",
+                      geographyLabel:
+                          "Designated place",
+                      identifierLabel: "DGUID",
+                      fillColor: "#16a34a",
+                      outlineColor: "#15803d",
+                      fillOpacity: 0.3,
+                      lineWidth: 2,
+                  }
+                : null,
 
-        pollingDistricts: provinceData?.pollingDistricts
-            ? {
-                sourceId: `${province}-polling-districts`,
-                fillLayerId: `${province}-polling-districts-fill`,
-                outlineLayerId: `${province}-polling-districts-outline`,
-                dataUrl: provinceData.pollingDistricts,
-                idProperty: "pd_id",
-                nameProperty: "ed_name",
-                classificationProperty: "ed_name",
-                typeProperty: "PD_NUM",
-                geographyLabel: "Federal polling district",
-                identifierLabel: "Polling district ID",
-                fillColor: "#9333ea",
-                outlineColor: "#6b21a8",
-                fillOpacity: 0.06,
-                lineWidth: 0.6,
-            }
-            : null,
+        pollingDistricts:
+            provinceData?.pollingDistricts
+                ? {
+                      sourceId:
+                          `${province}-polling-districts`,
+                      fillLayerId:
+                          `${province}-polling-districts-fill`,
+                      outlineLayerId:
+                          `${province}-polling-districts-outline`,
+                      dataUrl:
+                          provinceData.pollingDistricts,
+                      idProperty: "pd_id",
+                      nameProperty: "ed_name",
+                      classificationProperty:
+                          "ed_name",
+                      typeProperty: "PD_NUM",
+                      geographyLabel:
+                          "Federal polling district",
+                      identifierLabel:
+                          "Polling district ID",
+                      fillColor: "#9333ea",
+                      outlineColor: "#6b21a8",
+                      fillOpacity: 0.06,
+                      lineWidth: 0.6,
+                  }
+                : null,
+
+        federalDistricts:
+             provinceData?.federalDistricts
+                ? {
+                      sourceId:
+                          `${province}-federal-districts`,
+        
+                      fillLayerId:
+                          `${province}-federal-districts-fill`,
+            
+                      outlineLayerId:
+                          `${province}-federal-districts-outline`,
+        
+                      dataUrl:
+                          provinceData.federalDistricts,
+            
+                      idProperty: "FEDUID",
+                      nameProperty: "FEDNAME",
+                      classificationProperty: "PRUID",
+                      typeProperty: "FEDUID",
+        
+                      geographyLabel:
+                          "Federal electoral district",
+        
+                      identifierLabel:
+                          "Federal district code",
+            
+                      fillColor: "#dc2626",
+                      outlineColor: "#991b1b",
+                      fillOpacity: 0.12,
+                      lineWidth: 1.5,
+                  }
+                : null,
     };
 }
 
@@ -267,8 +326,157 @@ function formatCount(value) {
     const number = Number(value);
 
     return Number.isFinite(number)
-        ? number.toLocaleString()
+        ? number.toLocaleString("en-CA")
         : "";
+}
+
+function formatProfileNumber(value) {
+    if (value == null || value === "") {
+        return "";
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number)
+        ? number.toLocaleString("en-CA", {
+              maximumFractionDigits: 1,
+          })
+        : "";
+}
+
+function formatProfilePercent(value) {
+    const formattedValue = formatProfileNumber(value);
+
+    return formattedValue ? `${formattedValue}%` : "";
+}
+
+function formatProfileCurrency(value) {
+    if (value == null || value === "") {
+        return "";
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number)
+        ? new Intl.NumberFormat("en-CA", {
+              style: "currency",
+              currency: "CAD",
+              maximumFractionDigits: 0,
+          }).format(number)
+        : "";
+}
+
+function normalizeFederalDistrictCode(value) {
+    if (value == null || value === "") {
+        return null;
+    }
+
+    const text = String(value).trim();
+
+    // A federal electoral district code is five digits.
+    const exactCode = text.match(/(?:^|\D)(\d{5})(?:\D|$)/);
+    if (exactCode) {
+        return exactCode[1];
+    }
+
+    // Some converted polling-district IDs begin with the
+    // five-digit federal district code, followed by the poll number.
+    const leadingCode = text.match(/^(\d{5})/);
+    if (leadingCode) {
+        return leadingCode[1];
+    }
+
+    // Handle a numeric code that may have lost leading zeroes.
+    if (/^\d{1,5}$/.test(text)) {
+        return text.padStart(5, "0");
+    }
+
+    return null;
+}
+
+function getFederalDistrictCode(properties) {
+    const directCandidates = [
+        properties.FEDUID,
+        properties.FED_NUM,
+        properties.FED_ID,
+        properties.ED_ID,
+        properties.ED_NUM,
+        properties.feduid,
+        properties.fed_num,
+        properties.fed_id,
+        properties.ed_id,
+        properties.ed_num,
+    ];
+
+    for (const candidate of directCandidates) {
+        const code = normalizeFederalDistrictCode(candidate);
+        if (code) {
+            return code;
+        }
+    }
+
+    // Your converted polling-district data currently uses pd_id.
+    // In many Elections Canada files, its first five digits identify
+    // the containing federal electoral district.
+    return normalizeFederalDistrictCode(
+        properties.pd_id ?? properties.PD_ID
+    );
+}
+
+function normalizeDistrictName(value) {
+    return String(value ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]+/g, " ")
+        .trim()
+        .toLowerCase();
+}
+
+function findFederalProfile(profiles, properties, provinceLabel) {
+    const code = getFederalDistrictCode(properties);
+
+    if (code && profiles[code]) {
+        return {
+            code,
+            profile: profiles[code],
+            matchedBy: "code",
+        };
+    }
+
+    // Name matching is only a fallback in case the converted GeoJSON
+    // does not retain a usable federal district code.
+    const districtName = normalizeDistrictName(
+        properties.ed_name ??
+        properties.ED_NAME ??
+        properties.FEDNAME ??
+        properties.FEDENAME ??
+        properties.FEDFNAME
+    );
+    const normalizedProvince = normalizeDistrictName(provinceLabel);
+
+    if (!districtName) {
+        return {
+            code,
+            profile: null,
+            matchedBy: null,
+        };
+    }
+
+    const profile = Object.values(profiles).find((candidate) => {
+        const sameName =
+            normalizeDistrictName(candidate?.name) === districtName;
+        const sameProvince =
+            !normalizedProvince ||
+            normalizeDistrictName(candidate?.province) === normalizedProvince;
+
+        return sameName && sameProvince;
+    }) ?? null;
+
+    return {
+        code: profile?.geoCode ?? code,
+        profile,
+        matchedBy: profile ? "name" : null,
+    };
 }
 
 function getDistanceInMeters(coord1, coord2) {
@@ -301,6 +509,7 @@ const Map = forwardRef(({
     const mapRef = useRef(null);
     const drawControlRef = useRef(null);
     const selectionMarkerRef = useRef(null);
+    const federalProfilesRef = useRef({});
     const modeSettings = MODE_SETTINGS[mode] || MODE_SETTINGS.view;
 
     const initialProvinceData =
@@ -338,6 +547,53 @@ const Map = forwardRef(({
     useEffect(() => {
         onRegionSelectRef.current = onRegionSelect;
     }, [onRegionSelect]);
+    
+    useEffect(() => {
+        let cancelled = false;
+    
+        async function loadFederalProfiles() {
+            if (!FED_PROFILES_2011_URL) {
+                console.error(
+                    "[FED PROFILE] VITE_SUPABASE_URL is not configured"
+                );
+                return;
+            }
+    
+            try {
+                const response = await fetch(
+                    FED_PROFILES_2011_URL
+                );
+    
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}: ${response.statusText}`
+                    );
+                }
+    
+                const profiles = await response.json();
+    
+                if (!cancelled) {
+                    federalProfilesRef.current = profiles;
+    
+                    console.log(
+                        "[FED PROFILE] Loaded profiles:",
+                        Object.keys(profiles).length
+                    );
+                }
+            } catch (error) {
+                console.error(
+                    "[FED PROFILE] Failed to load profiles:",
+                    error
+                );
+            }
+        }
+    
+        loadFederalProfiles();
+    
+        return () => {
+            cancelled = true;
+        };
+    }, []);
     
     function clearSelectedRegion() {
         const map = mapRef.current;
@@ -607,10 +863,12 @@ const Map = forwardRef(({
 
     useEffect(() => {
         const map = mapRef.current;
-        if (!map || mode === "view") return undefined;
+        if (!map) return undefined;
 
         const handleClick = (event) => {
-            if (drawControlRef.current) {
+            // Drawing-mode checks should not block ordinary map
+            // inspection while the component is in view mode.
+            if (mode !== "view" && drawControlRef.current) {
                 const terraDraw = drawControlRef.current.getTerraDrawInstance();
                 if (terraDraw) {
                     const drawMode = terraDraw.getMode();
@@ -668,6 +926,48 @@ const Map = forwardRef(({
                     const properties =
                         feature.properties ?? {};
 
+                    const isPollingDistrict =
+                        activeBoundaryKey ===
+                        "pollingDistricts";
+
+                    const isFederalDistrict =
+                        activeBoundaryKey ===
+                        "federalDistricts";
+
+                    const provinceData =
+                        PROVINCE_MAP_DATA[
+                            provinceRef.current
+                        ];
+
+                    const profileMatch =
+                        isPollingDistrict ||
+                        isFederalDistrict
+                            ? findFederalProfile(
+                                  federalProfilesRef.current,
+                                  properties,
+                                  provinceData?.label ?? ""
+                              )
+                            : {
+                                  code: null,
+                                  profile: null,
+                                  matchedBy: null,
+                              };
+
+                    const federalDistrictCode =
+                        profileMatch.code;
+                    const federalProfile =
+                        profileMatch.profile;
+
+                    console.log(
+                        "[FED PROFILE] Match result:",
+                        {
+                            federalDistrictCode,
+                            matchedBy: profileMatch.matchedBy,
+                            federalProfile,
+                            featureProperties: properties,
+                        }
+                    );
+
                     const featureId =
                         feature.id ??
                         properties[config.idProperty];
@@ -694,17 +994,8 @@ const Map = forwardRef(({
                     selectedRegionRef.current =
                         featureReference;
 
-                    const provinceData =
-                        PROVINCE_MAP_DATA[
-                            provinceRef.current
-                        ];
-
                     const landArea =
                         Number(properties.LANDAREA);
-
-                    const isPollingDistrict =
-                        activeBoundaryKey ===
-                        "pollingDistricts";
 
                     const pollingDistrictNumber =
                         properties.PD_NUM ?? "";
@@ -722,22 +1013,129 @@ const Map = forwardRef(({
                             .filter(Boolean)
                             .join(" — ");
 
-                    const extraDetails = isPollingDistrict
-                        ? [
-                            {
-                                label: "Estimated electors",
-                                value: formatCount(
-                                    properties.electors_est
-                                ),
-                            },
-                            {
-                                label: "Total votes",
-                                value: formatCount(
-                                    properties.total_votes
-                                ),
-                            },
-                        ].filter((detail) => detail.value)
-                        : [];
+                    const pollingDistrictDetails =
+                        isPollingDistrict
+                            ? [
+                                  {
+                                      label: "Estimated electors",
+                                      value: formatCount(
+                                          properties.electors_est
+                                      ),
+                                  },
+                                  {
+                                      label: "Total votes",
+                                      value: formatCount(
+                                          properties.total_votes
+                                      ),
+                                  },
+                              ]
+                            : [];
+
+                    const federalProfileDetails =
+                        federalProfile
+                            ? [
+                                  {
+                                      label: "2011 federal riding",
+                                      value:
+                                          federalProfile.name ??
+                                          electoralDistrictName,
+                                  },
+                                  {
+                                      label: "Federal district code",
+                                      value:
+                                          federalProfile.geoCode ??
+                                          federalDistrictCode,
+                                  },
+                                  {
+                                      label: "2011 riding population",
+                                      value: formatProfileNumber(
+                                          federalProfile.population
+                                      ),
+                                  },
+                                  {
+                                      label: "Median age",
+                                      value: formatProfileNumber(
+                                          federalProfile.medianAge
+                                      ),
+                                  },
+                                  {
+                                      label: "Employment rate",
+                                      value: formatProfilePercent(
+                                          federalProfile.employmentRate
+                                      ),
+                                  },
+                                  {
+                                      label: "Unemployment rate",
+                                      value: formatProfilePercent(
+                                          federalProfile.unemploymentRate
+                                      ),
+                                  },
+                                  {
+                                      label: "Median individual income",
+                                      value: formatProfileCurrency(
+                                          federalProfile.medianIndividualIncome
+                                      ),
+                                  },
+                                  {
+                                      label: "Median household income",
+                                      value: formatProfileCurrency(
+                                          federalProfile.medianHouseholdIncome
+                                      ),
+                                  },
+                                  {
+                                      label: "Immigrant population",
+                                      value: formatProfileNumber(
+                                          federalProfile.immigrantPopulation
+                                      ),
+                                  },
+                                  {
+                                      label: "Visible minority population",
+                                      value: formatProfileNumber(
+                                          federalProfile.visibleMinorityPopulation
+                                      ),
+                                  },
+                                  {
+                                      label: "Bachelor's degree or above",
+                                      value: formatProfileNumber(
+                                          federalProfile.bachelorOrAbove
+                                      ),
+                                  },
+                                  {
+                                      label: "NHS non-response rate",
+                                      value: formatProfilePercent(
+                                          federalProfile.gnr
+                                      ),
+                                  },
+                                  {
+                                      label: "Statistics scope",
+                                      value: isFederalDistrict
+                                          ? "Selected federal riding"
+                                          : "Entire federal riding, not only this polling district",
+                                  },
+                                  {
+                                      label: "Statistics source",
+                                      value:
+                                          "2011 Census and 2011 National Household Survey",
+                                  },
+                              ]
+                            : isPollingDistrict || isFederalDistrict
+                              ? [
+                                    {
+                                        label: "2011 riding profile",
+                                        value:
+                                            "No matching federal riding profile found",
+                                    },
+                                ]
+                              : [];
+
+                    const extraDetails = [
+                        ...pollingDistrictDetails,
+                        ...federalProfileDetails,
+                    ].filter(
+                        (detail) =>
+                            detail.value != null &&
+                            detail.value !== ""
+                    );
 
                     onRegionSelectRef.current?.({
                         id: featureId,
@@ -749,9 +1147,13 @@ const Map = forwardRef(({
                         name: isPollingDistrict
                             ? pollingDistrictName ||
                               "Unknown polling district"
-                            : properties[
-                                  config.nameProperty
-                              ] ?? "Unknown region",
+                            : isFederalDistrict
+                              ? federalProfile?.name ??
+                                properties.FEDNAME ??
+                                "Unknown federal riding"
+                              : properties[
+                                    config.nameProperty
+                                ] ?? "Unknown region",
 
                         identifierLabel:
                             config.identifierLabel,
@@ -764,24 +1166,39 @@ const Map = forwardRef(({
                         classificationLabel:
                             isPollingDistrict
                                 ? "Electoral district"
-                                : "Classification",
+                                : isFederalDistrict
+                                  ? "Province/territory code"
+                                  : "Classification",
                         classification:
-                            properties[
-                                config.classificationProperty
-                            ] ?? "",
+                            isFederalDistrict
+                                ? properties.PRUID ?? ""
+                                : properties[
+                                      config.classificationProperty
+                                  ] ?? "",
 
                         typeLabel:
                             isPollingDistrict
                                 ? "Polling district number"
-                                : "Type",
+                                : isFederalDistrict
+                                  ? "Boundary basis"
+                                  : "Type",
                         regionType:
-                            properties[
-                                config.typeProperty
-                            ] ?? "",
+                            isFederalDistrict
+                                ? "2013 Representation Order"
+                                : properties[
+                                      config.typeProperty
+                                  ] ?? "",
 
                         landArea:
                             Number.isFinite(landArea)
                                 ? landArea
+                                : null,
+
+                        federalDistrictCode,
+                        federalProfile,
+                        profileSource:
+                            federalProfile != null
+                                ? "2011 Census and 2011 National Household Survey"
                                 : null,
 
                         extraDetails,

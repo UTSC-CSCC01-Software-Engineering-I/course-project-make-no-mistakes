@@ -740,6 +740,12 @@ function ViewProposalPage() {
                     Polling districts
                   </option>
                 )}
+
+                {selectedProvinceData?.federalDistricts && (
+                  <option value="federalDistricts">
+                    Federal ridings
+                  </option>
+                )}
               </select>
             </div>
           </div>

@@ -7,12 +7,38 @@ const MAP_DATA_BASE_URL = SUPABASE_URL
   ? `${SUPABASE_URL}/storage/v1/object/public/map-data`
   : "/map-data";
 
+export const FED_PROFILES_2011_URL =
+  SUPABASE_URL
+    ? `${MAP_DATA_BASE_URL}/profiles/fed-profiles-2011.json`
+    : null;
+
+/*
+ * Statistics Canada province and territory identifiers.
+ * Each value matches one of the split federal-riding files
+ * uploaded to map-data/federal/.
+ */
+const FEDERAL_RIDING_PRUID_BY_PROVINCE = {
+  nl: "10",
+  pe: "11",
+  ns: "12",
+  nb: "13",
+  qc: "24",
+  on: "35",
+  mb: "46",
+  sk: "47",
+  ab: "48",
+  bc: "59",
+  yt: "60",
+  nt: "61",
+  nu: "62",
+};
+
 /*
  * Provinces and territories whose polling-district GeoJSON
  * files were successfully uploaded.
  *
  * Ontario and Quebec are intentionally excluded because their
- * files are currently too large for your Supabase upload limit.
+ * files are currently too large for the Supabase upload limit.
  */
 const POLLING_DISTRICT_PROVINCES = new Set([
   "ab",
@@ -128,6 +154,17 @@ function mapDataUrl(provinceCode, filename) {
   );
 }
 
+function federalRidingsUrl(provinceCode) {
+  const pruid =
+    FEDERAL_RIDING_PRUID_BY_PROVINCE[
+      provinceCode
+    ];
+
+  return pruid
+    ? `${MAP_DATA_BASE_URL}/federal/${pruid}.json`
+    : null;
+}
+
 export const PROVINCE_MAP_DATA =
   Object.fromEntries(
     Object.entries(PROVINCES).map(
@@ -164,6 +201,11 @@ export const PROVINCE_MAP_DATA =
                     `fed2021_${provinceCode}_polling_districts.geojson`
                   )
                 : null,
+
+            federalDistricts:
+              federalRidingsUrl(
+                provinceCode
+              ),
           },
         ];
       }
