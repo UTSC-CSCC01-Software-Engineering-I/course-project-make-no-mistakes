@@ -1,5 +1,20 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { fetchSubmissions } from '../utils/submissionsApi'
+import { shortUser, formatDate } from '../utils/format'
 import './CommissionerDashboardPage.css'
+
+// only counter-proposals have a view page right now
+const ROUTABLE_SUBMISSION_TYPES = new Set(['counter_proposal'])
+
+// turn a snake_case enum value into title case for display
+function toTitleCase(value) {
+  if (!value) return ''
+  return String(value)
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
 
 const commissionerSubmissions = [
   {
@@ -165,12 +180,6 @@ function buildSubmissionVolume(submissions) {
     .sort((a, b) => getSubmissionDateValue(b) - getSubmissionDateValue(a))
 }
 
-function getRecentSubmissions(submissions) {
-  return [...submissions]
-    .sort((a, b) => getSubmissionDateValue(b) - getSubmissionDateValue(a))
-    .slice(0, 5)
-}
-
 function StatisticCard({ label, value }) {
   return (
     <article className="dashboardStatisticCard">
@@ -185,7 +194,28 @@ function CommissionerDashboardPage() {
   const overviewItems = buildOverviewItems(commissionerSubmissions)
   const ridingActivity = buildRidingActivity(commissionerSubmissions)
   const submissionVolume = buildSubmissionVolume(commissionerSubmissions)
-  const recentSubmissions = getRecentSubmissions(commissionerSubmissions)
+
+  const [recentSubmissions, setRecentSubmissions] = useState([])
+  const [recentSubmissionsStatus, setRecentSubmissionsStatus] = useState('loading')
+
+  useEffect(() => {
+    let active = true
+
+    fetchSubmissions()
+      .then((data) => {
+        if (!active) return
+        setRecentSubmissions(data.slice(0, 5))
+        setRecentSubmissionsStatus('ready')
+      })
+      .catch(() => {
+        if (!active) return
+        setRecentSubmissionsStatus('error')
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <main className="commissionerDashboardPage">
@@ -295,29 +325,50 @@ function CommissionerDashboardPage() {
           </button>
         </div>
         <div className="dashboardSubmissionCards">
-          {recentSubmissions.map((submission) => (
-            <article className="dashboardSubmissionCard" key={submission.referenceNumber}>
-              <div className="dashboardSubmissionInfo">
-                <span className="dashboardSubmissionReference">
-                  {submission.referenceNumber}
-                </span>
-                <span className="dashboardSubmissionMeta">
-                  {submission.submissionType}
-                </span>
-              </div>
-              <div className="dashboardSubmissionInfo">
-                <span className="dashboardSubmissionMeta">
-                  {submission.riding}
-                </span>
-                <span className="dashboardSubmissionMeta">
-                  {submission.status} - {submission.date}
-                </span>
-              </div>
-              <button className="dashboardActionButton" type="button">
-                View Details
-              </button>
-            </article>
-          ))}
+          {recentSubmissionsStatus === 'loading' && (
+            <p className="dashboardSubmissionsMessage">Loading recent submissions…</p>
+          )}
+
+          {recentSubmissionsStatus === 'error' && (
+            <p className="dashboardSubmissionsMessage">Unable to load recent submissions.</p>
+          )}
+
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.length === 0 && (
+            <p className="dashboardSubmissionsMessage">No submissions yet.</p>
+          )}
+
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.map((submission) => {
+            const routable = ROUTABLE_SUBMISSION_TYPES.has(submission.submission_type)
+
+            return (
+              <article className="dashboardSubmissionCard" key={submission.id}>
+                <div className="dashboardSubmissionInfo">
+                  <span className="dashboardSubmissionReference">
+                    {submission.public_reference_number}
+                  </span>
+                  <span className="dashboardSubmissionMeta">
+                    {toTitleCase(submission.submission_type)}
+                  </span>
+                </div>
+                <div className="dashboardSubmissionInfo">
+                  <span className="dashboardSubmissionMeta">
+                    {shortUser(submission.user_id)}
+                  </span>
+                  <span className="dashboardSubmissionMeta">
+                    {toTitleCase(submission.status)} - {formatDate(submission.created_at)}
+                  </span>
+                </div>
+                <button
+                  className="dashboardActionButton"
+                  type="button"
+                  disabled={!routable}
+                  onClick={routable ? () => navigate(`/view/${submission.id}`) : undefined}
+                >
+                  View Details
+                </button>
+              </article>
+            )
+          })}
         </div>
       </section>
 
