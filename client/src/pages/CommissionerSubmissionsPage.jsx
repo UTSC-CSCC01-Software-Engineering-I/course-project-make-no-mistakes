@@ -15,6 +15,15 @@ function toTitleCase(value) {
 function CommissionerSubmissionsPage() {
 	const [submissions, setSubmissions] = useState([])
 	const [status, setStatus] = useState('loading')
+	const [copiedUserId, setCopiedUserId] = useState(null)
+
+	function handleCopyUserId(userId) {
+		if (!userId) return
+		navigator.clipboard.writeText(userId).then(() => {
+			setCopiedUserId(userId)
+			setTimeout(() => setCopiedUserId(null), 1500)
+		})
+	}
 
 	useEffect(() => {
 		let active = true
@@ -72,7 +81,13 @@ function CommissionerSubmissionsPage() {
 									<td>{submission.public_reference_number}</td>
 									<td>{toTitleCase(submission.submission_type)}</td>
 									<td>{toTitleCase(submission.status)}</td>
-									<td>{shortUser(submission.user_id)}</td>
+									<td
+										className="commissionerSubmissionsUser"
+										title="Click to copy user ID"
+										onClick={() => handleCopyUserId(submission.user_id)}
+									>
+										{copiedUserId === submission.user_id ? 'Copied!' : shortUser(submission.user_id)}
+									</td>
 									<td>{formatDate(submission.created_at)}</td>
 									<td className="commissionerSubmissionsBody">{submission.body}</td>
 								</tr>

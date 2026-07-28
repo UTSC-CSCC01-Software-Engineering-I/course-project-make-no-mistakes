@@ -64,6 +64,10 @@
     border-bottom: none;
 }
 
+.commissionerSubmissionsUser {
+    cursor: pointer;
+}
+
 .commissionerSubmissionsBody {
     max-width: 360px;
     white-space: pre-wrap;
