@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import './CommissionerDashboardPage.css'
 
 const commissionerSubmissions = [
@@ -180,6 +181,7 @@ function StatisticCard({ label, value }) {
 }
 
 function CommissionerDashboardPage() {
+  const navigate = useNavigate()
   const overviewItems = buildOverviewItems(commissionerSubmissions)
   const ridingActivity = buildRidingActivity(commissionerSubmissions)
   const submissionVolume = buildSubmissionVolume(commissionerSubmissions)
@@ -284,7 +286,11 @@ function CommissionerDashboardPage() {
       <section className="dashboardSection" id="submissions">
         <div className="dashboardSectionHeader">
           <h2>Recent Submissions</h2>
-          <button className="dashboardTextAction" type="button">
+          <button
+            className="dashboardTextAction"
+            type="button"
+            onClick={() => navigate('/commissioner-submissions')}
+          >
             View All →
           </button>
         </div>
@@ -324,7 +330,11 @@ function CommissionerDashboardPage() {
           <button className="dashboardActionButton" type="button">
             Export PDF
           </button>
-          <button className="dashboardActionButton" type="button">
+          <button
+            className="dashboardActionButton"
+            type="button"
+            onClick={() => navigate('/commissioner-submissions')}
+          >
             View All Submissions
           </button>
         </div>
