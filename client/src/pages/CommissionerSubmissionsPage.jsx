@@ -15,13 +15,13 @@ function toTitleCase(value) {
 function CommissionerSubmissionsPage() {
 	const [submissions, setSubmissions] = useState([])
 	const [status, setStatus] = useState('loading')
-	const [copiedUserId, setCopiedUserId] = useState(null)
+	const [copiedRowId, setCopiedRowId] = useState(null)
 
-	function handleCopyUserId(userId) {
+	function handleCopyUserId(rowId, userId) {
 		if (!userId) return
 		navigator.clipboard.writeText(userId).then(() => {
-			setCopiedUserId(userId)
-			setTimeout(() => setCopiedUserId(null), 1500)
+			setCopiedRowId(rowId)
+			setTimeout(() => setCopiedRowId(null), 1500)
 		})
 	}
 
@@ -84,9 +84,9 @@ function CommissionerSubmissionsPage() {
 									<td
 										className="commissionerSubmissionsUser"
 										title="Click to copy user ID"
-										onClick={() => handleCopyUserId(submission.user_id)}
+										onClick={() => handleCopyUserId(submission.id, submission.user_id)}
 									>
-										{copiedUserId === submission.user_id ? 'Copied!' : shortUser(submission.user_id)}
+										{copiedRowId === submission.id ? 'Copied!' : shortUser(submission.user_id)}
 									</td>
 									<td>{formatDate(submission.created_at)}</td>
 									<td className="commissionerSubmissionsBody">{submission.body}</td>
