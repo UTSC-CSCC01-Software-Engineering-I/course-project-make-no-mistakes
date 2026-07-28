@@ -1,20 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { fetchSubmissions } from '../utils/submissionsApi'
-import { shortUser, formatDate } from '../utils/format'
+import { fetchProposals } from '../utils/proposalsApi'
+import { shortUser, formatDate, toTitleCase } from '../utils/format'
 import './CommissionerDashboardPage.css'
-
-// only counter-proposals have a view page right now
-const ROUTABLE_SUBMISSION_TYPES = new Set(['counter_proposal'])
-
-// turn a snake_case enum value into title case for display
-function toTitleCase(value) {
-  if (!value) return ''
-  return String(value)
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
 
 const commissionerSubmissions = [
   {
@@ -201,7 +189,7 @@ function CommissionerDashboardPage() {
   useEffect(() => {
     let active = true
 
-    fetchSubmissions()
+    fetchProposals()
       .then((data) => {
         if (!active) return
         setRecentSubmissions(data.slice(0, 5))
@@ -337,38 +325,33 @@ function CommissionerDashboardPage() {
             <p className="dashboardSubmissionsMessage">No submissions yet.</p>
           )}
 
-          {recentSubmissionsStatus === 'ready' && recentSubmissions.map((submission) => {
-            const routable = ROUTABLE_SUBMISSION_TYPES.has(submission.submission_type)
-
-            return (
-              <article className="dashboardSubmissionCard" key={submission.id}>
-                <div className="dashboardSubmissionInfo">
-                  <span className="dashboardSubmissionReference">
-                    {submission.public_reference_number}
-                  </span>
-                  <span className="dashboardSubmissionMeta">
-                    {toTitleCase(submission.submission_type)}
-                  </span>
-                </div>
-                <div className="dashboardSubmissionInfo">
-                  <span className="dashboardSubmissionMeta">
-                    {shortUser(submission.user_id)}
-                  </span>
-                  <span className="dashboardSubmissionMeta">
-                    {toTitleCase(submission.status)} - {formatDate(submission.created_at)}
-                  </span>
-                </div>
-                <button
-                  className="dashboardActionButton"
-                  type="button"
-                  disabled={!routable}
-                  onClick={routable ? () => navigate(`/view/${submission.id}`) : undefined}
-                >
-                  View Details
-                </button>
-              </article>
-            )
-          })}
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.map((submission) => (
+            <article className="dashboardSubmissionCard" key={submission.id}>
+              <div className="dashboardSubmissionInfo">
+                <span className="dashboardSubmissionReference">
+                  {submission.public_reference_number}
+                </span>
+                <span className="dashboardSubmissionMeta">
+                  {toTitleCase(submission.status)}
+                </span>
+              </div>
+              <div className="dashboardSubmissionInfo">
+                <span className="dashboardSubmissionMeta">
+                  {shortUser(submission.user_id)}
+                </span>
+                <span className="dashboardSubmissionMeta">
+                  {formatDate(submission.created_at)}
+                </span>
+              </div>
+              <button
+                className="dashboardActionButton"
+                type="button"
+                onClick={() => navigate(`/view/${submission.id}`)}
+              >
+                View Details
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
