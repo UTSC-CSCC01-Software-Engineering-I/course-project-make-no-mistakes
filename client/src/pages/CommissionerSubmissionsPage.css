@@ -67,6 +67,7 @@
 .commissionerSubmissionsUser,
 .commissionerSubmissionsReference {
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .commissionerSubmissionsBody {
