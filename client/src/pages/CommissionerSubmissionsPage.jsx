@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { fetchSubmissions } from '../utils/submissionsApi'
 import { shortUser, formatDate } from '../utils/format'
 import './CommissionerSubmissionsPage.css'
+
+// only counter-proposals have a public view page right now
+const ROUTABLE_SUBMISSION_TYPES = new Set(['counter_proposal'])
 
 // turn a snake_case enum value into Title Case for display
 function toTitleCase(value) {
@@ -13,6 +17,7 @@ function toTitleCase(value) {
 }
 
 function CommissionerSubmissionsPage() {
+	const navigate = useNavigate()
 	const [submissions, setSubmissions] = useState([])
 	const [status, setStatus] = useState('loading')
 	const [copiedRowId, setCopiedRowId] = useState(null)
@@ -76,22 +81,32 @@ function CommissionerSubmissionsPage() {
 							</tr>
 						</thead>
 						<tbody>
-							{submissions.map((submission) => (
-								<tr key={submission.id}>
-									<td>{submission.public_reference_number}</td>
-									<td>{toTitleCase(submission.submission_type)}</td>
-									<td>{toTitleCase(submission.status)}</td>
-									<td
-										className="commissionerSubmissionsUser"
-										title="Click to copy user ID"
-										onClick={() => handleCopyUserId(submission.id, submission.user_id)}
-									>
-										{copiedRowId === submission.id ? 'Copied!' : shortUser(submission.user_id)}
-									</td>
-									<td>{formatDate(submission.created_at)}</td>
-									<td className="commissionerSubmissionsBody">{submission.body}</td>
-								</tr>
-							))}
+							{submissions.map((submission) => {
+								const routable = ROUTABLE_SUBMISSION_TYPES.has(submission.submission_type)
+
+								return (
+									<tr key={submission.id}>
+										<td
+											className={routable ? 'commissionerSubmissionsReference' : undefined}
+											title={routable ? 'Click to view submission' : undefined}
+											onClick={routable ? () => navigate(`/view/${submission.id}`) : undefined}
+										>
+											{submission.public_reference_number}
+										</td>
+										<td>{toTitleCase(submission.submission_type)}</td>
+										<td>{toTitleCase(submission.status)}</td>
+										<td
+											className="commissionerSubmissionsUser"
+											title="Click to copy user ID"
+											onClick={() => handleCopyUserId(submission.id, submission.user_id)}
+										>
+											{copiedRowId === submission.id ? 'Copied!' : shortUser(submission.user_id)}
+										</td>
+										<td>{formatDate(submission.created_at)}</td>
+										<td className="commissionerSubmissionsBody">{submission.body}</td>
+									</tr>
+								)
+							})}
 						</tbody>
 					</table>
 				</div>

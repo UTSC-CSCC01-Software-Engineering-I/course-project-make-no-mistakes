@@ -64,7 +64,8 @@
     border-bottom: none;
 }
 
-.commissionerSubmissionsUser {
+.commissionerSubmissionsUser,
+.commissionerSubmissionsReference {
     cursor: pointer;
 }
 
