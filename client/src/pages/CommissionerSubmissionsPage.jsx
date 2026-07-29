@@ -48,6 +48,14 @@ function CommissionerSubmissionsPage() {
 	const [dateFrom, setDateFrom] = useState('')
 	const [dateTo, setDateTo] = useState('')
 
+	function handleClearFilters() {
+		setReferenceQuery('')
+		setStatusFilter('all')
+		setUserQuery('')
+		setDateFrom('')
+		setDateTo('')
+	}
+
 	function handleCopyUserId(rowId, userId) {
 		if (!userId) return
 		navigator.clipboard.writeText(userId).then(() => {
@@ -150,6 +158,14 @@ function CommissionerSubmissionsPage() {
 							onChange={(event) => setDateTo(event.target.value)}
 						/>
 					</div>
+
+					<button
+						className="commissionerSubmissionsClearFilters"
+						type="button"
+						onClick={handleClearFilters}
+					>
+						Clear Filters
+					</button>
 				</div>
 			)}
 
