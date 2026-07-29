@@ -83,6 +83,13 @@ function CommissionerSubmissionsPage() {
 		}
 	}, [])
 
+	const hasActiveFilters =
+		Boolean(referenceQuery) ||
+		statusFilter !== 'all' ||
+		Boolean(userQuery) ||
+		Boolean(dateFrom) ||
+		Boolean(dateTo)
+
 	const filteredProposals = useMemo(() => {
 		return proposals.filter(
 			(proposal) =>
@@ -159,13 +166,15 @@ function CommissionerSubmissionsPage() {
 						/>
 					</div>
 
-					<button
-						className="commissionerSubmissionsClearFilters"
-						type="button"
-						onClick={handleClearFilters}
-					>
-						Clear Filters
-					</button>
+					{hasActiveFilters && (
+						<button
+							className="commissionerSubmissionsClearFilters"
+							type="button"
+							onClick={handleClearFilters}
+						>
+							Clear Filters
+						</button>
+					)}
 				</div>
 			)}
 
