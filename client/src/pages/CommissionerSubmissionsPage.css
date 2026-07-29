@@ -25,6 +25,42 @@
     font-weight: 500;
 }
 
+.commissionerSubmissionsFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.commissionerSubmissionsFilterField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.commissionerSubmissionsFilterField label {
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.commissionerSubmissionsFilterField input,
+.commissionerSubmissionsFilterField select {
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 10px 12px;
+}
+
+.commissionerSubmissionsFilterField input:focus,
+.commissionerSubmissionsFilterField select:focus {
+    outline: none;
+    border-color: #ff2a5f;
+}
+
 .commissionerSubmissionsTableContainer {
     width: 100%;
     overflow-x: auto;
@@ -79,5 +115,15 @@
 @media (max-width: 520px) {
     .commissionerSubmissionsPage {
         padding: 20px;
+    }
+
+    .commissionerSubmissionsFilters {
+        flex-direction: column;
+    }
+
+    .commissionerSubmissionsFilterField input,
+    .commissionerSubmissionsFilterField select {
+        width: 100%;
+        box-sizing: border-box;
     }
 }
