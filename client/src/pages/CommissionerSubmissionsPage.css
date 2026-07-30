@@ -125,6 +125,28 @@
     text-decoration: underline;
 }
 
+.commissionerSubmissionsStatusSelect {
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #262626;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.commissionerSubmissionsStatusSelect:focus {
+    outline: none;
+    border-color: #ff2a5f;
+}
+
+.commissionerSubmissionsStatusSelect:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
 .commissionerSubmissionsBody {
     max-width: 360px;
     white-space: pre-wrap;
