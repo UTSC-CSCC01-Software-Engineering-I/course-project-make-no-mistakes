@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { fetchProposals } from '../utils/proposalsApi'
+import { fetchProposals, updateProposalStatus } from '../utils/proposalsApi'
 import { shortUser, formatDate, toTitleCase } from '../utils/format'
 import './CommissionerSubmissionsPage.css'
 
@@ -41,6 +41,7 @@ function CommissionerSubmissionsPage() {
 	const [proposals, setProposals] = useState([])
 	const [status, setStatus] = useState('loading')
 	const [copiedRowId, setCopiedRowId] = useState(null)
+	const [savingRowId, setSavingRowId] = useState(null)
 
 	const [referenceQuery, setReferenceQuery] = useState('')
 	const [statusFilter, setStatusFilter] = useState('all')
@@ -54,6 +55,24 @@ function CommissionerSubmissionsPage() {
 		setUserQuery('')
 		setDateFrom('')
 		setDateTo('')
+	}
+
+	function handleStatusChange(rowId, newStatus) {
+		setSavingRowId(rowId)
+		updateProposalStatus(rowId, newStatus)
+			.then((updated) => {
+				setProposals((prev) =>
+					prev.map((proposal) =>
+						proposal.id === rowId ? { ...proposal, status: updated.status } : proposal
+					)
+				)
+			})
+			.catch((error) => {
+				window.alert(error.message || 'Failed to update status.')
+			})
+			.finally(() => {
+				setSavingRowId(null)
+			})
 	}
 
 	function handleCopyUserId(rowId, userId) {
@@ -216,7 +235,22 @@ function CommissionerSubmissionsPage() {
 									>
 										{proposal.public_reference_number}
 									</td>
-									<td>{toTitleCase(proposal.status)}</td>
+									<td>
+										<select
+											className="commissionerSubmissionsStatusSelect"
+											value={proposal.status}
+											disabled={savingRowId === proposal.id}
+											onChange={(event) =>
+												handleStatusChange(proposal.id, event.target.value)
+											}
+										>
+											{STATUS_OPTIONS.map((option) => (
+												<option key={option} value={option}>
+													{toTitleCase(option)}
+												</option>
+											))}
+										</select>
+									</td>
 									<td
 										className="commissionerSubmissionsUser"
 										title="Click to copy user ID"

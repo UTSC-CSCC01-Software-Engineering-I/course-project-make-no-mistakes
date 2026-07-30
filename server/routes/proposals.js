@@ -1,11 +1,12 @@
 const express = require("express");
 
 const supabaseAdmin = require("../lib/supabaseAdmin");
-const { requireAuth } = require("../middleware/requireRole");
+const { requireAuth, requireCommissioner } = require("../middleware/requireRole");
 
 const proposalsRouter = express.Router();
 
 const COUNTER_PROPOSAL = "counter_proposal";
+const VALID_STATUSES = ["received", "under_review", "addressed"];
 
 // list all counter-proposals, newest first
 proposalsRouter.get("/", async (req, res) => {
@@ -85,6 +86,34 @@ proposalsRouter.post("/", requireAuth, async (req, res) => {
 	}
 
 	return res.status(201).json(data);
+});
+
+// update a counter-proposal's processing status (commissioner-only)
+proposalsRouter.patch("/:id/status", requireAuth, requireCommissioner, async (req, res) => {
+	const { status } = req.body;
+
+	if (!VALID_STATUSES.includes(status)) {
+		return res.status(400).json({ error: "Invalid status." });
+	}
+
+	const { data, error } = await supabaseAdmin
+		.from("submissions")
+		.update({ status })
+		.eq("id", req.params.id)
+		.eq("submission_type", COUNTER_PROPOSAL)
+		.select("*")
+		.maybeSingle();
+
+	if (error) {
+		console.error("[UPDATE PROPOSAL STATUS ERROR]", error);
+		return res.status(500).json({ error: "Failed to update proposal status." });
+	}
+
+	if (!data) {
+		return res.status(404).json({ error: "Proposal not found." });
+	}
+
+	return res.status(200).json(data);
 });
 
 module.exports = proposalsRouter;

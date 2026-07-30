@@ -4,8 +4,9 @@ import { io } from 'socket.io-client'
 
 import ProposalComment from '../components/ProposalComment'
 import Map from '../components/Map'
-import { fetchProposal } from '../utils/proposalsApi'
-import { shortUser, formatDate } from '../utils/format'
+import { fetchProposal, updateProposalStatus } from '../utils/proposalsApi'
+import { shortUser, formatDate, toTitleCase } from '../utils/format'
+import { useRoleContext } from '../utils/RoleProvider'
 import {
   getDistanceInMeters,
   getPolygonAreaOverlapPercentage,
@@ -18,6 +19,7 @@ import thumbsUpIcon from '../assets/thumbsUp.png'
 import commentIcon from '../assets/greencomment.png'
 
 const DISTANCE_THRESHOLD = 50
+const STATUS_OPTIONS = ['received', 'under_review', 'addressed']
 const AUTH_TOKEN_STORAGE_KEY = 'sb_token'
 const LEGACY_AUTH_TOKEN_STORAGE_KEY = 'token'
 const LOGIN_PATH = '/login'
@@ -163,7 +165,11 @@ function ViewProposalPage() {
   const { proposalId } = useParams()
   const mapComponentRef = useRef(null)
 
+  const { role } = useRoleContext()
+  const isCommissioner = role === 'commissioner'
+
   const [proposal, setProposal] = useState(null)
+  const [savingStatus, setSavingStatus] = useState(false)
 
   // loading | ready | notfound | error
   const [proposalStatus, setProposalStatus] =
@@ -701,6 +707,30 @@ function ViewProposalPage() {
     }
   }
 
+  function handleStatusChange(event) {
+    const newStatus = event.target.value
+
+    setSavingStatus(true)
+
+    updateProposalStatus(proposal.id, newStatus)
+      .then((updated) => {
+        setProposal((current) =>
+          current
+            ? {
+                ...current,
+                status: updated.status,
+              }
+            : current
+        )
+      })
+      .catch((error) => {
+        window.alert(error.message || 'Failed to update status.')
+      })
+      .finally(() => {
+        setSavingStatus(false)
+      })
+  }
+
   function incrementLikes() {
     setLikes(
       (currentLikes) =>
@@ -932,6 +962,32 @@ function ViewProposalPage() {
               proposal.created_at
             )}
           </span>
+
+          {isCommissioner && (
+            <div className="proposalStatusControl">
+              <label htmlFor="proposal-status">
+                Status
+              </label>
+
+              <select
+                id="proposal-status"
+                value={proposal.status}
+                disabled={savingStatus}
+                onChange={handleStatusChange}
+              >
+                {STATUS_OPTIONS.map(
+                  (option) => (
+                    <option
+                      key={option}
+                      value={option}
+                    >
+                      {toTitleCase(option)}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="horizontalCommentHeaderBox">
