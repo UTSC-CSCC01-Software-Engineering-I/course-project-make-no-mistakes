@@ -137,7 +137,7 @@
     cursor: pointer;
 }
 
-.commissionerSubmissionsStatusSelect:focus {
+.commissionerSubmissionsStatusSelect:hover {
     outline: none;
     border-color: #ff2a5f;
 }
