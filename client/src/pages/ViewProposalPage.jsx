@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import { io } from 'socket.io-client'
 
 import ProposalComment from '../components/ProposalComment'
+import CommissionerReviewPanel from '../components/CommissionerReviewPanel'
 import Map from '../components/Map'
 import { fetchProposal, updateProposalStatus } from '../utils/proposalsApi'
 import { shortUser, formatDate, toTitleCase } from '../utils/format'
@@ -1169,6 +1170,12 @@ function ViewProposalPage() {
           className="commentBox"
           aria-label="Proposal comments"
         >
+          {isCommissioner && (
+            <CommissionerReviewPanel
+              submissionId={proposal.id}
+            />
+          )}
+
           <div className="addCommentSection">
             {isLoggedIn ? (
               <form
