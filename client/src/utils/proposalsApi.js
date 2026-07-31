@@ -26,3 +26,8 @@ export function fetchMyProposals(token = getToken()) {
 export function createProposal(payload, token = getToken()) {
 	return run(api.post('/', payload, authConfig(token)))
 }
+
+// update a counter-proposal's processing status (commissioner-only)
+export function updateProposalStatus(id, status, token = getToken()) {
+	return run(api.patch(`/${encodeURIComponent(id)}/status`, { status }, authConfig(token)))
+}

@@ -7,6 +7,7 @@ import LoginPage from '/src/pages/auth/LoginPage'
 import RegisterPage from '/src/pages/auth/RegisterPage'
 import ViewProposalPage from '/src/pages/ViewProposalPage'
 import CommissionerDashboardPage from '/src/pages/CommissionerDashboardPage'
+import CommissionerSubmissionsPage from '/src/pages/CommissionerSubmissionsPage'
 import RequireRole from '/src/components/auth/RequireRole'
 import RoleProvider from '/src/utils/RoleProvider'
 import UserSubmissionsPage from '/src/pages/UserSubmissionsPage'
@@ -25,6 +26,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/commissioner-dashboard" element={<RequireRole role="commissioner"><CommissionerDashboardPage /></RequireRole>} />
+        <Route path="/commissioner-submissions" element={<RequireRole role="commissioner"><CommissionerSubmissionsPage /></RequireRole>} />
         <Route path="/user-submissions" element={<RequireRole role="publicuser"><UserSubmissionsPage /></RequireRole>} />
         <Route path="/submit-objection" element={<RequireRole role="publicuser"><SubmitObjectionPage /></RequireRole>} />
         <Route path="/submit-counter-proposal" element={<RequireRole role="publicuser"><SubmitCounterProposalPage /></RequireRole>} />
