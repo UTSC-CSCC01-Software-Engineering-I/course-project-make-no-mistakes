@@ -1,0 +1,141 @@
+.commissionerReviewPanel {
+  padding: 16px;
+  border-bottom: 1px solid #3a3a3a;
+  background-color: #262626;
+  font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
+}
+
+.commissionerTagsHeading,
+.commissionerNotesHeading {
+  margin: 0 0 12px;
+  color: #f0f0f0;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* the Notes heading follows the tags block, so it needs top spacing */
+.commissionerNotesHeading {
+  margin-top: 20px;
+}
+
+.commissionerReviewTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.commissionerTag {
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  background-color: transparent;
+  color: #a0a0a0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.commissionerTag:hover:not(:disabled) {
+  border-color: #ff2a5f;
+  color: #f0f0f0;
+}
+
+.commissionerTag.active {
+  background-color: rgba(255, 42, 95, 0.15);
+  border-color: #ff2a5f;
+  color: #ff2a5f;
+}
+
+.commissionerTag:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.commissionerNoteForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.commissionerNoteInput {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+.commissionerNoteInput:focus {
+  outline: none;
+  border-color: #ff2a5f;
+}
+
+.commissionerNoteSubmit {
+  border: 1px solid #ff2a5f;
+  border-radius: 8px;
+  background-color: rgba(255, 42, 95, 0.15);
+  color: #ff2a5f;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.commissionerNoteSubmit:hover:not(:disabled) {
+  background-color: rgba(255, 42, 95, 0.25);
+}
+
+.commissionerNoteSubmit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.commissionerNoteList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.commissionerNoteEmpty {
+  color: #a0a0a0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.commissionerNote {
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  padding: 10px 12px;
+}
+
+.commissionerNoteText {
+  margin: 0 0 6px;
+  color: #f0f0f0;
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.commissionerNoteMeta {
+  color: #a0a0a0;
+  font-size: 12px;
+  font-weight: 500;
+}
