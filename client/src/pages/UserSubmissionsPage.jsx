@@ -1,22 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import SearchBar from '../components/SearchBar';
 import { fetchMyProposals } from '../utils/proposalsApi';
 import { formatDate, toTitleCase } from '../utils/format';
 import './UserSubmissionsPage.css';
 
 const STATUS_OPTIONS = ['received', 'under_review', 'addressed'];
-
-function getSubmissionDateInputValue(proposal) {
-    const date = new Date(proposal.created_at);
-    if (Number.isNaN(date.getTime())) return '';
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-}
 
 function matchesReference(proposal, referenceQuery) {
     if (!referenceQuery) return true;
@@ -27,7 +15,13 @@ function matchesReference(proposal, referenceQuery) {
 
 function matchesDate(proposal, searchDate) {
     if (!searchDate) return true;
-    return getSubmissionDateInputValue(proposal) === searchDate;
+
+    const submittedAt = new Date(proposal.created_at);
+
+    return (
+        submittedAt >= new Date(`${searchDate}T00:00:00`) &&
+        submittedAt <= new Date(`${searchDate}T23:59:59.999`)
+    );
 }
 
 function matchesStatus(proposal, statusFilter) {
@@ -107,14 +101,15 @@ function UserSubmissionsPage() {
                     />
                 </div>
 
-                <SearchBar
-                    value={searchDate}
-                    onChange={setSearchDate}
-                    searchType="date"
-                    showSearchTypeSelector={false}
-                    showFilter={false}
-                    showSearchButton={false}
-                />
+                <div className="userSubmissionsFilterField">
+                    <label htmlFor="date-search">Date</label>
+                    <input
+                        id="date-search"
+                        type="date"
+                        value={searchDate}
+                        onChange={(event) => setSearchDate(event.target.value)}
+                    />
+                </div>
 
                 <div className="userSubmissionsFilterField">
                     <label htmlFor="status-filter">Status</label>
