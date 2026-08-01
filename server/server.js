@@ -25,6 +25,9 @@ app.use("/auth", authRouter);
 const commentsRouter = require('./routes/comments.js');
 app.use("/api/comments", commentsRouter);
 
+const counterProposalsRouter = require('./routes/counterProposals.js');
+app.use('/api/counter-proposals', counterProposalsRouter);
+
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");
 });

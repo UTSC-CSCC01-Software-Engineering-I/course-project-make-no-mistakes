@@ -26,6 +26,7 @@ function App() {
         <Route path="/user-submissions" element={<UserSubmissionsPage />} />
         <Route path="/submit-objection" element={<SubmitObjectionPage />} />
         <Route path="/submit-counter-proposal" element={<SubmitCounterProposalPage />} />
+        <Route path="/view/:proposalId/counter-proposal" element={<SubmitCounterProposalPage />} />
         <Route
           path="/view/:proposalId"
           element={<ViewProposalPage />}

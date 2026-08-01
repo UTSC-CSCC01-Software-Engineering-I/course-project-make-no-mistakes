@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { NavLink, useParams } from 'react-router'
 import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 
@@ -134,6 +134,9 @@ function ViewProposalPage() {
           <span className="proposalHeaderText">
             {proposal.postDate}
           </span>
+          <NavLink className="counterProposalLink" to={`/view/${proposal.id}/counter-proposal`}>
+            Counter-Propose
+          </NavLink>
         </div>
 
         <div className="horizontalCommentHeaderBox">

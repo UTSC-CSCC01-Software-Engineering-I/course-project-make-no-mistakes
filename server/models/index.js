@@ -21,8 +21,16 @@ const Comment = sequelize.define('Comment', {
   },
 });
 
+const CounterProposal = sequelize.define('CounterProposal', {
+  sourceProposalId: { type: DataTypes.STRING, allowNull: false },
+  userId: { type: DataTypes.STRING, allowNull: false },
+  authorName: { type: DataTypes.STRING, allowNull: false },
+  rationale: { type: DataTypes.TEXT, allowNull: false },
+  boundaryGeometry: { type: DataTypes.JSON, allowNull: false },
+  status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'received' },
+});
+
 // Forces SQLite to create the tables if they are missing
 sequelize.sync();
 
-// Export only the Comment model
-module.exports = { sequelize, Comment };
+module.exports = { sequelize, Comment, CounterProposal };

@@ -1,36 +1,9 @@
 const express = require('express');
 const { Comment } = require('../models/index.js');
 const { addCommentToQueue } = require('../worker/commentWorker.js'); 
-const supabase = require('../lib/supabase'); // NEW: Import Supabase to verify users
+const authenticate = require('../middleware/authenticate.js');
 
 const commentsRouter = express.Router();
-
-// REAL Auth Middleware
-const isAuthenticated = async (req, res, next) => {
-  try {
-    // 1. Grab the token from the request headers
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Missing or invalid token' });
-    }
-
-    const token = authHeader.split(' ')[1];
-    
-    // 2. Ask Supabase to verify the token and get the real user
-    const { data, error } = await supabase.auth.getUser(token);
-    
-    if (error || !data?.user) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
-    }
-
-    // 3. Attach the REAL Supabase UUID to the request
-    req.user = { id: data.user.id };
-    next();
-  } catch (err) {
-    console.error("[AUTH ERROR]", err);
-    return res.status(500).json({ error: 'Authentication error' });
-  }
-};
 
 // 0. GET Comments
 commentsRouter.get('/', async (req, res) => {
@@ -49,7 +22,7 @@ commentsRouter.get('/', async (req, res) => {
 });
 
 // 1. POST Comment
-commentsRouter.post('/', isAuthenticated, async (req, res) => {
+commentsRouter.post('/', authenticate, async (req, res) => {
   console.log(`\n[ROUTE] --- NEW COMMENT POST REQUEST ---`);
   console.log(`[ROUTE] Request body:`, req.body);
   console.log(`[ROUTE] Real User ID:`, req.user.id);
@@ -77,7 +50,7 @@ commentsRouter.post('/', isAuthenticated, async (req, res) => {
 });
 
 // 2. DELETE Comment
-commentsRouter.delete('/:id', isAuthenticated, async (req, res) => {
+commentsRouter.delete('/:id', authenticate, async (req, res) => {
   try {
     const comment = await Comment.findByPk(req.params.id);
     if (!comment) return res.status(404).json({ error: "Comment not found" });
@@ -96,7 +69,7 @@ commentsRouter.delete('/:id', isAuthenticated, async (req, res) => {
 });
 
 // 3. PATCH Upvote/Downvote
-commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
+commentsRouter.patch('/:id/vote', authenticate, async (req, res) => {
   const { action } = req.body;
   try {
     const comment = await Comment.findByPk(req.params.id);

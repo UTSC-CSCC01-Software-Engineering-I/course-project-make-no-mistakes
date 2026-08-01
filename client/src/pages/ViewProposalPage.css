@@ -95,6 +95,21 @@ body {
     font-size: 16px;
 }
 
+.counterProposalLink {
+    border: 2px solid #5b4f8a;
+    border-radius: 16px;
+    color: #5b4f8a;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 10px;
+    text-decoration: none;
+}
+
+.counterProposalLink:hover {
+    background-color: #d3c3e2;
+}
+
 .commentHeaderText {
     font-family: Verdana;
     color: #9773b3;

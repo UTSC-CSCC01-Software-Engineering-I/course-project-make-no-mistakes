@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import SearchBar from '../components/SearchBar';
 import ProposalPreview from '../components/ProposalPreview';
@@ -29,19 +29,6 @@ const fakeSubmissions = [
         postComments: 14
     },
     {
-        id: 3,
-        referenceNumber: 'CRMP-2026-003',
-        type: 'counterproposal',
-        status: 'Addressed',
-        date: '06/18/2026',
-        riding: 'Ottawa West, Ontario',
-        content: 'Alternative map grouping the northern suburbs with the rural district to balance the population quota while maintaining communities of interest.',
-        previewURL: 'https://placehold.co/500x280/87bd93/1e5d2d?text=Counter+Proposal+Map',
-        postRating: 60,
-        postVotes: 45,
-        postComments: 8
-    },
-    {
         id: 4,
         referenceNumber: 'CRMP-2026-004',
         type: 'comment',
@@ -66,10 +53,48 @@ const fakeSubmissions = [
 ];
 
 function UserSubmissionsPage() {
+    const authToken = localStorage.getItem('sb_token');
     const [activeTab, setActiveTab] = useState('comment');
+    const [counterProposals, setCounterProposals] = useState([]);
+    const [isLoadingCounterProposals, setIsLoadingCounterProposals] = useState(Boolean(authToken));
+    const [counterProposalError, setCounterProposalError] = useState(
+        authToken ? '' : 'Log in to view your saved counter-proposals.'
+    );
     const navigate = useNavigate();
 
-    const filteredSubmissions = fakeSubmissions.filter(sub => sub.type === activeTab);
+    useEffect(() => {
+        if (!authToken) return;
+
+        fetch('/api/counter-proposals/mine', {
+            headers: { Authorization: `Bearer ${authToken}` },
+        })
+            .then(async (response) => {
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Failed to load counter-proposals');
+                return result;
+            })
+            .then(setCounterProposals)
+            .catch((error) => setCounterProposalError(error.message))
+            .finally(() => setIsLoadingCounterProposals(false));
+    }, [authToken]);
+
+    const savedCounterProposals = counterProposals.map((counterProposal) => ({
+        id: counterProposal.id,
+        referenceNumber: `CRMP-${String(counterProposal.id).padStart(4, '0')}`,
+        type: 'counterproposal',
+        status: counterProposal.status.charAt(0).toUpperCase() + counterProposal.status.slice(1),
+        date: new Date(counterProposal.createdAt).toLocaleDateString(),
+        riding: `Counter to proposal ${counterProposal.sourceProposalId}`,
+        content: counterProposal.rationale,
+        boundaryGeometry: counterProposal.boundaryGeometry,
+        postRating: 0,
+        postLikes: 0,
+        postComments: 0,
+    }));
+
+    const filteredSubmissions = activeTab === 'counterproposal'
+        ? savedCounterProposals
+        : fakeSubmissions.filter(sub => sub.type === activeTab);
 
     return (
         <main className="subsPage">
@@ -108,7 +133,11 @@ function UserSubmissionsPage() {
 
             <section className="userSubmissionsContainer">
                 <div className="userSubmissionsList">
-                    {filteredSubmissions.length > 0 ? (
+                    {activeTab === 'counterproposal' && isLoadingCounterProposals ? (
+                        <p className="noSubmissionsMessage">Loading counter-proposals...</p>
+                    ) : activeTab === 'counterproposal' && counterProposalError ? (
+                        <p className="noSubmissionsMessage">{counterProposalError}</p>
+                    ) : filteredSubmissions.length > 0 ? (
                         filteredSubmissions.map(sub => (
                             <article className="userSubmissionCard" key={sub.id}>
                                 <div className="userSubmissionHeader">
@@ -131,10 +160,10 @@ function UserSubmissionsPage() {
                                                 postDate={sub.date}
                                                 previewURL={sub.previewURL}
                                                 postRating={sub.postRating}
-                                                postVotes={sub.postVotes}
+                                                postLikes={sub.postLikes ?? sub.postVotes}
                                                 postComments={sub.postComments}
                                             >
-                                                <Map mode="view" />
+                                                <Map mode="view" geometry={sub.boundaryGeometry} />
                                             </ProposalPreview>
                                         </div>
                                     )}
