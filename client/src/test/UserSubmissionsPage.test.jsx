@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import UserSubmissionsPage from "../pages/UserSubmissionsPage";
@@ -77,8 +77,10 @@ test("renders the user's own submissions in a table", async () => {
 
   expect(await screen.findByText("CRMP-2026-001")).toBeInTheDocument();
   expect(screen.getByText("CRMP-2026-002")).toBeInTheDocument();
-  expect(screen.getByText("Received")).toBeInTheDocument();
-  expect(screen.getByText("Under Review")).toBeInTheDocument();
+
+  const table = screen.getByRole("table");
+  expect(within(table).getByText("Received")).toBeInTheDocument();
+  expect(within(table).getByText("Under Review")).toBeInTheDocument();
   expect(screen.getByText("Rationale for proposal A.")).toBeInTheDocument();
 });
 
