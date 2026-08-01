@@ -82,6 +82,20 @@ test("renders the user's own submissions in a table", async () => {
   expect(screen.getByText("Rationale for proposal A.")).toBeInTheDocument();
 });
 
+test("filters submissions by reference number", async () => {
+  const user = userEvent.setup();
+  fetchMyProposals.mockResolvedValue([PROPOSAL_A, PROPOSAL_B]);
+
+  render(<UserSubmissionsPage />);
+
+  await screen.findByText("CRMP-2026-001");
+
+  await user.type(screen.getByLabelText("Reference"), "2026-002");
+
+  expect(screen.queryByText("CRMP-2026-001")).not.toBeInTheDocument();
+  expect(screen.getByText("CRMP-2026-002")).toBeInTheDocument();
+});
+
 test("filters submissions by selected date", async () => {
   const user = userEvent.setup();
   fetchMyProposals.mockResolvedValue([PROPOSAL_A, PROPOSAL_B]);
@@ -90,7 +104,7 @@ test("filters submissions by selected date", async () => {
 
   await screen.findByText("CRMP-2026-001");
 
-  await user.type(screen.getByLabelText("Search by Date"), localDateInputValue(PROPOSAL_A.created_at));
+  await user.type(screen.getByLabelText("Date"), localDateInputValue(PROPOSAL_A.created_at));
 
   expect(screen.getByText("CRMP-2026-001")).toBeInTheDocument();
   expect(screen.queryByText("CRMP-2026-002")).not.toBeInTheDocument();
@@ -140,6 +154,8 @@ test("clear filters button appears once a filter is active and resets status and
   await user.click(screen.getByRole("button", { name: "Clear Filters" }));
 
   expect(screen.getByLabelText("Status")).toHaveValue("all");
+  expect(screen.getByLabelText("Reference")).toHaveValue("");
+  expect(screen.getByLabelText("Date")).toHaveValue("");
   expect(screen.getByText("CRMP-2026-002")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Clear Filters" })).not.toBeInTheDocument();
 });
