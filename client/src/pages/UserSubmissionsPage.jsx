@@ -89,6 +89,7 @@ function UserSubmissionsPage() {
                     searchType="date"
                     showSearchTypeSelector={false}
                     showFilter={false}
+                    showSearchButton={false}
                 />
 
                 <div className="userSubmissionsFilterField">
