@@ -83,4 +83,85 @@ describe('User-owned map submissions', () => {
     expect(response.status).toBe(401);
     expect(Submission.findOne).not.toHaveBeenCalled();
   });
+
+  test('stores counter-proposal geometry under the authenticated Supabase user', async () => {
+    const mapData = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { riding: 'Toronto Centre' },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [-79.4, 43.64],
+            [-79.36, 43.64],
+            [-79.36, 43.68],
+            [-79.4, 43.64],
+          ]],
+        },
+      }],
+    };
+    Submission.create.mockImplementation(async (values) => ({ id: 12, ...values }));
+
+    const response = await request(app)
+      .post('/api/users/me/submissions')
+      .set('Authorization', 'Bearer valid-token')
+      .send({
+        type: 'counterproposal',
+        content: 'Keep the neighbourhood within one district.',
+        riding: 'Toronto Centre',
+        proposalId: '42',
+        mapData,
+        userId: 'spoofed-user',
+      });
+
+    expect(response.status).toBe(201);
+    expect(Submission.create).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'counterproposal',
+      content: 'Keep the neighbourhood within one district.',
+      riding: 'Toronto Centre',
+      proposalId: '42',
+      mapData,
+      userId: 'auth-user-1',
+    }));
+  });
+
+  test('rejects a counter-proposal without stored boundary geometry', async () => {
+    const response = await request(app)
+      .post('/api/users/me/submissions')
+      .set('Authorization', 'Bearer valid-token')
+      .send({
+        type: 'counterproposal',
+        content: 'This submission has no drawing.',
+        proposalId: '42',
+        mapData: { type: 'FeatureCollection', features: [] },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe(
+      'Counter-proposals require a non-empty GeoJSON FeatureCollection'
+    );
+    expect(Submission.create).not.toHaveBeenCalled();
+  });
+
+  test('does not store an unauthenticated counter-proposal', async () => {
+    const response = await request(app)
+      .post('/api/users/me/submissions')
+      .send({
+        type: 'counterproposal',
+        content: 'Unauthenticated submission.',
+        proposalId: '42',
+        mapData: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'Point', coordinates: [-79.38, 43.65] },
+          }],
+        },
+      });
+
+    expect(response.status).toBe(401);
+    expect(Submission.create).not.toHaveBeenCalled();
+  });
 });

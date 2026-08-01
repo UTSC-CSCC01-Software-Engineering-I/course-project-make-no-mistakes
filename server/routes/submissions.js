@@ -73,6 +73,11 @@ submissionsRouter.post('/me/submissions', isAuthenticated, async (req, res) => {
     if (mapData != null && !isFeatureCollection(mapData)) {
       return res.status(400).json({ error: 'mapData must be a GeoJSON FeatureCollection' });
     }
+    if (type === 'counterproposal' && (!isFeatureCollection(mapData) || mapData.features.length === 0)) {
+      return res.status(400).json({
+        error: 'Counter-proposals require a non-empty GeoJSON FeatureCollection',
+      });
+    }
 
     const now = new Date();
     const date = now.toLocaleDateString('en-US', {
