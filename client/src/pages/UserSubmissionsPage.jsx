@@ -18,6 +18,13 @@ function getSubmissionDateInputValue(proposal) {
     return `${year}-${month}-${day}`;
 }
 
+function matchesReference(proposal, referenceQuery) {
+    if (!referenceQuery) return true;
+    return proposal.public_reference_number
+        .toLowerCase()
+        .includes(referenceQuery.trim().toLowerCase());
+}
+
 function matchesDate(proposal, searchDate) {
     if (!searchDate) return true;
     return getSubmissionDateInputValue(proposal) === searchDate;
@@ -33,10 +40,12 @@ function UserSubmissionsPage() {
     const [proposals, setProposals] = useState([]);
     const [status, setStatus] = useState('loading');
 
+    const [referenceQuery, setReferenceQuery] = useState('');
     const [searchDate, setSearchDate] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
     function handleClearFilters() {
+        setReferenceQuery('');
         setSearchDate('');
         setStatusFilter('all');
     }
@@ -60,13 +69,17 @@ function UserSubmissionsPage() {
         };
     }, []);
 
-    const hasActiveFilters = Boolean(searchDate) || statusFilter !== 'all';
+    const hasActiveFilters =
+        Boolean(referenceQuery) || Boolean(searchDate) || statusFilter !== 'all';
 
     const filteredProposals = useMemo(() => {
         return proposals.filter(
-            (proposal) => matchesDate(proposal, searchDate) && matchesStatus(proposal, statusFilter)
+            (proposal) =>
+                matchesReference(proposal, referenceQuery) &&
+                matchesDate(proposal, searchDate) &&
+                matchesStatus(proposal, statusFilter)
         );
-    }, [proposals, searchDate, statusFilter]);
+    }, [proposals, referenceQuery, searchDate, statusFilter]);
 
     return (
         <main className="userSubmissionsPage">
@@ -83,6 +96,17 @@ function UserSubmissionsPage() {
             </header>
 
             <div className="userSubmissionsFilters">
+                <div className="userSubmissionsFilterField">
+                    <label htmlFor="reference-search">Reference</label>
+                    <input
+                        id="reference-search"
+                        type="text"
+                        placeholder="Search reference number"
+                        value={referenceQuery}
+                        onChange={(event) => setReferenceQuery(event.target.value)}
+                    />
+                </div>
+
                 <SearchBar
                     value={searchDate}
                     onChange={setSearchDate}

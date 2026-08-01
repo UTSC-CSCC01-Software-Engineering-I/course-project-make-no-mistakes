@@ -78,6 +78,7 @@
     white-space: nowrap;
 }
 
+.userSubmissionsFilterField input,
 .userSubmissionsFilterField select {
     border: 1px solid #333333;
     border-radius: 8px;
@@ -88,6 +89,7 @@
     padding: 10px 12px;
 }
 
+.userSubmissionsFilterField input:focus,
 .userSubmissionsFilterField select:focus {
     outline: none;
     border-color: #ff2a5f;
@@ -196,6 +198,7 @@
         max-width: none;
     }
 
+    .userSubmissionsFilterField input,
     .userSubmissionsFilterField select {
         flex: 1;
         min-width: 0;
