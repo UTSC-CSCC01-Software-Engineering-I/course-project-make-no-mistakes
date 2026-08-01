@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useParams } from 'react-router';
 import Map from '../components/Map';
 import { apiService } from '../apiService';
 import './SubmitCounterProposalPage.css';
 
 function SubmitCounterProposalPage() {
+    const { proposalId } = useParams();
     const [rationaleText, setRationaleText] = useState('');
+    const [sourceProposalId, setSourceProposalId] = useState(proposalId || '');
     const [selectedPoint, setSelectedPoint] = useState(null);
     const [mapData, setMapData] = useState({ type: 'FeatureCollection', features: [] });
     const [submitting, setSubmitting] = useState(false);
+    const [mapVersion, setMapVersion] = useState(0);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!localStorage.getItem('sb_token')) {
             alert('Please log in before submitting a map.');
+            return;
+        }
+        if (mapData.features.length === 0) {
+            alert('Draw at least one boundary before submitting.');
             return;
         }
 
@@ -23,10 +31,12 @@ function SubmitCounterProposalPage() {
                 content: rationaleText.trim(),
                 riding: 'Toronto Centre / Spadina—Fort York',
                 mapData,
+                proposalId: sourceProposalId,
             });
             alert(`Counter-proposal ${submission.referenceNumber} submitted successfully.`);
             setRationaleText('');
             setMapData({ type: 'FeatureCollection', features: [] });
+            setMapVersion((current) => current + 1);
         } catch (error) {
             alert(error.message || 'Counter-proposal submission failed.');
         } finally {
@@ -52,6 +62,7 @@ function SubmitCounterProposalPage() {
                         <button className="cpToolButton cpUndo">Undo</button>
                     </div>
                     <Map
+                        key={mapVersion}
                         mode="counterproposal"
                         onMapClick={setSelectedPoint}
                         onDrawChange={setMapData}
@@ -98,6 +109,17 @@ function SubmitCounterProposalPage() {
                         <h2>Proposal Details</h2>
                         
                         <form className="cpForm" onSubmit={handleSubmit}>
+                            <div className="cpFormGroup">
+                                <label htmlFor="sourceProposal">Original Proposal ID</label>
+                                <input
+                                    id="sourceProposal"
+                                    type="text"
+                                    value={sourceProposalId}
+                                    onChange={(event) => setSourceProposalId(event.target.value)}
+                                    placeholder="Enter the proposal being countered"
+                                    required
+                                />
+                            </div>
                             <div className="cpFormGroup">
                                 <label htmlFor="proposalRationale">Proposal Rationale</label>
                                 <textarea 

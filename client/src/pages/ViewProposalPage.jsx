@@ -388,6 +388,9 @@ function ViewProposalPage() {
           <span className="proposalHeaderText">
             {proposal.postDate}
           </span>
+          <a className="counterProposalLink" href={`/view/${proposal.id}/counter-proposal`}>
+            Counter-Propose
+          </a>
         </div>
 
         <div className="horizontalCommentHeaderBox">
