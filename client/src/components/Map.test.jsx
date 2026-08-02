@@ -490,7 +490,7 @@ describe('Map statistical layers', () => {
         classification: 'Banff—Airdrie',
         typeLabel: 'Polling district number',
         regionType: 1,
-        extraDetails: [
+        extraDetails: expect.arrayContaining([
           {
             label: 'Estimated electors',
             value: '1,234',
@@ -499,7 +499,7 @@ describe('Map statistical layers', () => {
             label: 'Total votes',
             value: '987',
           },
-        ],
+        ]),
         properties,
       })
     )

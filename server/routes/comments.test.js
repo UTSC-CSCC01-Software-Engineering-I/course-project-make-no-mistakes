@@ -44,7 +44,13 @@ describe('Comments API Routes', () => {
   test('1. POST /api/comments - Should successfully create a comment and save authorName', async () => {
     // Fake login
     supabase.auth.getUser.mockResolvedValue({
-      data: { user: { id: 'fake-uuid-123' } },
+      data: {
+        user: {
+          id: 'fake-uuid-123',
+          email: 'test@student.ca',
+          user_metadata: {},
+        }
+      },
       error: null
     });
 
@@ -81,7 +87,7 @@ describe('Comments API Routes', () => {
 
     // Should throw a 401 Unauthorized
     expect(response.status).toBe(401);
-    expect(response.body.error).toBe('Missing or invalid token');
+    expect(response.body.error).toBe('You must be logged in to perform this action.');
     expect(Comment.create).not.toHaveBeenCalled(); // Ensure DB was untouched
   });
 

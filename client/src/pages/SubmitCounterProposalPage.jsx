@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Map from '../components/Map';
 import { createProposal } from '../utils/proposalsApi';
+import { RIDING_OPTIONS } from '../utils/ridings';
 import './SubmitCounterProposalPage.css';
 
 function SubmitCounterProposalPage() {
     const navigate = useNavigate();
     const [rationaleText, setRationaleText] = useState('');
+    const [selectedRidingId, setSelectedRidingId] = useState(String(RIDING_OPTIONS[0].id));
     const [selectedPoint, setSelectedPoint] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -19,7 +21,10 @@ function SubmitCounterProposalPage() {
         setSubmitting(true);
 
         try {
-            const proposal = await createProposal({ body: rationaleText.trim() });
+            const proposal = await createProposal({
+                body: rationaleText.trim(),
+                relatedRidings: [Number(selectedRidingId)],
+            });
             setRationaleText('');
             navigate(`/view/${proposal.id}`);
         } catch (err) {
@@ -93,6 +98,20 @@ function SubmitCounterProposalPage() {
                         <h2>Proposal Details</h2>
                         
                         <form className="cpForm" onSubmit={handleSubmit}>
+                            <div className="cpFormGroup">
+                                <label htmlFor="proposalRiding">Affected Riding</label>
+                                <select
+                                    id="proposalRiding"
+                                    value={selectedRidingId}
+                                    onChange={(e) => setSelectedRidingId(e.target.value)}
+                                >
+                                    {RIDING_OPTIONS.map((riding) => (
+                                        <option key={riding.id} value={riding.id}>
+                                            {riding.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className="cpFormGroup">
                                 <label htmlFor="proposalRationale">Proposal Rationale</label>
                                 <textarea 
