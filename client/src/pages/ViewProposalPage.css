@@ -97,6 +97,29 @@ select {
   overflow-wrap: anywhere;
 }
 
+.proposalStatusControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-family);
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.proposalStatusControl select {
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.proposalStatusControl select:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .commentHeaderText {
   color: var(--text-main);
   font-weight: 700;

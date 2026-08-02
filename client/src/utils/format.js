@@ -9,3 +9,12 @@ export function formatDate(iso) {
 	const date = new Date(iso)
 	return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString()
 }
+
+// turns a snake_case enum value into Title Case for display
+export function toTitleCase(value) {
+	if (!value) return ''
+	return String(value)
+		.split('_')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ')
+}
