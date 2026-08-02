@@ -1,40 +1,33 @@
-.subsPage {
+.userSubmissionsPage {
     width: 100%;
     min-height: 100vh;
     background-color: #1a1a1a;
-    padding: 24px;
+    padding: 32px;
     box-sizing: border-box;
     font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
 }
 
-.subsPageHeader {
+.userSubmissionsHeader {
     margin-bottom: 30px;
     text-align: left;
 }
 
-.subsPageHeaderTop {
+.userSubmissionsHeaderTop {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 12px;
 }
 
-.subsPageHeaderTop h1 {
+.userSubmissionsHeaderTop h1 {
     color: #ffffff;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 30px;
     margin: 0;
 }
 
-.subsPageActions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.subsActionButton {
+.userSubmissionsActionButton {
     border: none;
     border-radius: 25px;
     background-color: #ff2a5f;
@@ -44,183 +37,163 @@
     font-weight: 600;
     padding: 10px 20px;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s;
 }
 
-.subsActionButton:hover {
+.userSubmissionsActionButton:hover {
     background-color: #e01a4f;
 }
 
-.subsToggleNav {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-
-.subsToggleButton {
-    border: 1px solid #333333;
-    border-radius: 25px;
-    background-color: transparent;
-    color: #f0f0f0;
-    font-family: inherit;
-    font-size: 14px;
+.userSubmissionsMessage {
+    color: #a0a0a0;
+    font-size: 15px;
     font-weight: 500;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
-.subsToggleButton:hover {
-    background-color: rgba(255, 42, 95, 0.1);
-    border-color: #ff2a5f;
-    color: #ff2a5f;
+.userSubmissionsFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 24px;
 }
 
-.subsToggleButton.active {
-    background-color: #ff2a5f;
-    color: #ffffff;
-    border-color: #ff2a5f;
-}
-
-.userSubmissionsContainer {
-    background-color: transparent;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-.userSubmissionsList {
-    display: grid;
-    gap: 16px;
-}
-
-.userSubmissionCard {
+.userSubmissionsFilterField {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    border: 1px solid #333333;
-    border-radius: 12px;
-    background-color: #262626;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: left;
+    gap: 6px;
 }
 
-.userSubmissionHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #3a3a3a;
-    padding-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.userSubmissionRef {
-    color: #ffffff;
-    font-size: 16px;
+.userSubmissionsFilterField label {
+    color: #a0a0a0;
+    font-size: 12px;
     font-weight: 600;
 }
 
-.userSubmissionBadges {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+.userSubmissionsFilterField input,
+.userSubmissionsFilterField select {
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 10px 12px;
 }
 
-.userSubmissionStatus {
+.userSubmissionsFilterField input:focus,
+.userSubmissionsFilterField select:focus {
+    outline: none;
+    border-color: #ff2a5f;
+}
+
+.userSubmissionsClearFilters {
+    border: 1px solid #ff2a5f;
+    border-radius: 8px;
+    background-color: rgba(255, 42, 95, 0.1);
+    color: #ff2a5f;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+}
+
+.userSubmissionsTableContainer {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #333333;
+    border-radius: 12px;
+}
+
+.userSubmissionsTable {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    background-color: #1a1a1a;
+}
+
+.userSubmissionsTable th,
+.userSubmissionsTable td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #333333;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.userSubmissionsTable th {
+    background-color: #1a1a1a;
+    color: #a0a0a0;
+    font-weight: 600;
+}
+
+.userSubmissionsTable td {
+    color: #f0f0f0;
+    font-weight: 500;
+}
+
+.userSubmissionsTable tr:last-child td {
+    border-bottom: none;
+}
+
+.userSubmissionsReference {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.userSubmissionsStatusBadge {
     font-size: 12px;
     font-weight: 600;
     padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid transparent;
+    white-space: nowrap;
 }
 
-.status-Received {
+.status-received {
     background-color: rgba(160, 160, 160, 0.1);
     color: #a0a0a0;
     border-color: #333333;
 }
 
-.status-UnderReview {
+.status-under_review {
     background-color: rgba(255, 204, 0, 0.1);
     color: #ffcc00;
     border-color: #ffcc00;
 }
 
-.status-Addressed {
+.status-addressed {
     background-color: rgba(255, 42, 95, 0.1);
     color: #ff2a5f;
     border-color: #ff2a5f;
 }
 
-.userSubmissionBody {
-    color: #f0f0f0;
+.userSubmissionsBody {
+    max-width: 360px;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
-.userSubmissionRiding {
-    font-size: 14px;
-    margin: 0 0 8px 0;
-    color: #a0a0a0;
-}
+@media (max-width: 520px) {
+    .userSubmissionsPage {
+        padding: 20px;
+    }
 
-.userSubmissionRiding strong {
-    color: #ffffff;
-}
+    .userSubmissionsFilters {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.userSubmissionContent {
-    font-size: 14px;
-    margin: 0;
-    line-height: 1.5;
-    color: #d0d0d0;
-}
+    .userSubmissionsFilterField input,
+    .userSubmissionsFilterField select {
+        flex: 1;
+        min-width: 0;
+        box-sizing: border-box;
+    }
 
-.userSubmissionPreviewWrapper {
-    margin-top: 16px;
-    display: flex;
-}
-
-.userSubmissionFooter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    border-top: 1px dashed #3a3a3a;
-    padding-top: 16px;
-}
-
-.userSubmissionDate {
-    font-size: 12px;
-    color: #a0a0a0;
-    font-weight: 500;
-}
-
-.userSubmissionAction {
-    border: 1px solid #ff2a5f;
-    border-radius: 20px;
-    background-color: transparent;
-    color: #ff2a5f;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 16px;
-    transition: all 0.2s;
-}
-
-.userSubmissionAction:hover {
-    background-color: #ff2a5f;
-    color: #ffffff;
-}
-
-.noSubmissionsMessage {
-    color: #a0a0a0;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    padding: 40px;
-    background-color: #262626;
-    border-radius: 12px;
-    border: 1px solid #333333;
+    .userSubmissionsClearFilters {
+        width: 100%;
+    }
 }

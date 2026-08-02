@@ -27,6 +27,7 @@ function SearchBar({
     searchTypes = ['user', 'date'],
     showSearchTypeSelector = true,
     showFilter = true,
+    showSearchButton = true,
 }) {
     const [isSearchTypeMenuOpen, setIsSearchTypeMenuOpen] = useState(false)
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false)
@@ -110,17 +111,19 @@ function SearchBar({
                     value={value}
                     onChange={(event) => onChange(event.target.value)}
                 />
-                <button
-                    className="searchBarButton"
-                    type="submit"
-                    aria-label="Search proposals"
-                >
-                    <img
-                        className="searchBarIcon"
-                        src={searchIcon}
-                        alt="Search"
-                    />
-                </button>
+                {showSearchButton && (
+                    <button
+                        className="searchBarButton"
+                        type="submit"
+                        aria-label="Search proposals"
+                    >
+                        <img
+                            className="searchBarIcon"
+                            src={searchIcon}
+                            alt="Search"
+                        />
+                    </button>
+                )}
 
                 {showFilter && (
                     <div className="filterMenu" ref={filterMenuRef}>
