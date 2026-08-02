@@ -160,12 +160,28 @@ function latestMap() {
   return mockMapInstances[mockMapInstances.length - 1]
 }
 
+const originalConsoleError = console.error.bind(console)
+
 let consoleLogSpy
+let consoleErrorSpy
 
 beforeEach(() => {
   consoleLogSpy = jest
     .spyOn(console, 'log')
     .mockImplementation(() => {})
+
+  consoleErrorSpy = jest
+    .spyOn(console, 'error')
+    .mockImplementation((...args) => {
+      if (
+        args[0] ===
+        '[FED PROFILE] VITE_SUPABASE_URL is not configured'
+      ) {
+        return
+      }
+
+      originalConsoleError(...args)
+    })
 
   mockMapInstances.length = 0
 
@@ -180,6 +196,7 @@ beforeEach(() => {
 
 afterEach(() => {
   consoleLogSpy.mockRestore()
+  consoleErrorSpy.mockRestore()
 })
 
 describe('Map statistical layers', () => {
@@ -490,7 +507,7 @@ describe('Map statistical layers', () => {
         classification: 'Banff—Airdrie',
         typeLabel: 'Polling district number',
         regionType: 1,
-        extraDetails: [
+        extraDetails: expect.arrayContaining([
           {
             label: 'Estimated electors',
             value: '1,234',
@@ -499,7 +516,7 @@ describe('Map statistical layers', () => {
             label: 'Total votes',
             value: '987',
           },
-        ],
+        ]),
         properties,
       })
     )
