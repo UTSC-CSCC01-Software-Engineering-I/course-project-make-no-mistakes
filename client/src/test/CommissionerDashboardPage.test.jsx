@@ -1,6 +1,33 @@
 import { render, screen, within } from "@testing-library/react";
 
 import CommissionerDashboardPage from "../pages/CommissionerDashboardPage";
+import { fetchProposals } from "../utils/proposalsApi";
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router", () => ({
+  __esModule: true,
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock("../utils/proposalsApi", () => ({
+  __esModule: true,
+  fetchProposals: jest.fn(),
+}));
+
+// AI-assisted (claude)
+const recentProposals = Array.from({ length: 6 }, (_, index) => ({
+  id: `id-${index + 1}`,
+  public_reference_number: `CRMP-2026-00${index + 1}`,
+  status: "received",
+  user_id: `user-${index + 1}`,
+  created_at: "2026-06-20T12:00:00.000Z",
+}));
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  fetchProposals.mockReturnValue(new Promise(() => {}));
+});
 
 test("calculates overview statistics from commissioner submissions", () => {
   render(<CommissionerDashboardPage />);
@@ -46,10 +73,28 @@ test("shows submission volume sorted by newest date first", () => {
   expect(volumeRows[1]).toHaveTextContent("Scarborough North");
 });
 
-test("shows the five most recent submissions", () => {
+test("shows the five most recent submissions from the API", async () => {
+  fetchProposals.mockResolvedValue(recentProposals);
+
   render(<CommissionerDashboardPage />);
 
-  expect(screen.getByText("CRMP-2026-001")).toBeInTheDocument();
+  expect(await screen.findByText("CRMP-2026-001")).toBeInTheDocument();
   expect(screen.getByText("CRMP-2026-005")).toBeInTheDocument();
   expect(screen.queryByText("CRMP-2026-006")).not.toBeInTheDocument();
+});
+
+test("shows an empty message when there are no recent submissions", async () => {
+  fetchProposals.mockResolvedValue([]);
+
+  render(<CommissionerDashboardPage />);
+
+  expect(await screen.findByText("No submissions yet.")).toBeInTheDocument();
+});
+
+test("shows an error message when the recent-submissions fetch fails", async () => {
+  fetchProposals.mockRejectedValue(new Error("Request failed."));
+
+  render(<CommissionerDashboardPage />);
+
+  expect(await screen.findByText("Unable to load recent submissions.")).toBeInTheDocument();
 });
