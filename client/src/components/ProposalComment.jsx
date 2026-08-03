@@ -31,6 +31,7 @@ function ProposalComment({
   const [likes, setLikes] = useState(postLikes)
   const [downvotes, setDownvotes] = useState(postDownvotes)
   const [pendingVote, setPendingVote] = useState(null)
+  const [currentVote, setCurrentVote] = useState(null)
 
   useEffect(() => {
     setLikes(postLikes)
@@ -78,6 +79,7 @@ function ProposalComment({
 
       setLikes(Number(responseBody?.upvotes) || 0)
       setDownvotes(Number(responseBody?.downvotes) || 0)
+      setCurrentVote(responseBody?.currentVote || null)
     } catch (error) {
       console.error('[COMMENT VOTE ERROR]', error)
     } finally {
@@ -114,12 +116,13 @@ function ProposalComment({
           </span>
 
           <button
-            className="likeButtonWrapper"
+            className={`likeButtonWrapper ${currentVote === 'upvote' ? 'activeVote' : ''}`}
             type="button"
             disabled={votingDisabled}
             onClick={() => handleVote('upvote')}
             aria-label={isLoggedIn ? 'Upvote comment' : 'Log in to upvote'}
             title={voteTitle}
+            aria-pressed={currentVote === 'upvote'}
           >
             <img
               className="likeButton"
@@ -134,12 +137,13 @@ function ProposalComment({
           </span>
 
           <button
-            className="likeButtonWrapper"
+            className={`likeButtonWrapper ${currentVote === 'downvote' ? 'activeVote' : ''}`}
             type="button"
             disabled={votingDisabled}
             onClick={() => handleVote('downvote')}
             aria-label={isLoggedIn ? 'Downvote comment' : 'Log in to downvote'}
             title={voteTitle}
+            aria-pressed={currentVote === 'downvote'}
           >
             <img
               className="likeButton downvoteIcon"

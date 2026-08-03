@@ -21,8 +21,20 @@ const Comment = sequelize.define('Comment', {
   },
 });
 
+const CommentVote = sequelize.define('CommentVote', {
+  commentId: { type: DataTypes.INTEGER, allowNull: false },
+  userId: { type: DataTypes.STRING, allowNull: false },
+  action: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: { isIn: [['upvote', 'downvote']] },
+  },
+}, {
+  indexes: [{ unique: true, fields: ['commentId', 'userId'] }],
+});
+
 // Forces SQLite to create the tables if they are missing
 sequelize.sync();
 
 // Export only the Comment model
-module.exports = { sequelize, Comment };
+module.exports = { sequelize, Comment, CommentVote };

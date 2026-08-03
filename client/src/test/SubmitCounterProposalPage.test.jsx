@@ -13,7 +13,21 @@ jest.mock("react-router", () => ({
 
 jest.mock("../components/Map", () => ({
   __esModule: true,
-  default: () => <div data-testid="counter-proposal-map" />,
+  default: ({ onDrawChange }) => (
+    <button
+      type="button"
+      onClick={() => onDrawChange({
+        type: "FeatureCollection",
+        features: [{
+          type: "Feature",
+          properties: {},
+          geometry: { type: "Point", coordinates: [-79.38, 43.65] },
+        }],
+      })}
+    >
+      Draw boundary
+    </button>
+  ),
 }));
 
 jest.mock("../utils/proposalsApi", () => ({
@@ -31,6 +45,7 @@ test("submits counter proposal with the selected affected riding", async () => {
 
   render(<SubmitCounterProposalPage />);
 
+  await user.click(screen.getByRole("button", { name: "Draw boundary" }));
   await user.selectOptions(screen.getByLabelText("Affected Riding"), "3");
   await user.type(
     screen.getByLabelText("Proposal Rationale"),
@@ -41,6 +56,14 @@ test("submits counter proposal with the selected affected riding", async () => {
   expect(createProposal).toHaveBeenCalledWith({
     body: "Move this boundary to better match the local community.",
     relatedRidings: [3],
+    mapData: {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: {},
+        geometry: { type: "Point", coordinates: [-79.38, 43.65] },
+      }],
+    },
   });
   expect(mockNavigate).toHaveBeenCalledWith("/view/proposal-123");
 });

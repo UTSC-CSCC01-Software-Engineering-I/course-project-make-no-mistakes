@@ -171,6 +171,7 @@ test("shows the Dashboard link for commissioners", async () => {
   renderNavBar();
 
   expect(await screen.findByRole("link", { name: "Dashboard" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Review" })).toBeInTheDocument();
 });
 
 test("hides the My Submissions link when logged out", () => {
@@ -186,6 +187,8 @@ test("shows the My Submissions link for publicusers", async () => {
   renderNavBar();
 
   expect(await screen.findByRole("link", { name: "My Submissions" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Counterproposal" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Objection" })).toBeInTheDocument();
 });
 
 test("hides the My Submissions link for commissioners", async () => {

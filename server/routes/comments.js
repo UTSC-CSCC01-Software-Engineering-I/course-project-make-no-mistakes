@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { Comment } = require('../models/index.js');
+const { Comment, CommentVote } = require('../models/index.js');
 const { addCommentToQueue } = require('../worker/commentWorker.js');
 const supabase = require('../lib/supabase');
 
@@ -229,12 +229,44 @@ commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
       });
     }
 
+    const [vote, created] = await CommentVote.findOrCreate({
+      where: {
+        commentId: comment.id,
+        userId: req.user.id,
+      },
+      defaults: { action },
+    });
+
     const field = action === 'upvote' ? 'upvotes' : 'downvotes';
+    let currentVote = action;
 
-    await comment.increment(field);
-    await comment.reload();
+    try {
+      if (created) {
+        await comment.increment(field);
+      } else if (vote.action === action) {
+        await comment.decrement(field);
+        await vote.destroy();
+        currentVote = null;
+      } else {
+        const previousField = vote.action === 'upvote' ? 'upvotes' : 'downvotes';
+        await comment.decrement(previousField);
+        await comment.increment(field);
+        await vote.update({ action });
+      }
 
-    return res.status(200).json(comment);
+      await comment.reload();
+    } catch (error) {
+      if (created) {
+        await vote.destroy().catch(() => {});
+      }
+      throw error;
+    }
+
+    const response = typeof comment.toJSON === 'function'
+      ? comment.toJSON()
+      : comment;
+
+    return res.status(200).json({ ...response, currentVote });
   } catch (error) {
     console.error('[VOTE ERROR]', error);
 
