@@ -65,6 +65,11 @@ proposalsRouter.get("/:id", async (req, res) => {
 // create counter-proposal; TODO: only rationale for now, need to add related ridings and such
 proposalsRouter.post("/", requireAuth, async (req, res) => {
 	const body = typeof req.body.body === "string" ? req.body.body.trim() : "";
+	const relatedRidings = Array.isArray(req.body.relatedRidings)
+		? req.body.relatedRidings
+			.map((ridingId) => Number(ridingId))
+			.filter((ridingId) => Number.isInteger(ridingId))
+		: [];
 
 	if (!body) {
 		return res.status(400).json({ error: "Proposal rationale is required." });
@@ -75,6 +80,7 @@ proposalsRouter.post("/", requireAuth, async (req, res) => {
 		.insert({
 			user_id: req.user.id,
 			submission_type: COUNTER_PROPOSAL,
+			related_ridings: relatedRidings,
 			body,
 		})
 		.select("*")
