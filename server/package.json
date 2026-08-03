@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
   "test": "jest",
+  "testv": "jest --verbose",
   "start": "node --env-file=.env server",
   "dev": "node --watch --env-file=.env server",
   "create-commissioner": "node --env-file=.env scripts/createCommissioner"
