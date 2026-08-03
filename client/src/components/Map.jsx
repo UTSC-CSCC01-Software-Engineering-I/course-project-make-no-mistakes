@@ -751,6 +751,8 @@ const Map = forwardRef(
             province = "on",
             boundaryLayer = "none",
             onRegionSelect,
+            multiSelectRegions = false,
+            initialDrawMode = "select",
         },
         ref
     ) => {
@@ -799,8 +801,16 @@ const Map = forwardRef(
         const boundaryLayerRef =
             useRef(boundaryLayer);
 
-        const selectedRegionRef =
-            useRef(null);
+        const multiSelectRegionsRef =
+            useRef(multiSelectRegions);
+
+        /*
+         * Map selection key -> { featureReference, region }.
+         * A Map is used so multiple selected regions can remain
+         * highlighted at the same time.
+         */
+        const selectedRegionsRef =
+            useRef(new globalThis.Map());
 
         const onRegionSelectRef =
             useRef(onRegionSelect);
@@ -819,6 +829,11 @@ const Map = forwardRef(
             boundaryLayerRef.current =
                 boundaryLayer;
         }, [boundaryLayer]);
+
+        useEffect(() => {
+            multiSelectRegionsRef.current =
+                multiSelectRegions;
+        }, [multiSelectRegions]);
 
         useEffect(() => {
             onRegionSelectRef.current =
@@ -884,34 +899,103 @@ const Map = forwardRef(
             };
         }, []);
 
+        function getRegionSelectionKey(
+            source,
+            id
+        ) {
+            return `${source}:${String(id)}`;
+        }
+
+        function notifySelectedRegions() {
+            const selectedRegions =
+                Array.from(
+                    selectedRegionsRef.current.values()
+                ).map(
+                    (entry) => entry.region
+                );
+
+            onRegionSelectRef.current?.(
+                multiSelectRegionsRef.current
+                    ? selectedRegions
+                    : selectedRegions[0] ?? null
+            );
+        }
+
         function clearSelectedRegion() {
             const map =
                 mapRef.current;
 
-            const selectedRegion =
-                selectedRegionRef.current;
+            selectedRegionsRef.current.forEach(
+                ({ featureReference }) => {
+                    if (
+                        map &&
+                        map.getSource(
+                            featureReference.source
+                        )
+                    ) {
+                        map.setFeatureState(
+                            featureReference,
+                            {
+                                selected: false,
+                            }
+                        );
+                    }
+                }
+            );
+
+            selectedRegionsRef.current.clear();
+            notifySelectedRegions();
+        }
+
+        function deselectRegion(region) {
+            const source =
+                region?.sourceId;
+
+            const id =
+                region?.id;
+
+            if (
+                !source ||
+                id == null
+            ) {
+                return;
+            }
+
+            const selectionKey =
+                getRegionSelectionKey(
+                    source,
+                    id
+                );
+
+            const selectedEntry =
+                selectedRegionsRef.current.get(
+                    selectionKey
+                );
+
+            if (!selectedEntry) {
+                return;
+            }
+
+            const map =
+                mapRef.current;
 
             if (
                 map &&
-                selectedRegion &&
-                map.getSource(
-                    selectedRegion.source
-                )
+                map.getSource(source)
             ) {
                 map.setFeatureState(
-                    selectedRegion,
+                    selectedEntry.featureReference,
                     {
                         selected: false,
                     }
                 );
             }
 
-            selectedRegionRef.current =
-                null;
-
-            onRegionSelectRef.current?.(
-                null
+            selectedRegionsRef.current.delete(
+                selectionKey
             );
+
+            notifySelectedRegions();
         }
 
         useImperativeHandle(
@@ -1310,6 +1394,11 @@ const Map = forwardRef(
                     () => {
                         clearSelectedRegion();
                     },
+
+                deselectRegion:
+                    (region) => {
+                        deselectRegion(region);
+                    },
             })
         );
 
@@ -1369,9 +1458,9 @@ const Map = forwardRef(
                 new MaplibreTerradrawControl(
                     {
                         modes: [
+                            "select",
                             "linestring",
                             "polygon",
-                            "select",
                             "delete-selection",
                             "delete",
                             "undo",
@@ -1406,6 +1495,22 @@ const Map = forwardRef(
                             .getTerraDrawInstance();
 
                     if (terraDraw) {
+                        /*
+                         * Begin in selection/click mode instead of
+                         * starting a line or polygon drawing. Pages
+                         * that need another initial tool can override
+                         * this with the initialDrawMode prop.
+                         */
+                        if (
+                            initialDrawMode &&
+                            terraDraw.getMode() !==
+                                initialDrawMode
+                        ) {
+                            terraDraw.setMode(
+                                initialDrawMode
+                            );
+                        }
+
                         terraDraw.on(
                             "change",
                             () => {
@@ -1616,20 +1721,13 @@ const Map = forwardRef(
                             features[0];
 
                         if (!feature) {
-                            clearSelectedRegion();
-                            return;
-                        }
+                            if (
+                                !multiSelectRegionsRef.current
+                            ) {
+                                clearSelectedRegion();
+                            }
 
-                        if (
-                            selectedRegionRef.current
-                        ) {
-                            map.setFeatureState(
-                                selectedRegionRef.current,
-                                {
-                                    selected:
-                                        false,
-                                }
-                            );
+                            return;
                         }
 
                         const properties =
@@ -1705,7 +1803,11 @@ const Map = forwardRef(
                                 properties
                             );
 
-                            clearSelectedRegion();
+                            if (
+                                !multiSelectRegionsRef.current
+                            ) {
+                                clearSelectedRegion();
+                            }
 
                             return;
                         }
@@ -1718,17 +1820,6 @@ const Map = forwardRef(
                                 id:
                                     featureId,
                             };
-
-                        map.setFeatureState(
-                            featureReference,
-                            {
-                                selected:
-                                    true,
-                            }
-                        );
-
-                        selectedRegionRef.current =
-                            featureReference;
 
                         const landArea =
                             Number(
@@ -1948,10 +2039,13 @@ const Map = forwardRef(
                                         ""
                             );
 
-                        onRegionSelectRef.current?.(
+                        const regionDetails =
                             {
                                 id:
                                     featureId,
+
+                                sourceId:
+                                    config.sourceId,
 
                                 provinceLabel:
                                     provinceData
@@ -2033,8 +2127,92 @@ const Map = forwardRef(
 
                                 extraDetails,
                                 properties,
+                            };
+
+                        const selectionKey =
+                            getRegionSelectionKey(
+                                config.sourceId,
+                                featureId
+                            );
+
+                        const selectedRegions =
+                            selectedRegionsRef.current;
+
+                        if (
+                            multiSelectRegionsRef.current
+                        ) {
+                            const existingSelection =
+                                selectedRegions.get(
+                                    selectionKey
+                                );
+
+                            if (existingSelection) {
+                                map.setFeatureState(
+                                    existingSelection.featureReference,
+                                    {
+                                        selected: false,
+                                    }
+                                );
+
+                                selectedRegions.delete(
+                                    selectionKey
+                                );
+                            } else {
+                                map.setFeatureState(
+                                    featureReference,
+                                    {
+                                        selected: true,
+                                    }
+                                );
+
+                                selectedRegions.set(
+                                    selectionKey,
+                                    {
+                                        featureReference,
+                                        region:
+                                            regionDetails,
+                                    }
+                                );
                             }
-                        );
+                        } else {
+                            selectedRegions.forEach(
+                                ({ featureReference:
+                                    previousFeature }) => {
+                                    if (
+                                        map.getSource(
+                                            previousFeature.source
+                                        )
+                                    ) {
+                                        map.setFeatureState(
+                                            previousFeature,
+                                            {
+                                                selected: false,
+                                            }
+                                        );
+                                    }
+                                }
+                            );
+
+                            selectedRegions.clear();
+
+                            map.setFeatureState(
+                                featureReference,
+                                {
+                                    selected: true,
+                                }
+                            );
+
+                            selectedRegions.set(
+                                selectionKey,
+                                {
+                                    featureReference,
+                                    region:
+                                        regionDetails,
+                                }
+                            );
+                        }
+
+                        notifySelectedRegions();
 
                         /*
                          * Do not place the normal

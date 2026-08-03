@@ -18,6 +18,51 @@ function clearAccessToken() {
   localStorage.removeItem(LEGACY_AUTH_TOKEN_STORAGE_KEY)
 }
 
+function parseArrayValue(value) {
+  if (Array.isArray(value)) {
+    return value
+  }
+
+  if (value == null || value === '') {
+    return []
+  }
+
+  if (typeof value !== 'string') {
+    return []
+  }
+
+  try {
+    const parsed = JSON.parse(value)
+
+    return Array.isArray(parsed)
+      ? parsed
+      : []
+  } catch {
+    return [value]
+  }
+}
+
+function normalizeRelatedRidings(value) {
+  return [
+    ...new Set(
+      parseArrayValue(value)
+        .map((riding) => {
+          if (typeof riding === 'string') {
+            return riding.trim()
+          }
+
+          return String(
+            riding?.federalDistrictName ??
+              riding?.federal_district_name ??
+              riding?.name ??
+              ''
+          ).trim()
+        })
+        .filter(Boolean)
+    ),
+  ]
+}
+
 function ProposalComment({
   commentId,
   relatedRidings = [],
@@ -31,6 +76,11 @@ function ProposalComment({
   const [likes, setLikes] = useState(postLikes)
   const [downvotes, setDownvotes] = useState(postDownvotes)
   const [pendingVote, setPendingVote] = useState(null)
+
+  const ridingNames =
+    normalizeRelatedRidings(
+      relatedRidings
+    )
 
   useEffect(() => {
     setLikes(postLikes)
@@ -92,15 +142,25 @@ function ProposalComment({
     <article className="proposalComment">
       <header className="commentHeader">
         <span className="commentHeaderText">{postUser}</span>
-        <time className="commentDateText">{postDate}</time>
+        <time className="commentHeaderText">{postDate}</time>
       </header>
 
-      {relatedRidings.length > 0 && (
-        <div className="commentSubHeader">
-          <span className="commentSubHeaderText">
-            Selected Ridings: {relatedRidings.join(', ')}
-          </span>
-        </div>
+      {ridingNames.length > 0 && (
+        <section
+          className="commentRidingHeaders"
+          aria-label="Federal ridings related to this objection"
+        >
+          {ridingNames.map((riding) => (
+            <div
+              className="commentSubHeader"
+              key={riding}
+            >
+              <span className="commentSubHeaderText">
+                Objection to: {riding}
+              </span>
+            </div>
+          ))}
+        </section>
       )}
 
       <section className="commentBody">

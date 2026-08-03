@@ -59,6 +59,105 @@ function getUserIdFromAccessToken(accessToken) {
   }
 }
 
+function parseArrayValue(value) {
+  if (Array.isArray(value)) {
+    return value
+  }
+
+  if (value == null || value === '') {
+    return []
+  }
+
+  if (typeof value !== 'string') {
+    return []
+  }
+
+  try {
+    const parsed = JSON.parse(value)
+
+    return Array.isArray(parsed)
+      ? parsed
+      : []
+  } catch {
+    return [value]
+  }
+}
+
+function getRelatedRidingNames(comment) {
+  const nameValues = parseArrayValue(
+    comment?.relatedRidings ??
+      comment?.related_ridings
+  )
+
+  const detailValues = parseArrayValue(
+    comment?.relatedRidingDetails ??
+      comment?.related_riding_details
+  )
+
+  return [
+    ...new Set(
+      [...nameValues, ...detailValues]
+        .map((riding) => {
+          if (typeof riding === 'string') {
+            return riding.trim()
+          }
+
+          return String(
+            riding?.federalDistrictName ??
+              riding?.federal_district_name ??
+              riding?.name ??
+              ''
+          ).trim()
+        })
+        .filter(Boolean)
+    ),
+  ]
+}
+
+function normalizeComment(comment) {
+  return {
+    ...comment,
+
+    id:
+      comment?.id ??
+      comment?.commentId ??
+      comment?.comment_id,
+
+    proposalId:
+      comment?.proposalId ??
+      comment?.proposal_id,
+
+    userId:
+      comment?.userId ??
+      comment?.user_id,
+
+    authorName:
+      comment?.authorName ??
+      comment?.author_name ??
+      'Anonymous',
+
+    createdAt:
+      comment?.createdAt ??
+      comment?.created_at ??
+      null,
+
+    content:
+      comment?.content ??
+      '',
+
+    upvotes:
+      comment?.upvotes ??
+      0,
+
+    downvotes:
+      comment?.downvotes ??
+      0,
+
+    relatedRidings:
+      getRelatedRidingNames(comment),
+  }
+}
+
 function SelectedRegionCard({
   selectedRegion,
   fallbackProvinceLabel,
@@ -215,13 +314,55 @@ function ViewProposalPage() {
     useState('on')
 
   const [boundaryLayer, setBoundaryLayer] =
-    useState('none')
+    useState('federalDistricts')
 
-  const [selectedRegion, setSelectedRegion] =
-    useState(null)
+  const [selectedRegions, setSelectedRegions] =
+    useState([])
 
   const selectedProvinceData =
     PROVINCE_MAP_DATA[province]
+
+  /*
+   * Selecting no federal ridings keeps the
+   * submission as a regular comment.
+   *
+   * Selecting one or more federal ridings
+   * changes it into an objection.
+   */
+  const selectedFederalRidings =
+    boundaryLayer === 'federalDistricts'
+      ? selectedRegions
+          .map((region) => {
+            const federalDistrictCode =
+              region?.federalDistrictCode ??
+              region?.identifier
+
+            if (!federalDistrictCode) {
+              return null
+            }
+
+            return {
+              federalDistrictCode:
+                String(federalDistrictCode),
+
+              federalDistrictName:
+                region.name ||
+                'Unknown federal riding',
+
+              province:
+                region.provinceLabel ||
+                selectedProvinceData?.label ||
+                '',
+
+              boundaryVersion:
+                region.regionType || '',
+            }
+          })
+          .filter(Boolean)
+      : []
+
+  const isObjection =
+    selectedFederalRidings.length > 0
 
   const currentUserId =
     getUserIdFromAccessToken(accessToken)
@@ -346,93 +487,148 @@ function ViewProposalPage() {
       return undefined
     }
 
+    let active = true
+
     const controller =
       new AbortController()
 
-    fetch(
-      `/api/comments?proposalId=${encodeURIComponent(proposalId)}`,
-      {
-        signal: controller.signal,
+    async function loadApprovedComments(
+      signal
+    ) {
+      const response = await fetch(
+        `/api/comments?proposalId=${encodeURIComponent(proposalId)}`,
+        signal
+          ? { signal }
+          : undefined
+      )
+
+      if (!response.ok) {
+        throw new Error(
+          `Unable to load comments (${response.status}).`
+        )
       }
-    )
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Unable to load comments (${response.status}).`
-          )
-        }
 
-        return response.json()
-      })
-      .then((commentsResponse) => {
-        if (
-          Array.isArray(
-            commentsResponse
-          )
-        ) {
-          setLiveComments(
-            commentsResponse
-          )
-        }
-      })
-      .catch((error) => {
-        if (
-          error.name !==
-          'AbortError'
-        ) {
-          console.error(
-            '[COMMENTS GET ERROR]',
-            error
-          )
-        }
-      })
+      const commentsResponse =
+        await response.json()
 
-    const socket =
-      io(SOCKET_URL)
+      if (
+        active &&
+        Array.isArray(commentsResponse)
+      ) {
+        setLiveComments(
+          commentsResponse.map(
+            normalizeComment
+          )
+        )
+      }
+    }
+
+    loadApprovedComments(
+      controller.signal
+    ).catch((error) => {
+      if (
+        error.name !== 'AbortError'
+      ) {
+        console.error(
+          '[COMMENTS GET ERROR]',
+          error
+        )
+      }
+    })
+
+    const socket = io(SOCKET_URL)
 
     socket.on(
       'comment_approved',
       (approvedComment) => {
+        const normalizedApprovedComment =
+          normalizeComment(
+            approvedComment
+          )
+
+        const approvedProposalId =
+          normalizedApprovedComment
+            .proposalId
+
         if (
-          String(
-            approvedComment.proposalId
-          ) !== String(proposalId)
+          approvedProposalId != null &&
+          String(approvedProposalId) !==
+            String(proposalId)
         ) {
           return
         }
 
-        setLiveComments(
-          (currentComments) => {
-            const alreadyExists =
-              currentComments.some(
-                (comment) =>
-                  String(
-                    comment.id
-                  ) ===
-                  String(
-                    approvedComment.id
-                  )
-              )
+        /*
+         * Re-fetch the approved comments so the
+         * complete database record is used. Some
+         * moderation workers emit only a partial
+         * Socket.IO payload and may omit ridings.
+         */
+        loadApprovedComments()
+          .catch((error) => {
+            console.error(
+              '[COMMENTS APPROVAL REFRESH ERROR]',
+              error
+            )
 
-            return alreadyExists
-              ? currentComments
-              : [
-                  ...currentComments,
-                  approvedComment,
-                ]
-          }
-        )
+            if (!active) {
+              return
+            }
+
+            setLiveComments(
+              (currentComments) => {
+                const approvedCommentId =
+                  normalizedApprovedComment.id
+
+                const existingIndex =
+                  currentComments.findIndex(
+                    (comment) =>
+                      String(comment.id) ===
+                      String(approvedCommentId)
+                  )
+
+                if (existingIndex < 0) {
+                  return [
+                    ...currentComments,
+                    normalizedApprovedComment,
+                  ]
+                }
+
+                return currentComments.map(
+                  (comment, index) =>
+                    index === existingIndex
+                      ? {
+                          ...comment,
+                          ...normalizedApprovedComment,
+
+                          relatedRidings:
+                            normalizedApprovedComment
+                              .relatedRidings
+                              .length > 0
+                              ? normalizedApprovedComment
+                                  .relatedRidings
+                              : comment
+                                  .relatedRidings,
+                        }
+                      : comment
+                )
+              }
+            )
+          })
       }
     )
 
     socket.on(
       'comment_rejected',
       (data) => {
+        const rejectedProposalId =
+          data?.proposalId ??
+          data?.proposal_id
+
         if (
-          data?.proposalId &&
-          String(
-            data.proposalId
-          ) !== String(proposalId)
+          rejectedProposalId != null &&
+          String(rejectedProposalId) !==
+            String(proposalId)
         ) {
           return
         }
@@ -448,6 +644,7 @@ function ViewProposalPage() {
     )
 
     return () => {
+      active = false
       controller.abort()
       socket.disconnect()
     }
@@ -486,6 +683,10 @@ function ViewProposalPage() {
     const content =
       newCommentText.trim()
 
+    /*
+     * Comment text is the only mandatory
+     * submission field.
+     */
     if (
       !content ||
       isSubmittingComment
@@ -499,6 +700,33 @@ function ViewProposalPage() {
       )
 
       return
+    }
+
+    const submissionType =
+      isObjection
+        ? 'objection'
+        : 'comment'
+
+    const requestBody = {
+      content,
+      proposalId,
+      submissionType,
+    }
+
+    /*
+     * Riding metadata is sent only for an
+     * objection. Normal comments omit these
+     * fields completely.
+     */
+    if (isObjection) {
+      requestBody.relatedRidings =
+        selectedFederalRidings.map(
+          (riding) =>
+            riding.federalDistrictName
+        )
+
+      requestBody.relatedRidingDetails =
+        selectedFederalRidings
     }
 
     setIsSubmittingComment(true)
@@ -520,10 +748,9 @@ function ViewProposalPage() {
             },
 
             body:
-              JSON.stringify({
-                content,
-                proposalId,
-              }),
+              JSON.stringify(
+                requestBody
+              ),
           }
         )
 
@@ -564,7 +791,7 @@ function ViewProposalPage() {
       if (!response.ok) {
         throw new Error(
           responseBody?.error ||
-            `Unable to submit the comment (${response.status}).`
+            `Unable to submit the ${submissionType} (${response.status}).`
         )
       }
 
@@ -574,12 +801,21 @@ function ViewProposalPage() {
         `comment-draft-${proposalId}`
       )
 
+      if (isObjection) {
+        setSelectedRegions([])
+
+        mapComponentRef.current
+          ?.clearSelectedRegion?.()
+      }
+
       setCommentNotice({
         type: 'success',
 
         text:
           responseBody?.message ||
-          'Your comment was submitted for review.',
+          (isObjection
+            ? 'Your objection was submitted for review.'
+            : 'Your comment was submitted for review.'),
       })
     } catch (error) {
       console.error(
@@ -592,7 +828,7 @@ function ViewProposalPage() {
 
         text:
           error.message ||
-          'Unable to submit your comment.',
+          `Unable to submit your ${submissionType}.`,
       })
     } finally {
       setIsSubmittingComment(false)
@@ -870,9 +1106,18 @@ function ViewProposalPage() {
     const nextProvince =
       event.target.value
 
+    const nextProvinceData =
+      PROVINCE_MAP_DATA[nextProvince]
+
     setProvince(nextProvince)
-    setBoundaryLayer('none')
-    setSelectedRegion(null)
+
+    setBoundaryLayer(
+      nextProvinceData?.federalDistricts
+        ? 'federalDistricts'
+        : 'none'
+    )
+
+    setSelectedRegions([])
 
     mapComponentRef.current
       ?.clearSelectedRegion?.()
@@ -885,14 +1130,66 @@ function ViewProposalPage() {
       event.target.value
     )
 
-    setSelectedRegion(null)
+    setSelectedRegions([])
 
     mapComponentRef.current
       ?.clearSelectedRegion?.()
   }
 
-  function handleCloseSelectedRegion() {
-    setSelectedRegion(null)
+  function handleRegionSelect(
+    selection
+  ) {
+    if (
+      boundaryLayer ===
+      'federalDistricts'
+    ) {
+      setSelectedRegions(
+        Array.isArray(selection)
+          ? selection
+          : selection
+            ? [selection]
+            : []
+      )
+
+      return
+    }
+
+    setSelectedRegions(
+      selection
+        ? [selection]
+        : []
+    )
+  }
+
+  function handleRemoveSelectedRegion(
+    region
+  ) {
+    if (
+      mapComponentRef.current
+        ?.deselectRegion
+    ) {
+      mapComponentRef.current
+        .deselectRegion(region)
+
+      return
+    }
+
+    setSelectedRegions(
+      (currentRegions) =>
+        currentRegions.filter(
+          (currentRegion) =>
+            !(
+              currentRegion.sourceId ===
+                region.sourceId &&
+              String(currentRegion.id) ===
+                String(region.id)
+            )
+        )
+    )
+  }
+
+  function handleClearSelectedRegions() {
+    setSelectedRegions([])
 
     mapComponentRef.current
       ?.clearSelectedRegion?.()
@@ -1015,155 +1312,220 @@ function ViewProposalPage() {
           className="mapBox"
           aria-label="Proposal map"
         >
-          <button
-            className="simplifyButton"
-            onClick={
-              handleSimplifyClick
-            }
-            type="button"
-          >
-            Simplify
-          </button>
+          {selectedRegions.length > 0 && (
+            <div
+              className="mapSelectionBar"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="mapSelectionSummary">
+                <span
+                  className="mapSelectionCount"
+                  aria-hidden="true"
+                >
+                  {selectedRegions.length}
+                </span>
 
-          {validationError ? (
-            <div
-              className="validationBanner invalid"
-              role="alert"
-            >
-              {validationError}
-            </div>
-          ) : isLineStringClosed ? (
-            <div
-              className="validationBanner warning"
-              role="status"
-            >
-              Closed polygon detected!
-              Click &quot;Simplify&quot;
-              to fuse coordinates and
-              save memory.
-            </div>
-          ) : (
-            <div
-              className="validationBanner valid"
-              role="status"
-            >
-              ✓ Census Boundaries Valid
+                <span>
+                  {selectedRegions.length === 1
+                    ? 'federal riding selected'
+                    : 'federal ridings selected'}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="clearSelectedRegionsButton"
+                onClick={
+                  handleClearSelectedRegions
+                }
+                aria-label={`Clear all ${
+                  selectedRegions.length
+                } selected federal riding${
+                  selectedRegions.length === 1
+                    ? ''
+                    : 's'
+                }`}
+              >
+                <span
+                  className="clearSelectedRegionsIcon"
+                  aria-hidden="true"
+                >
+                  ×
+                </span>
+
+                Clear all
+              </button>
             </div>
           )}
 
-          <div className="mapLayerControls">
-            <div className="mapLayerControl">
-              <label htmlFor="province-select">
-                Province
-              </label>
+          <div className="mapViewport">
+            <button
+              className="simplifyButton"
+              onClick={
+                handleSimplifyClick
+              }
+              type="button"
+            >
+              Simplify
+            </button>
 
-              <select
-                id="province-select"
-                value={province}
-                onChange={
-                  handleProvinceChange
-                }
+            {validationError ? (
+              <div
+                className="validationBanner invalid"
+                role="alert"
               >
-                {Object.entries(
-                  PROVINCE_MAP_DATA
-                ).map(
-                  ([
-                    provinceCode,
-                    provinceData,
-                  ]) => (
-                    <option
-                      key={
-                        provinceCode
-                      }
-                      value={
-                        provinceCode
-                      }
-                    >
-                      {
-                        provinceData.label
-                      }
+                {validationError}
+              </div>
+            ) : isLineStringClosed ? (
+              <div
+                className="validationBanner warning"
+                role="status"
+              >
+                Closed polygon detected!
+                Click &quot;Simplify&quot;
+                to fuse coordinates and
+                save memory.
+              </div>
+            ) : (
+              <div
+                className="validationBanner valid"
+                role="status"
+              >
+                ✓ Census Boundaries Valid
+              </div>
+            )}
+
+            <div className="mapLayerControls">
+              <div className="mapLayerControl">
+                <label htmlFor="province-select">
+                  Province
+                </label>
+
+                <select
+                  id="province-select"
+                  value={province}
+                  onChange={
+                    handleProvinceChange
+                  }
+                >
+                  {Object.entries(
+                    PROVINCE_MAP_DATA
+                  ).map(
+                    ([
+                      provinceCode,
+                      provinceData,
+                    ]) => (
+                      <option
+                        key={provinceCode}
+                        value={provinceCode}
+                      >
+                        {provinceData.label}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              <div className="mapLayerControl">
+                <label htmlFor="boundary-layer-select">
+                  Statistical layer
+                </label>
+
+                <select
+                  id="boundary-layer-select"
+                  value={
+                    boundaryLayer
+                  }
+                  onChange={
+                    handleBoundaryLayerChange
+                  }
+                >
+                  <option value="none">
+                    None
+                  </option>
+
+                  {selectedProvinceData
+                    ?.populationCentres && (
+                    <option value="populationCentres">
+                      Population centres
                     </option>
+                  )}
+
+                  {selectedProvinceData
+                    ?.designatedPlaces && (
+                    <option value="designatedPlaces">
+                      Designated places
+                    </option>
+                  )}
+
+                  {selectedProvinceData
+                    ?.pollingDistricts && (
+                    <option value="pollingDistricts">
+                      Polling districts
+                    </option>
+                  )}
+
+                  {selectedProvinceData
+                    ?.federalDistricts && (
+                    <option value="federalDistricts">
+                      Federal ridings
+                    </option>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <Map
+              ref={mapComponentRef}
+              mode="objection"
+              onDrawChange={
+                handleDrawChange
+              }
+              province={province}
+              boundaryLayer={
+                boundaryLayer
+              }
+              onRegionSelect={
+                handleRegionSelect
+              }
+              multiSelectRegions={
+                boundaryLayer ===
+                'federalDistricts'
+              }
+              initialDrawMode="select"
+            />
+
+            {selectedRegions.length > 0 && (
+              <div
+                className="selectedRegionList"
+                aria-label="Selected region details"
+              >
+                {selectedRegions.map(
+                  (region) => (
+                    <SelectedRegionCard
+                      key={
+                        `${
+                          region.sourceId ||
+                          'region'
+                        }-${region.id}`
+                      }
+                      selectedRegion={region}
+                      fallbackProvinceLabel={
+                        selectedProvinceData
+                          ?.label
+                      }
+                      onClose={() =>
+                        handleRemoveSelectedRegion(
+                          region
+                        )
+                      }
+                    />
                   )
                 )}
-              </select>
-            </div>
-
-            <div className="mapLayerControl">
-              <label htmlFor="boundary-layer-select">
-                Statistical layer
-              </label>
-
-              <select
-                id="boundary-layer-select"
-                value={
-                  boundaryLayer
-                }
-                onChange={
-                  handleBoundaryLayerChange
-                }
-              >
-                <option value="none">
-                  None
-                </option>
-
-                {selectedProvinceData
-                  ?.populationCentres && (
-                  <option value="populationCentres">
-                    Population centres
-                  </option>
-                )}
-
-                {selectedProvinceData
-                  ?.designatedPlaces && (
-                  <option value="designatedPlaces">
-                    Designated places
-                  </option>
-                )}
-
-                {selectedProvinceData
-                  ?.pollingDistricts && (
-                  <option value="pollingDistricts">
-                    Polling districts
-                  </option>
-                )}
-
-                {selectedProvinceData
-                  ?.federalDistricts && (
-                  <option value="federalDistricts">
-                    Federal ridings
-                  </option>
-                )}
-              </select>
-            </div>
+              </div>
+            )}
           </div>
-
-          <Map
-            ref={mapComponentRef}
-            mode="objection"
-            onDrawChange={
-              handleDrawChange
-            }
-            province={province}
-            boundaryLayer={
-              boundaryLayer
-            }
-            onRegionSelect={
-              setSelectedRegion
-            }
-          />
-
-          <SelectedRegionCard
-            selectedRegion={
-              selectedRegion
-            }
-            fallbackProvinceLabel={
-              selectedProvinceData
-                ?.label
-            }
-            onClose={
-              handleCloseSelectedRegion
-            }
-          />
         </section>
 
         <aside
@@ -1188,8 +1550,40 @@ function ViewProposalPage() {
                   className="commentFormLabel"
                   htmlFor="new-comment"
                 >
-                  Add a comment
+                  {isObjection
+                    ? `Add an objection (${
+                        selectedFederalRidings.length
+                      } ${
+                        selectedFederalRidings.length ===
+                        1
+                          ? 'riding'
+                          : 'ridings'
+                      })`
+                    : 'Add a comment'}
                 </label>
+
+                {isObjection && (
+                  <div
+                    className="selectedRidingHeaders"
+                    aria-label="Ridings included in this objection"
+                  >
+                    {selectedFederalRidings.map(
+                      (riding) => (
+                        <div
+                          className="selectedRidingHeader"
+                          key={
+                            riding.federalDistrictCode
+                          }
+                        >
+                          Objection to:{' '}
+                          {
+                            riding.federalDistrictName
+                          }
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
 
                 <textarea
                   id="new-comment"
@@ -1208,7 +1602,11 @@ function ViewProposalPage() {
                       )
                     }
                   }
-                  placeholder="Write your objection or comment here..."
+                  placeholder={
+                    isObjection
+                      ? 'Explain your objection to the selected federal riding boundaries...'
+                      : 'Write a comment, or select one or more federal ridings to make this an objection...'
+                  }
                   rows={4}
                   maxLength={2000}
                   required
@@ -1232,7 +1630,9 @@ function ViewProposalPage() {
                   >
                     {isSubmittingComment
                       ? 'Submitting...'
-                      : 'Post Comment'}
+                      : isObjection
+                        ? 'Post Objection'
+                        : 'Post Comment'}
                   </button>
                 </div>
 

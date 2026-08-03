@@ -151,6 +151,7 @@ select {
 .loginToCommentButton:focus-visible,
 .commentTextArea:focus-visible,
 .deleteCommentButton:focus-visible,
+.clearSelectedRegionsButton:focus-visible,
 .selectedRegionHeader button:focus-visible,
 .mapLayerControl select:focus-visible {
   outline: 2px solid var(--accent);
@@ -188,13 +189,109 @@ select {
   height: auto;
   min-width: 0;
   min-height: 0;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   overflow: hidden;
   background-color: #1a1a1a;
 }
 
-.mapBox .mapContainer {
+/*
+ * The toolbar is outside the map viewport, so it takes up
+ * its own space instead of covering map content.
+ */
+.mapSelectionBar {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 14px;
+  color: var(--text-main);
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mapSelectionSummary {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mapSelectionCount {
+  display: inline-flex;
+  min-width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.clearSelectedRegionsButton {
+  appearance: none;
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 12px;
+  color: var(--accent);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.clearSelectedRegionsButton:hover {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.clearSelectedRegionsButton:active {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.clearSelectedRegionsIcon {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/*
+ * All absolute map controls are positioned relative to this
+ * viewport, not relative to the selection toolbar.
+ */
+.mapViewport {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background-color: #1a1a1a;
+}
+
+.mapViewport .mapContainer {
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -237,6 +334,20 @@ select {
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: 700;
+}
+
+.selectedRidingHeaders {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: -2px 0 2px;
+}
+
+.selectedRidingHeader {
+  color: var(--text-main);
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .commentTextArea {
@@ -506,17 +617,27 @@ select {
 }
 
 /* Selected-region statistics popup */
-.selectedRegionCard {
+.selectedRegionList {
   position: absolute;
   left: 14px;
   bottom: 14px;
   z-index: 40;
-  box-sizing: border-box;
+  display: flex;
   width: 340px;
   max-width: calc(100% - 28px);
   max-height: 55%;
+  flex-direction: column;
+  gap: 10px;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-right: 4px;
+}
+
+.selectedRegionCard {
+  position: static;
+  box-sizing: border-box;
+  width: 100%;
+  flex: 0 0 auto;
   padding: 16px;
   font-family: var(--font-family);
   font-size: 14px;
@@ -758,11 +879,14 @@ select {
     font-size: 11px;
   }
 
-  .selectedRegionCard {
+  .selectedRegionList {
     left: 8px;
     bottom: 8px;
     width: min(280px, calc(100% - 16px));
     max-height: 60%;
+  }
+
+  .selectedRegionCard {
     padding: 10px;
     font-size: 11px;
   }
@@ -790,5 +914,35 @@ select {
   .selectedRegionCard dl > div {
     grid-template-columns: 82px minmax(0, 1fr);
     gap: 6px;
+  }
+}
+
+@media (max-width: 560px) {
+  .mapSelectionBar {
+    min-height: 40px;
+    gap: 8px;
+    padding: 5px 8px;
+  }
+
+  .mapSelectionSummary {
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .mapSelectionCount {
+    min-width: 23px;
+    height: 23px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .clearSelectedRegionsButton {
+    min-height: 29px;
+    padding: 4px 9px;
+    font-size: 10px;
+  }
+
+  .selectedRidingHeader {
+    font-size: 11px;
   }
 }

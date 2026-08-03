@@ -19,6 +19,11 @@ const Comment = sequelize.define('Comment', {
     allowNull: true,
     defaultValue: 'Anonymous'
   },
+  relatedRidings: {
+    type: DataTypes.JSON,
+    allowNull: false,
+    defaultValue: [],
+  },
 });
 
 // Forces SQLite to create the tables if they are missing
