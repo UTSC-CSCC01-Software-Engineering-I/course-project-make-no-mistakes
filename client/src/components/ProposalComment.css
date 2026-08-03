@@ -97,6 +97,16 @@
   .proposalComment .likeButtonWrapper:hover:not(:disabled) {
     background: rgba(255, 42, 95, 0.15);
   }
+
+  .proposalComment .likeButtonWrapper.activeVote {
+    background: #ffe5ec;
+    border-color: #ff2a5f;
+  }
+
+  .proposalComment .likeButtonWrapper.activeVote img.likeButton {
+    filter: invert(33%) sepia(85%) saturate(3015%) hue-rotate(331deg) brightness(101%) contrast(106%);
+    opacity: 1;
+  }
   
   .proposalComment .likeButtonWrapper:disabled {
     cursor: not-allowed;

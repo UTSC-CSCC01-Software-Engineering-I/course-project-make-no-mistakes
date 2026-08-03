@@ -237,24 +237,36 @@ commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
       defaults: { action },
     });
 
-    if (!created) {
-      return res.status(409).json({
-        error: 'You have already voted on this comment.',
-        code: 'ALREADY_VOTED',
-      });
-    }
-
     const field = action === 'upvote' ? 'upvotes' : 'downvotes';
+    let currentVote = action;
 
     try {
-      await comment.increment(field);
+      if (created) {
+        await comment.increment(field);
+      } else if (vote.action === action) {
+        await comment.decrement(field);
+        await vote.destroy();
+        currentVote = null;
+      } else {
+        const previousField = vote.action === 'upvote' ? 'upvotes' : 'downvotes';
+        await comment.decrement(previousField);
+        await comment.increment(field);
+        await vote.update({ action });
+      }
+
       await comment.reload();
     } catch (error) {
-      await vote.destroy().catch(() => {});
+      if (created) {
+        await vote.destroy().catch(() => {});
+      }
       throw error;
     }
 
-    return res.status(200).json(comment);
+    const response = typeof comment.toJSON === 'function'
+      ? comment.toJSON()
+      : comment;
+
+    return res.status(200).json({ ...response, currentVote });
   } catch (error) {
     console.error('[VOTE ERROR]', error);
 
