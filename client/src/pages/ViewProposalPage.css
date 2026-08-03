@@ -210,11 +210,12 @@ select {
 .commentBox {
   display: flex;
   width: 30%;
-  height: auto;
+  height: 100%;
   min-width: 0;
   min-height: 0;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background-color: var(--bg-color);
   border-left: 1px solid var(--border-color);
 }
@@ -347,11 +348,9 @@ select {
 }
 
 .proposalCommentList {
-  flex: 1 1 auto;
+  flex: 1 0 auto;
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: visible;
 }
 
 .emptyCommentMessage {
@@ -666,11 +665,13 @@ select {
     width: 100%;
     height: auto;
     min-height: 0;
+    overflow: auto;
   }
 
   .commentBox {
     border-top: 1px solid var(--border-color);
     border-left: 0;
+    overflow-y: auto;
   }
 
   .addCommentSection {
