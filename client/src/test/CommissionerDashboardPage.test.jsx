@@ -12,17 +12,11 @@ jest.mock("react-router", () => ({
 }));
 
 // AI-assisted (claude)
-const recentProposals = Array.from({ length: 6 }, (_, index) => ({
-  id: `id-${index + 1}`,
-  public_reference_number: `CRMP-2026-00${index + 1}`,
-  status: "received",
-  user_id: `user-${index + 1}`,
-  created_at: "2026-06-20T12:00:00.000Z",
-}));
-
 const fakeProposals = [
   {
     id: "proposal-1",
+    public_reference_number: "CRMP-2026-001",
+    status: "received",
     user_id: "alice111-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [3],
@@ -30,6 +24,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-2",
+    public_reference_number: "CRMP-2026-002",
+    status: "received",
     user_id: "bob22222-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [1],
@@ -37,6 +33,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-3",
+    public_reference_number: "CRMP-2026-003",
+    status: "received",
     user_id: "carol333-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [3],
@@ -44,6 +42,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-4",
+    public_reference_number: "CRMP-2026-004",
+    status: "received",
     user_id: "dan44444-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [4],
@@ -51,6 +51,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-5",
+    public_reference_number: "CRMP-2026-005",
+    status: "received",
     user_id: "erin5555-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [5],
@@ -58,6 +60,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-6",
+    public_reference_number: "CRMP-2026-006",
+    status: "received",
     user_id: "faye6666-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [6],
@@ -65,6 +69,8 @@ const fakeProposals = [
   },
   {
     id: "proposal-7",
+    public_reference_number: "CRMP-2026-007",
+    status: "received",
     user_id: "gabe7777-0000-0000-0000-000000000000",
     submission_type: "counter_proposal",
     related_ridings: [2],
@@ -85,7 +91,7 @@ beforeEach(() => {
 test("calculates overview statistics from loaded proposals", async () => {
   render(<CommissionerDashboardPage />);
 
-  await screen.findByText("ID proposal-1");
+  await screen.findByText("CRMP-2026-001");
 
   const overviewSection = screen
     .getByRole("heading", { name: "Overview" })
@@ -114,7 +120,7 @@ test("calculates overview statistics from loaded proposals", async () => {
 test("shows riding activity breakdown and heat levels", async () => {
   render(<CommissionerDashboardPage />);
 
-  await screen.findByText("ID proposal-1");
+  await screen.findByText("CRMP-2026-001");
 
   const scarboroughRow = screen.getByRole("row", {
     name: /Scarborough North 2 2 High/i,
@@ -127,7 +133,7 @@ test("shows riding activity breakdown and heat levels", async () => {
 test("shows a commissioner heatmap built from riding submission totals", async () => {
   render(<CommissionerDashboardPage />);
 
-  await screen.findByText("ID proposal-1");
+  await screen.findByText("CRMP-2026-001");
 
   const heatmapSection = screen
     .getByRole("heading", { name: "Riding Activity Heatmap" })
@@ -148,7 +154,7 @@ test("filters the commissioner heatmap by submission type", async () => {
 
   render(<CommissionerDashboardPage />);
 
-  await screen.findByText("ID proposal-1");
+  await screen.findByText("CRMP-2026-001");
 
   const heatmapSection = screen
     .getByRole("heading", { name: "Riding Activity Heatmap" })
@@ -169,7 +175,7 @@ test("filters the commissioner heatmap by submission type", async () => {
 test("shows submission volume sorted by newest date first", async () => {
   render(<CommissionerDashboardPage />);
 
-  await screen.findByText("ID proposal-1");
+  await screen.findByText("CRMP-2026-001");
 
   const volumeSection = screen
     .getByRole("heading", { name: "Submission Volume Over Time" })
@@ -185,8 +191,6 @@ test("shows submission volume sorted by newest date first", async () => {
 });
 
 test("shows the five most recent submissions", async () => {
-  fetchProposals.mockResolvedValue(recentProposals);
-
   render(<CommissionerDashboardPage />);
 
   expect(await screen.findByText("CRMP-2026-001")).toBeInTheDocument();
