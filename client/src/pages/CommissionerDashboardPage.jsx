@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { fetchProposals } from '../utils/proposalsApi'
-import { formatDate, shortUser } from '../utils/format'
+import { shortUser, formatDate, toTitleCase } from '../utils/format'
 import { getRidingName } from '../utils/ridings'
 import './CommissionerDashboardPage.css'
 
@@ -250,12 +251,6 @@ function buildSubmissionVolume(submissions) {
     .sort((a, b) => getSubmissionDateValue(b) - getSubmissionDateValue(a))
 }
 
-function getRecentSubmissions(submissions) {
-  return [...submissions]
-    .sort((a, b) => getSubmissionDateValue(b) - getSubmissionDateValue(a))
-    .slice(0, 5)
-}
-
 function StatisticCard({ label, value }) {
   return (
     <article className="dashboardStatisticCard">
@@ -266,10 +261,15 @@ function StatisticCard({ label, value }) {
 }
 
 function CommissionerDashboardPage() {
+  const navigate = useNavigate()
+
   const [selectedHeatmapType, setSelectedHeatmapType] = useState('all')
   const [dashboardProposals, setDashboardProposals] = useState([])
   const [dashboardComments, setDashboardComments] = useState([])
   const [status, setStatus] = useState('loading')
+
+  const [recentSubmissions, setRecentSubmissions] = useState([])
+  const [recentSubmissionsStatus, setRecentSubmissionsStatus] = useState('loading')
 
   useEffect(() => {
     let active = true
@@ -283,9 +283,13 @@ function CommissionerDashboardPage() {
         setDashboardProposals(proposals.map(mapApiSubmissionToDashboardSubmission))
         setDashboardComments([])
         setStatus('ready')
+
+        setRecentSubmissions(proposals.slice(0, 5))
+        setRecentSubmissionsStatus('ready')
       } catch {
         if (!active) return
         setStatus('error')
+        setRecentSubmissionsStatus('error')
       }
     }
 
@@ -309,7 +313,6 @@ function CommissionerDashboardPage() {
     selectedHeatmapType
   )
   const submissionVolume = buildSubmissionVolume(dashboardProposals)
-  const recentSubmissions = getRecentSubmissions(dashboardProposals)
   const heatmapNeedsRidingData = onlyHasUnassignedRiding(dashboardProposals)
   const visibleHeatmapRows = heatmapNeedsRidingData ? [] : commissionerHeatmap
 
@@ -489,30 +492,50 @@ function CommissionerDashboardPage() {
       <section className="dashboardSection" id="submissions">
         <div className="dashboardSectionHeader">
           <h2>Recent Submissions</h2>
-          <button className="dashboardTextAction" type="button">
+          <button
+            className="dashboardTextAction"
+            type="button"
+            onClick={() => navigate('/commissioner-submissions')}
+          >
             View All →
           </button>
         </div>
         <div className="dashboardSubmissionCards">
-          {recentSubmissions.map((submission) => (
-            <article className="dashboardSubmissionCard" key={submission.referenceNumber}>
+          {recentSubmissionsStatus === 'loading' && (
+            <p className="dashboardSubmissionsMessage">Loading recent submissions…</p>
+          )}
+
+          {recentSubmissionsStatus === 'error' && (
+            <p className="dashboardSubmissionsMessage">Unable to load recent submissions.</p>
+          )}
+
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.length === 0 && (
+            <p className="dashboardSubmissionsMessage">No submissions yet.</p>
+          )}
+
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.map((submission) => (
+            <article className="dashboardSubmissionCard" key={submission.id}>
               <div className="dashboardSubmissionInfo">
                 <span className="dashboardSubmissionReference">
-                  {submission.referenceNumber}
+                  {submission.public_reference_number}
                 </span>
                 <span className="dashboardSubmissionMeta">
-                  {submission.submissionType}
+                  {toTitleCase(submission.status)}
                 </span>
               </div>
               <div className="dashboardSubmissionInfo">
                 <span className="dashboardSubmissionMeta">
-                  {submission.riding}
+                  {shortUser(submission.user_id)}
                 </span>
                 <span className="dashboardSubmissionMeta">
-                  {submission.status} - {submission.date}
+                  {formatDate(submission.created_at)}
                 </span>
               </div>
-              <button className="dashboardActionButton" type="button">
+              <button
+                className="dashboardActionButton"
+                type="button"
+                onClick={() => navigate(`/view/${submission.id}`)}
+              >
                 View Details
               </button>
             </article>
@@ -529,7 +552,11 @@ function CommissionerDashboardPage() {
           <button className="dashboardActionButton" type="button">
             Export PDF
           </button>
-          <button className="dashboardActionButton" type="button">
+          <button
+            className="dashboardActionButton"
+            type="button"
+            onClick={() => navigate('/commissioner-submissions')}
+          >
             View All Submissions
           </button>
         </div>

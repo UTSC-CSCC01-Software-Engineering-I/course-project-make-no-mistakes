@@ -38,6 +38,13 @@ app.use("/api/proposals", proposalsRouter);
 const objectionsRouter = require('./routes/objections.js');
 app.use("/api/objections", objectionsRouter);
 
+// commissioner-only notes + tags //////////////////////////////
+const submissionNotesRouter = require('./routes/submissionNotes.js');
+app.use("/api/submissions", submissionNotesRouter);
+
+const submissionTagsRouter = require('./routes/submissionTags.js');
+app.use("/api/submissions", submissionTagsRouter);
+
 // page not found, page error ///////////////////////////////////
 app.use((req, res, next) => {
   res.status(404).send("The page you are looking for does not exist");
