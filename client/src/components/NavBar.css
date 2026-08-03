@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 32px;
   padding: 0 32px;
   box-sizing: border-box;
@@ -67,4 +68,15 @@
 .activeNavBarLink.loginButton {
   border-bottom: none;
   background-color: #e01a4f;
+}
+
+@media (max-width: 760px) {
+  .navBar {
+    gap: 14px;
+    padding: 10px 16px;
+  }
+
+  .navBarR {
+    margin-left: 0;
+  }
 }

@@ -52,15 +52,36 @@ function NavBar() {
 
 		{
 			role === 'publicuser' ?
-				(
+				(<>
 					<NavLink to="/user-submissions"
 						className={({ isActive }) =>
 							isActive ? "navBarLink activeNavBarLink" : "navBarLink"
 						}>
 					My Submissions
 					</NavLink>
-				) : null
+					<NavLink to="/submit-counter-proposal"
+						className={({ isActive }) =>
+							isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+						}>
+					Counterproposal
+					</NavLink>
+					<NavLink to="/submit-objection"
+						className={({ isActive }) =>
+							isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+						}>
+					Objection
+					</NavLink>
+				</>) : null
 		}
+
+		{role === 'commissioner' ? (
+			<NavLink to="/commissioner-submissions"
+				className={({ isActive }) =>
+					isActive ? "navBarLink activeNavBarLink" : "navBarLink"
+				}>
+			Review
+			</NavLink>
+		) : null}
 	  	
 		<div className="navBarR">
 			{isLoggedIn ? (

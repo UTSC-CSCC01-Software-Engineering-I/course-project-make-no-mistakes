@@ -31,6 +31,7 @@ function ProposalComment({
   const [likes, setLikes] = useState(postLikes)
   const [downvotes, setDownvotes] = useState(postDownvotes)
   const [pendingVote, setPendingVote] = useState(null)
+  const [hasVoted, setHasVoted] = useState(false)
 
   useEffect(() => {
     setLikes(postLikes)
@@ -71,6 +72,9 @@ function ProposalComment({
       const responseBody = await response.json().catch(() => null)
 
       if (!response.ok) {
+        if (response.status === 409) {
+          setHasVoted(true)
+        }
         throw new Error(
           responseBody?.error || `Voting failed (${response.status}).`
         )
@@ -78,6 +82,7 @@ function ProposalComment({
 
       setLikes(Number(responseBody?.upvotes) || 0)
       setDownvotes(Number(responseBody?.downvotes) || 0)
+      setHasVoted(true)
     } catch (error) {
       console.error('[COMMENT VOTE ERROR]', error)
     } finally {
@@ -85,8 +90,12 @@ function ProposalComment({
     }
   }
 
-  const votingDisabled = !isLoggedIn || Boolean(pendingVote)
-  const voteTitle = isLoggedIn ? undefined : 'Log in to vote'
+  const votingDisabled = !isLoggedIn || hasVoted || Boolean(pendingVote)
+  const voteTitle = !isLoggedIn
+    ? 'Log in to vote'
+    : hasVoted
+      ? 'You have already voted'
+      : undefined
 
   return (
     <article className="proposalComment">

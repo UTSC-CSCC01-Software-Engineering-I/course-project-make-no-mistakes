@@ -3,7 +3,7 @@ const express = require('express');
 
 // Import the files relative to the 'routes' folder
 const commentsRouter = require('./comments');
-const { Comment } = require('../models/index.js');
+const { Comment, CommentVote } = require('../models/index.js');
 const supabase = require('../lib/supabase');
 
 // 1. Setup a fake Express app just for testing
@@ -17,7 +17,10 @@ jest.mock('../models/index.js', () => ({
     create: jest.fn(),
     findAll: jest.fn(),
     findByPk: jest.fn(),
-  }
+  },
+  CommentVote: {
+    findOrCreate: jest.fn(),
+  },
 }));
 
 jest.mock('../lib/supabase', () => ({
@@ -127,6 +130,10 @@ describe('Comments API Routes', () => {
       destroy: jest.fn() // Fake destroy function
     };
     Comment.findByPk.mockResolvedValue(mockComment);
+    CommentVote.findOrCreate.mockResolvedValue([
+      { destroy: jest.fn() },
+      true,
+    ]);
 
     const response = await request(app)
       .delete('/api/comments/1')
@@ -165,6 +172,33 @@ describe('Comments API Routes', () => {
     // Verify Sequelize was told to increment the 'upvotes' column
     expect(mockComment.increment).toHaveBeenCalledWith('upvotes');
     expect(mockComment.reload).toHaveBeenCalled();
+  });
+
+  test('6. PATCH /api/comments/:id/vote - Rejects a second vote by the same user', async () => {
+    supabase.auth.getUser.mockResolvedValue({
+      data: { user: { id: 'voter-555' } },
+      error: null
+    });
+
+    const mockComment = {
+      id: 1,
+      increment: jest.fn(),
+      reload: jest.fn()
+    };
+    Comment.findByPk.mockResolvedValue(mockComment);
+    CommentVote.findOrCreate.mockResolvedValue([
+      { action: 'upvote' },
+      false,
+    ]);
+
+    const response = await request(app)
+      .patch('/api/comments/1/vote')
+      .set('Authorization', 'Bearer valid-token')
+      .send({ action: 'downvote' });
+
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('ALREADY_VOTED');
+    expect(mockComment.increment).not.toHaveBeenCalled();
   });
 
 });

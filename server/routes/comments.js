@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { Comment } = require('../models/index.js');
+const { Comment, CommentVote } = require('../models/index.js');
 const { addCommentToQueue } = require('../worker/commentWorker.js');
 const supabase = require('../lib/supabase');
 
@@ -229,10 +229,30 @@ commentsRouter.patch('/:id/vote', isAuthenticated, async (req, res) => {
       });
     }
 
+    const [vote, created] = await CommentVote.findOrCreate({
+      where: {
+        commentId: comment.id,
+        userId: req.user.id,
+      },
+      defaults: { action },
+    });
+
+    if (!created) {
+      return res.status(409).json({
+        error: 'You have already voted on this comment.',
+        code: 'ALREADY_VOTED',
+      });
+    }
+
     const field = action === 'upvote' ? 'upvotes' : 'downvotes';
 
-    await comment.increment(field);
-    await comment.reload();
+    try {
+      await comment.increment(field);
+      await comment.reload();
+    } catch (error) {
+      await vote.destroy().catch(() => {});
+      throw error;
+    }
 
     return res.status(200).json(comment);
   } catch (error) {
