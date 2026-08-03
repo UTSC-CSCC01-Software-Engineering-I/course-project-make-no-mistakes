@@ -16,6 +16,7 @@ create table public.submissions (
   submission_type public.submission_type not null default 'comment'::submission_type,
   related_ridings integer[] not null default '{}'::integer[],
   target_block_ids jsonb null,
+  map_data jsonb null,
   geometry geometry null,
   body text not null,
   status public.submission_status not null default 'received'::submission_status,

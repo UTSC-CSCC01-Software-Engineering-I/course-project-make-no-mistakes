@@ -8,6 +8,10 @@ const proposalsRouter = express.Router();
 const COUNTER_PROPOSAL = "counter_proposal";
 const VALID_STATUSES = ["received", "under_review", "addressed"];
 
+function isFeatureCollection(value) {
+	return value?.type === "FeatureCollection" && Array.isArray(value.features);
+}
+
 // list all counter-proposals, newest first
 proposalsRouter.get("/", async (req, res) => {
 	const { data, error } = await supabaseAdmin
@@ -62,9 +66,10 @@ proposalsRouter.get("/:id", async (req, res) => {
 	return res.status(200).json(data);
 });
 
-// create counter-proposal; TODO: only rationale for now, need to add related ridings and such
+// create counter-proposal
 proposalsRouter.post("/", requireAuth, async (req, res) => {
 	const body = typeof req.body.body === "string" ? req.body.body.trim() : "";
+	const { mapData } = req.body;
 	const relatedRidings = Array.isArray(req.body.relatedRidings)
 		? req.body.relatedRidings
 			.map((ridingId) => Number(ridingId))
@@ -75,12 +80,19 @@ proposalsRouter.post("/", requireAuth, async (req, res) => {
 		return res.status(400).json({ error: "Proposal rationale is required." });
 	}
 
+	if (!isFeatureCollection(mapData) || mapData.features.length === 0) {
+		return res.status(400).json({
+			error: "Counter-proposals require a non-empty GeoJSON FeatureCollection.",
+		});
+	}
+
 	const { data, error } = await supabaseAdmin
 		.from("submissions")
 		.insert({
 			user_id: req.user.id,
 			submission_type: COUNTER_PROPOSAL,
 			related_ridings: relatedRidings,
+			map_data: mapData,
 			body,
 		})
 		.select("*")

@@ -10,6 +10,8 @@ function SubmitCounterProposalPage() {
     const [rationaleText, setRationaleText] = useState('');
     const [selectedRidingId, setSelectedRidingId] = useState(String(RIDING_OPTIONS[0].id));
     const [selectedPoint, setSelectedPoint] = useState(null);
+    const [mapData, setMapData] = useState({ type: 'FeatureCollection', features: [] });
+    const [mapVersion, setMapVersion] = useState(0);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -18,14 +20,21 @@ function SubmitCounterProposalPage() {
         if (submitting) return;
 
         setError('');
+        if (mapData.features.length === 0) {
+            setError('Draw at least one boundary before submitting.');
+            return;
+        }
         setSubmitting(true);
 
         try {
             const proposal = await createProposal({
                 body: rationaleText.trim(),
                 relatedRidings: [Number(selectedRidingId)],
+                mapData,
             });
             setRationaleText('');
+            setMapData({ type: 'FeatureCollection', features: [] });
+            setMapVersion((current) => current + 1);
             navigate(`/view/${proposal.id}`);
         } catch (err) {
             if (err.status === 401) {
@@ -55,7 +64,12 @@ function SubmitCounterProposalPage() {
                         <button className="cpToolButton assignB">Assign to Riding B</button>
                         <button className="cpToolButton cpUndo">Undo</button>
                     </div>
-                    <Map mode="counterproposal" onMapClick={setSelectedPoint} />
+                    <Map
+                        key={mapVersion}
+                        mode="counterproposal"
+                        onMapClick={setSelectedPoint}
+                        onDrawChange={setMapData}
+                    />
                 </section>
                 
                 <section className="cpPanelSection">
