@@ -124,6 +124,164 @@
     text-align: center;
 }
 
+.dashboardStatusMessage {
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 18px 0 0;
+}
+
+.dashboardHeatmapFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dashboardHeatmapFilter {
+    border: 1px solid #333333;
+    border-radius: 25px;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+    transition: all 0.2s;
+}
+
+.dashboardHeatmapFilter:hover,
+.dashboardHeatmapFilter.active {
+    background-color: rgba(255, 42, 95, 0.16);
+    border-color: #ff2a5f;
+    color: #ff2a5f;
+}
+
+.dashboardHeatmapEmptyState {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px dashed #444444;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    margin-top: 20px;
+    padding: 22px;
+}
+
+.dashboardHeatmapEmptyTitle {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.dashboardHeatmapEmptyText {
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.dashboardHeatmapLegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.dashboardHeatmapLegend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dashboardLegendSwatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+.dashboardHeatmapGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.dashboardHeatmapTile {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 118px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    padding: 18px;
+    box-sizing: border-box;
+    background-color: #1a1a1a;
+}
+
+.dashboardHeatmapTile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 42%),
+        repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.08) 0,
+            rgba(255, 255, 255, 0.08) 1px,
+            transparent 1px,
+            transparent 12px
+        );
+    opacity: 0.28;
+    pointer-events: none;
+}
+
+.dashboardHeatmapTile > * {
+    position: relative;
+    z-index: 1;
+}
+
+.dashboardHeatmapRiding {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.dashboardHeatmapCount {
+    color: #f0f0f0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.dashboardHeatmapLevel {
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.heatmapNone {
+    background-color: #333333;
+}
+
+.heatmapLow {
+    background-color: rgba(255, 178, 71, var(--heatmap-opacity, 0.5));
+}
+
+.heatmapMedium {
+    background-color: rgba(255, 107, 53, var(--heatmap-opacity, 0.65));
+}
+
+.heatmapHigh {
+    background-color: rgba(255, 42, 95, var(--heatmap-opacity, 0.9));
+}
+
 .dashboardTableContainer {
     width: 100%;
     overflow-x: auto;
@@ -309,5 +467,13 @@
     .dashboardSectionHeader {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .dashboardHeatmapFilters {
+        width: 100%;
+    }
+
+    .dashboardHeatmapFilter {
+        flex: 1 1 100%;
     }
 }

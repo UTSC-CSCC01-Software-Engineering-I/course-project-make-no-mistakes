@@ -219,7 +219,8 @@
     font-size: 14px;
 }
 
-.cpFormGroup textarea {
+.cpFormGroup textarea,
+.cpFormGroup select {
     border: 1px solid #333333;
     border-radius: 12px;
     background-color: #1a1a1a;
@@ -232,7 +233,12 @@
     transition: border-color 0.2s;
 }
 
-.cpFormGroup textarea:focus {
+.cpFormGroup select {
+    appearance: none;
+}
+
+.cpFormGroup textarea:focus,
+.cpFormGroup select:focus {
     border-color: #ff2a5f;
 }
 
