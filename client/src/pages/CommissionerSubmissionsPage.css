@@ -153,9 +153,137 @@
     word-break: break-word;
 }
 
+/* ... (existing styles) ... */
+
+.commissionerSubmissionsActionGroup {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.commissionerSubmissionsExportBtn {
+    border: 1px solid #444444;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #a0a0a0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    transition: all 0.2s;
+}
+
+.commissionerSubmissionsExportBtn:hover {
+    background-color: #262626;
+    border-color: #f0f0f0;
+    color: #f0f0f0;
+}
+
+.commissionerExportSection {
+    border: 1px solid #333333;
+    border-radius: 12px;
+    background-color: #262626;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.commissionerExportGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.commissionerExportGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.commissionerExportGroupHeader {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.commissionerExportGroupTitle {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.commissionerExportGroupSub {
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.commissionerExportOptions {
+    display: flex;
+    gap: 24px;
+}
+
+.commissionerExportOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f0f0f0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.commissionerExportOption input[type="checkbox"],
+.commissionerExportOption input[type="radio"] {
+    accent-color: #ff2a5f;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+.commissionerExportSubmit {
+    align-self: flex-start;
+    border: none;
+    border-radius: 25px;
+    background-color: #ff2a5f;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: background-color 0.2s;
+    margin-top: 8px;
+}
+
+.commissionerExportSubmit:hover {
+    background-color: #e01a4f;
+}
+
+.commissionerSubmissionsCheckbox {
+    accent-color: #ff2a5f;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
 @media (max-width: 520px) {
     .commissionerSubmissionsPage {
         padding: 20px;
+    }
+
+    .commissionerSubmissionsActionGroup {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
     }
 
     .commissionerSubmissionsFilters {
@@ -172,3 +300,5 @@
         width: 100%;
     }
 }
+
+

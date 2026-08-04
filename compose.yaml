@@ -26,6 +26,7 @@ services:
     env_file:
       - ./client/.env
     environment:
+      CI: "true"
       NODE_ENV: development
       PROXY_TARGET: http://server:8080
 
