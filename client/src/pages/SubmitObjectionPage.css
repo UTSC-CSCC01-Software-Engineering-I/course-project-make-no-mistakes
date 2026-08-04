@@ -169,10 +169,6 @@
     opacity: 0.55;
 }
 
-/*
- * Native option styling is browser-dependent,
- * but these values improve it in supported browsers.
- */
 
 .provinceControl option {
     background-color: #1a1a1a;
@@ -182,11 +178,6 @@
 .provinceControl option:disabled {
     color: #666666;
 }
-
-/*
- * Selected-riding summary on the right side
- * of the map toolbar.
- */
 
 .selectionSummary {
     display: flex;
@@ -560,10 +551,6 @@
         min-width: 220px;
     }
 }
-
-/*
- * Phone
- */
 
 @media (max-width: 600px) {
     .submitPage {

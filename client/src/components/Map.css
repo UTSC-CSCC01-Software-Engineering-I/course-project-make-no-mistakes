@@ -1,165 +1,71 @@
-/*
- * client/src/components/Map.css
- */
-
- .mapContainer {
+.mapContainer {
   position: relative;
   width: 100%;
   min-width: 0;
   overflow: hidden;
-
+  box-sizing: border-box;
   border: 1px solid #d1d5db;
   border-radius: 10px;
-
   background: #e5e7eb;
-  box-sizing: border-box;
 }
 
-/*
-* Map height when the component is used only
-* for viewing an existing proposal.
-*/
 .mapContainerView {
-  height: clamp(
-      380px,
-      58vh,
-      680px
-  );
+  height: clamp(380px, 58vh, 680px);
 }
 
-/*
-* The objection page needs additional vertical
-* space for selecting federal ridings.
-*/
-.mapContainerObjection {
-  height: clamp(
-      500px,
-      70vh,
-      760px
-  );
-}
-
-/*
-* Counterproposal drawing uses approximately
-* the same amount of space as objection mode.
-*/
+.mapContainerObjection,
 .mapContainerCounterproposal {
-  height: clamp(
-      500px,
-      70vh,
-      760px
-  );
+  height: clamp(500px, 70vh, 760px);
 }
 
-/*
-* MapLibre adds its canvas inside mapContainer.
-*/
-.mapContainer .maplibregl-canvas {
-  display: block;
+.mapContainer .maplibregl-canvas:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: -3px;
 }
 
-/*
-* Avoid the default browser focus outline around
-* the entire canvas. Map controls retain their own
-* keyboard focus indicators below.
-*/
-.mapContainer .maplibregl-canvas:focus {
-  outline: none;
-}
-
-/*
-* MapLibre navigation controls and TerraDraw tools.
-*/
 .mapContainer .maplibregl-ctrl-group {
   overflow: hidden;
-
   border: 0;
   border-radius: 8px;
-
-  box-shadow:
-      0 1px 4px
-      rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .mapContainer .maplibregl-ctrl-group button {
   cursor: pointer;
 }
 
-.mapContainer
-  .maplibregl-ctrl-group
-  button:focus-visible {
+.mapContainer .maplibregl-ctrl-group button:focus-visible {
   position: relative;
   z-index: 1;
-
   outline: 3px solid #2563eb;
   outline-offset: -3px;
 }
 
-/*
-* Keep the navigation and TerraDraw controls above
-* highlighted federal-riding polygons.
-*/
-.mapContainer .maplibregl-control-container {
-  position: relative;
-  z-index: 2;
-}
-
-/*
-* Attribution styling.
-*/
 .mapContainer .maplibregl-ctrl-attrib {
   font-size: 10px;
 }
 
-.mapContainer
-  .maplibregl-ctrl-attrib
-  a {
+.mapContainer .maplibregl-ctrl-attrib a {
   overflow-wrap: anywhere;
 }
 
-/*
-* Style the marker shown for an ordinary map-point
-* click. Federal-riding selections are highlighted
-* through MapLibre feature-state in Map.jsx instead.
-*/
-.mapContainer .maplibregl-marker {
-  cursor: pointer;
-}
-
-/*
-* Prevent excessively wide control containers from
-* extending beyond the map on smaller screens.
-*/
+/* Prevent the TerraDraw and navigation controls from overflowing. */
 .mapContainer .maplibregl-ctrl-top-left,
 .mapContainer .maplibregl-ctrl-top-right {
   max-width: calc(100% - 20px);
 }
 
-/*
-* Tablet layout.
-*/
 @media (max-width: 900px) {
   .mapContainerView {
-      height: clamp(
-          360px,
-          55vh,
-          600px
-      );
+      height: clamp(360px, 55vh, 600px);
   }
 
   .mapContainerObjection,
   .mapContainerCounterproposal {
-      height: clamp(
-          460px,
-          65vh,
-          680px
-      );
+      height: clamp(460px, 65vh, 680px);
   }
 }
 
-/*
-* Phone layout.
-*/
 @media (max-width: 600px) {
   .mapContainer {
       border-radius: 7px;
@@ -179,9 +85,6 @@
   }
 }
 
-/*
-* Very small phone layout.
-*/
 @media (max-width: 400px) {
   .mapContainerView {
       height: 380px;
