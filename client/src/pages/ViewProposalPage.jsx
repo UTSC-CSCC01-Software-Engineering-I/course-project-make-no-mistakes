@@ -925,6 +925,12 @@ function ViewProposalPage() {
     )
   }
 
+  const proposalRationale =
+    typeof proposal.body === 'string' &&
+    proposal.body.trim()
+      ? proposal.body.trim()
+      : 'No rationale provided.'
+
   return (
     <main className="proposalPage">
       <header className="proposalPageHeader">
@@ -1050,6 +1056,16 @@ function ViewProposalPage() {
               ✓ Census Boundaries Valid
             </div>
           )}
+
+          <section
+            className="proposalRationalePanel"
+            aria-labelledby="proposal-rationale-heading"
+          >
+            <h2 id="proposal-rationale-heading">
+              Proposal Rationale
+            </h2>
+            <p>{proposalRationale}</p>
+          </section>
 
           <div className="mapLayerControls">
             <div className="mapLayerControl">

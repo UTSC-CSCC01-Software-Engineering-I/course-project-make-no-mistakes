@@ -281,6 +281,22 @@ test("renders proposal header after successful fetch", async () => {
   ).toBeInTheDocument();
 });
 
+test("displays the counterproposal rationale", async () => {
+  fetchProposal.mockResolvedValue(fakeProposal);
+
+  render(<ViewProposalPage />);
+
+  expect(
+    await screen.findByRole("heading", {
+      name: "Proposal Rationale",
+    })
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText(fakeProposal.body)
+  ).toBeInTheDocument();
+});
+
 test("shows not-found message on 404", async () => {
   fetchProposal.mockRejectedValue(
     makeApiError(404)
