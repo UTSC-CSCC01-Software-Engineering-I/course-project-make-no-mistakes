@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import CommissionerDashboardPage from "../pages/CommissionerDashboardPage";
+import { exportToCSV, exportToPDF } from '../utils/exportUtils';
 import { fetchProposals } from "../utils/proposalsApi";
 
 const mockNavigate = jest.fn();
@@ -10,6 +11,14 @@ jest.mock("react-router", () => ({
   __esModule: true,
   useNavigate: () => mockNavigate,
 }));
+
+jest.mock("recharts", () => {
+  const OriginalRecharts = jest.requireActual("recharts");
+  return {
+    ...OriginalRecharts,
+    ResponsiveContainer: ({ children }) => <div>{children}</div>,
+  };
+});
 
 // AI-assisted (claude)
 const fakeProposals = [
@@ -172,7 +181,7 @@ test("filters the commissioner heatmap by submission type", async () => {
   expect(scarboroughTile).toHaveTextContent("High");
 });
 
-test("shows submission volume sorted by newest date first", async () => {
+test("shows submission volume chart over time", async () => {
   render(<CommissionerDashboardPage />);
 
   await screen.findByText("CRMP-2026-001");
@@ -181,13 +190,7 @@ test("shows submission volume sorted by newest date first", async () => {
     .getByRole("heading", { name: "Submission Volume Over Time" })
     .closest("section");
 
-  const volumeRows = within(volumeSection).getAllByRole("row");
-
-  expect(
-    volumeRows.some((row) =>
-      row.textContent.includes("Scarborough North")
-    )
-  ).toBe(true);
+  expect(volumeSection.querySelector(".dashboardChartContainer")).toBeInTheDocument();
 });
 
 test("shows the five most recent submissions", async () => {
