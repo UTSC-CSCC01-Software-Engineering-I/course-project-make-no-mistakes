@@ -449,7 +449,7 @@ test("displays selected region details", async () => {
   ).toBeInTheDocument();
 });
 
-test("passes the initial Ontario selection to Map", async () => {
+test("passes the initial Ontario selection and federal ridings layer to Map", async () => {
   await renderReadyProposalPage();
 
   expect(
@@ -463,7 +463,7 @@ test("passes the initial Ontario selection to Map", async () => {
     screen.getByTestId("map")
   ).toHaveAttribute(
     "data-boundary-layer",
-    "none"
+    "federalDistricts"
   );
 });
 
