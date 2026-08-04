@@ -477,3 +477,105 @@
         flex: 1 1 100%;
     }
 }
+
+.dashboardOverviewLayout {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.dashboardOverviewGrid {
+    flex: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    align-content: start;
+    margin-top: 0;
+}
+
+.dashboardPieChartContainer {
+    flex: 1;
+    min-width: 300px;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    background-color: #1a1a1a;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dashboardPieChartContainer h3 {
+    color: #a0a0a0;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    text-align: center;
+    width: 100%;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 12px;
+}
+
+.dashboardChartContainer {
+    width: 100%;
+    margin-top: 24px;
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    padding: 24px 24px 10px 0;
+    box-sizing: border-box;
+}
+
+.dashboardCustomChartTooltip {
+    background-color: #1a1a1a;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.dashboardCustomChartTooltip p {
+    margin: 0 0 6px;
+}
+
+.dashboardCustomChartTooltip p:last-child {
+    margin: 0;
+}
+
+.tooltipDate {
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
+    margin-bottom: 8px !important;
+}
+
+.tooltipCount {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.tooltipCount strong {
+    color: #ff2a5f;
+}
+
+.tooltipRiding {
+    color: #f0f0f0;
+    font-size: 13px;
+}
+
+.recharts-cartesian-grid-horizontal line {
+    stroke-opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+    .dashboardOverviewLayout {
+        flex-direction: column;
+    }
+    .dashboardPieChartContainer {
+        width: 100%;
+    }
+}

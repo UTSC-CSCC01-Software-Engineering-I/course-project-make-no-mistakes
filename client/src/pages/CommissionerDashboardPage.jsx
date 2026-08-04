@@ -1,9 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts'
 import { fetchProposals } from '../utils/proposalsApi'
 import { shortUser, formatDate, toTitleCase } from '../utils/format'
 import { getRidingName } from '../utils/ridings'
 import './CommissionerDashboardPage.css'
+import { exportToCSV, exportToPDF } from '../utils/exportUtils'
 
 const SUBMISSION_TYPES = [
   'Counter Proposal',
@@ -14,16 +28,13 @@ const UNKNOWN_RIDING = 'Unassigned riding'
 const UNKNOWN_STATUS = 'Unknown Status'
 const DASHBOARD_REFRESH_INTERVAL_MS = 30000
 
+// colors for the pie chart breakdown
+const PIE_COLORS = ['#ff2a5f', '#ffb247', '#317a51', '#7b42ff', '#a0a0a0']
+
 const STATUS_LABELS = {
   received: 'Received',
   under_review: 'Under Review',
   addressed: 'Addressed',
-}
-
-const COMMENT_STATUS_LABELS = {
-  pending: 'Pending Comments',
-  approved: 'Approved Comments',
-  rejected: 'Rejected Comments',
 }
 
 const SUBMISSION_TYPE_LABELS = {
@@ -33,19 +44,12 @@ const SUBMISSION_TYPE_LABELS = {
 }
 
 const HEATMAP_FILTERS = [
-  {
-    label: 'All',
-    value: 'all',
-  },
-  {
-    label: 'Counter Proposals',
-    value: 'Counter Proposal',
-  },
+  { label: 'All', value: 'all' },
+  { label: 'Counter Proposals', value: 'Counter Proposal' },
 ]
 
 function getSubmissionDateValue(submission) {
   const date = new Date(submission.createdAt)
-
   return Number.isNaN(date.getTime()) ? 0 : date.getTime()
 }
 
@@ -57,11 +61,7 @@ function getSubmissionReference(submission, index) {
   if (submission.referenceNumber || submission.reference_number) {
     return submission.referenceNumber || submission.reference_number
   }
-
-  if (submission.id) {
-    return `ID ${String(submission.id).slice(0, 12)}`
-  }
-
+  if (submission.id) return `ID ${String(submission.id).slice(0, 12)}`
   return `Submission ${index + 1}`
 }
 
@@ -69,13 +69,9 @@ function getSubmissionRiding(submission) {
   if (submission.riding || submission.ridingName) {
     return submission.riding || submission.ridingName
   }
-
   if (Array.isArray(submission.related_ridings) && submission.related_ridings.length > 0) {
-    return submission.related_ridings
-      .map(getRidingName)
-      .join(', ')
+    return submission.related_ridings.map(getRidingName).join(', ')
   }
-
   return UNKNOWN_RIDING
 }
 
@@ -87,19 +83,10 @@ function mapApiSubmissionToDashboardSubmission(submission, index) {
       submission.submissionType ||
       'Counter Proposal',
     riding: getSubmissionRiding(submission),
-    status:
-      STATUS_LABELS[submission.status] ||
-      submission.status ||
-      UNKNOWN_STATUS,
-    date:
-      submission.date ||
-      formatDate(submission.created_at),
-    createdAt:
-      submission.created_at ||
-      submission.createdAt,
-    submittedBy:
-      submission.submittedBy ||
-      shortUser(submission.user_id),
+    status: STATUS_LABELS[submission.status] || submission.status || UNKNOWN_STATUS,
+    date: submission.date || formatDate(submission.created_at),
+    createdAt: submission.created_at || submission.createdAt,
+    submittedBy: submission.submittedBy || shortUser(submission.user_id),
   }
 }
 
@@ -115,17 +102,29 @@ function buildOverviewItems(proposals, comments) {
   }))
 
   return [
-    {
-      label: 'Total Posts',
-      value: proposals.length,
-    },
-    {
-      label: 'Written Comments',
-      value: comments.length,
-    },
+    { label: 'Total Posts', value: proposals.length },
+    { label: 'Written Comments', value: comments.length },
     ...typeItems,
     ...commentStatusItems,
   ]
+}
+
+function buildPieChartData(proposals, comments) {
+  // submission types for the pie chart
+  const dataMap = {}
+  
+  if (comments && comments.length > 0) {
+    dataMap['Written Comments'] = comments.length
+  }
+
+  proposals.forEach((proposal) => {
+    const type = proposal.submissionType || 'Other'
+    dataMap[type] = (dataMap[type] || 0) + 1
+  })
+
+  return Object.entries(dataMap)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
 }
 
 function buildRidingActivity(submissions) {
@@ -135,17 +134,11 @@ function buildRidingActivity(submissions) {
       submissionCount: 0,
       counterProposals: 0,
     }
-
     existingActivity.submissionCount += 1
-
     if (submission.submissionType === 'Counter Proposal') {
       existingActivity.counterProposals += 1
     }
-
-    return {
-      ...activityMap,
-      [submission.riding]: existingActivity,
-    }
+    return { ...activityMap, [submission.riding]: existingActivity }
   }, {})
 
   return Object.values(activityByRiding)
@@ -157,20 +150,10 @@ function buildRidingActivity(submissions) {
 }
 
 function getHeatmapLevel(count, maxCount) {
-  if (maxCount === 0 || count === 0) {
-    return 'None'
-  }
-
+  if (maxCount === 0 || count === 0) return 'None'
   const heatRatio = count / maxCount
-
-  if (heatRatio >= 0.67) {
-    return 'High'
-  }
-
-  if (heatRatio >= 0.34) {
-    return 'Medium'
-  }
-
+  if (heatRatio >= 0.67) return 'High'
+  if (heatRatio >= 0.34) return 'Medium'
   return 'Low'
 }
 
@@ -178,45 +161,28 @@ function buildCommissionerHeatmap(submissions, selectedSubmissionType) {
   const visibleSubmissions =
     selectedSubmissionType === 'all'
       ? submissions
-      : submissions.filter(
-          (submission) => submission.submissionType === selectedSubmissionType
-        )
+      : submissions.filter((s) => s.submissionType === selectedSubmissionType)
 
-  const allRidingNames = [...new Set(submissions.map((submission) => submission.riding))]
+  const allRidingNames = [...new Set(submissions.map((s) => s.riding))]
 
   const heatmapRows = allRidingNames.map((ridingName) => {
-    const ridingSubmissions = visibleSubmissions.filter(
-      (submission) => submission.riding === ridingName
-    )
-
-    return {
-      ridingName,
-      submissionCount: ridingSubmissions.length,
-    }
+    const ridingSubmissions = visibleSubmissions.filter((s) => s.riding === ridingName)
+    return { ridingName, submissionCount: ridingSubmissions.length }
   })
 
-  const maxSubmissionCount = Math.max(
-    ...heatmapRows.map((row) => row.submissionCount),
-    0
-  )
+  const maxSubmissionCount = Math.max(...heatmapRows.map((row) => row.submissionCount), 0)
 
   return heatmapRows
     .map((row) => ({
       ...row,
       heatLevel: getHeatmapLevel(row.submissionCount, maxSubmissionCount),
-      heatRatio:
-        maxSubmissionCount === 0
-          ? 0
-          : row.submissionCount / maxSubmissionCount,
+      heatRatio: maxSubmissionCount === 0 ? 0 : row.submissionCount / maxSubmissionCount,
     }))
     .sort((a, b) => b.submissionCount - a.submissionCount || a.ridingName.localeCompare(b.ridingName))
 }
 
 function onlyHasUnassignedRiding(submissions) {
-  return (
-    submissions.length > 0 &&
-    submissions.every((submission) => submission.riding === UNKNOWN_RIDING)
-  )
+  return submissions.length > 0 && submissions.every((s) => s.riding === UNKNOWN_RIDING)
 }
 
 function buildSubmissionVolume(submissions) {
@@ -231,10 +197,7 @@ function buildSubmissionVolume(submissions) {
     existingVolume.ridingCounts[submission.riding] =
       (existingVolume.ridingCounts[submission.riding] || 0) + 1
 
-    return {
-      ...volumeMap,
-      [submission.date]: existingVolume,
-    }
+    return { ...volumeMap, [submission.date]: existingVolume }
   }, {})
 
   return Object.values(volumeByDate)
@@ -260,6 +223,21 @@ function StatisticCard({ label, value }) {
   )
 }
 
+// tooltip for the volume line chart
+const VolumeTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload
+    return (
+      <div className="dashboardCustomChartTooltip">
+        <p className="tooltipDate">{label}</p>
+        <p className="tooltipCount">Submissions: <strong>{data.submissionCount}</strong></p>
+        <p className="tooltipRiding">Most Active: {data.mostActiveRiding}</p>
+      </div>
+    )
+  }
+  return null
+}
+
 function CommissionerDashboardPage() {
   const navigate = useNavigate()
 
@@ -281,7 +259,7 @@ function CommissionerDashboardPage() {
         if (!active) return
 
         setDashboardProposals(proposals.map(mapApiSubmissionToDashboardSubmission))
-        setDashboardComments([])
+        setDashboardComments([]) // Mocking until comments logic is hooked up
         setStatus('ready')
 
         setRecentSubmissions(proposals.slice(0, 5))
@@ -295,10 +273,7 @@ function CommissionerDashboardPage() {
 
     loadDashboardData()
 
-    const refreshIntervalId = window.setInterval(
-      loadDashboardData,
-      DASHBOARD_REFRESH_INTERVAL_MS
-    )
+    const refreshIntervalId = window.setInterval(loadDashboardData, DASHBOARD_REFRESH_INTERVAL_MS)
 
     return () => {
       active = false
@@ -307,14 +282,15 @@ function CommissionerDashboardPage() {
   }, [])
 
   const overviewItems = buildOverviewItems(dashboardProposals, dashboardComments)
+  const pieChartData = useMemo(() => buildPieChartData(dashboardProposals, dashboardComments), [dashboardProposals, dashboardComments])
   const ridingActivity = buildRidingActivity(dashboardProposals)
-  const commissionerHeatmap = buildCommissionerHeatmap(
-    dashboardProposals,
-    selectedHeatmapType
-  )
+  const commissionerHeatmap = buildCommissionerHeatmap(dashboardProposals, selectedHeatmapType)
   const submissionVolume = buildSubmissionVolume(dashboardProposals)
   const heatmapNeedsRidingData = onlyHasUnassignedRiding(dashboardProposals)
   const visibleHeatmapRows = heatmapNeedsRidingData ? [] : commissionerHeatmap
+
+  // chronological order
+  const chartVolumeData = useMemo(() => [...submissionVolume].reverse(), [submissionVolume])
 
   return (
     <main className="commissionerDashboardPage">
@@ -333,21 +309,49 @@ function CommissionerDashboardPage() {
 
       <section className="dashboardSection" id="overview">
         <h2>Overview</h2>
-        {status === 'loading' && (
-          <p className="dashboardStatusMessage">Loading dashboard statistics...</p>
+        {status === 'loading' && <p className="dashboardStatusMessage">Loading dashboard statistics...</p>}
+        {status === 'error' && <p className="dashboardStatusMessage">Unable to load dashboard statistics.</p>}
+        
+        {status === 'ready' && (
+          <div className="dashboardOverviewLayout">
+            <div className="dashboardOverviewGrid">
+              {overviewItems.map((item) => (
+                <StatisticCard key={item.label} label={item.label} value={item.value} />
+              ))}
+            </div>
+            
+            <div className="dashboardPieChartContainer">
+              <h3>Submission Breakdown</h3>
+              {pieChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={3}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px', color: '#fff' }}
+                      itemStyle={{ color: '#fff', fontSize: '13px' }}
+                    />
+                    <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '12px', color: '#a0a0a0' }}/>
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="dashboardStatusMessage">No submission data available.</p>
+              )}
+            </div>
+          </div>
         )}
-        {status === 'error' && (
-          <p className="dashboardStatusMessage">Unable to load dashboard statistics.</p>
-        )}
-        <div className="dashboardOverviewGrid">
-          {overviewItems.map((item) => (
-            <StatisticCard
-              key={item.label}
-              label={item.label}
-              value={item.value}
-            />
-          ))}
-        </div>
       </section>
 
       <section className="dashboardSection" id="heatmap">
@@ -356,9 +360,7 @@ function CommissionerDashboardPage() {
           <div className="dashboardHeatmapFilters" aria-label="Heatmap submission type">
             {HEATMAP_FILTERS.map((filter) => (
               <button
-                className={`dashboardHeatmapFilter ${
-                  selectedHeatmapType === filter.value ? 'active' : ''
-                }`}
+                className={`dashboardHeatmapFilter ${selectedHeatmapType === filter.value ? 'active' : ''}`}
                 key={filter.value}
                 type="button"
                 onClick={() => setSelectedHeatmapType(filter.value)}
@@ -371,13 +373,9 @@ function CommissionerDashboardPage() {
 
         {heatmapNeedsRidingData && (
           <div className="dashboardHeatmapEmptyState">
-            <span className="dashboardHeatmapEmptyTitle">
-              Riding data is not available yet.
-            </span>
+            <span className="dashboardHeatmapEmptyTitle">Riding data is not available yet.</span>
             <span className="dashboardHeatmapEmptyText">
-              Current proposals are synced with Home, but they do not include
-              riding locations. This heatmap will show regional activity once
-              proposal locations are connected.
+              Current proposals are synced with Home, but they do not include riding locations. This heatmap will show regional activity once proposal locations are connected.
             </span>
           </div>
         )}
@@ -385,37 +383,20 @@ function CommissionerDashboardPage() {
         {visibleHeatmapRows.length > 0 && (
           <>
             <div className="dashboardHeatmapLegend" aria-label="Heatmap legend">
-              <span>
-                <span className="dashboardLegendSwatch heatmapNone" />
-                None
-              </span>
-              <span>
-                <span className="dashboardLegendSwatch heatmapLow" />
-                Low
-              </span>
-              <span>
-                <span className="dashboardLegendSwatch heatmapMedium" />
-                Medium
-              </span>
-              <span>
-                <span className="dashboardLegendSwatch heatmapHigh" />
-                High
-              </span>
+              <span><span className="dashboardLegendSwatch heatmapNone" />None</span>
+              <span><span className="dashboardLegendSwatch heatmapLow" />Low</span>
+              <span><span className="dashboardLegendSwatch heatmapMedium" />Medium</span>
+              <span><span className="dashboardLegendSwatch heatmapHigh" />High</span>
             </div>
-
             <div className="dashboardHeatmapGrid" aria-label="Commissioner submission heatmap">
               {visibleHeatmapRows.map((riding) => (
                 <article
                   className={`dashboardHeatmapTile heatmap${riding.heatLevel}`}
                   key={riding.ridingName}
-                  style={{
-                    '--heatmap-opacity': 0.18 + riding.heatRatio * 0.72,
-                  }}
+                  style={{ '--heatmap-opacity': 0.18 + riding.heatRatio * 0.72 }}
                 >
                   <span className="dashboardHeatmapRiding">{riding.ridingName}</span>
-                  <span className="dashboardHeatmapCount">
-                    {riding.submissionCount} submissions
-                  </span>
+                  <span className="dashboardHeatmapCount">{riding.submissionCount} submissions</span>
                   <span className="dashboardHeatmapLevel">{riding.heatLevel}</span>
                 </article>
               ))}
@@ -443,9 +424,7 @@ function CommissionerDashboardPage() {
                   <td>{riding.submissionCount}</td>
                   <td>{riding.counterProposals}</td>
                   <td>
-                    <span className={`dashboardHeatBadge heat${riding.heatLevel}`}>
-                      {riding.heatLevel}
-                    </span>
+                    <span className={`dashboardHeatBadge heat${riding.heatLevel}`}>{riding.heatLevel}</span>
                   </td>
                 </tr>
               ))}
@@ -456,86 +435,68 @@ function CommissionerDashboardPage() {
 
       <section className="dashboardSection" id="volume">
         <h2>Submission Volume Over Time</h2>
-        <div className="dashboardTableContainer">
-          <table className="dashboardSubmissionsTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Submissions</th>
-                <th>Most Active Riding</th>
-              </tr>
-            </thead>
-            <tbody>
-              {submissionVolume.map((volume) => (
-                <tr key={volume.date}>
-                  <td>{volume.date}</td>
-                  <td>
-                    <div className="dashboardVolumeCell">
-                      <span>{volume.submissionCount}</span>
-                      <span
-                        className="dashboardVolumeBar"
-                        style={{
-                          width: `${Math.max(volume.submissionCount * 32, 32)}px`,
-                        }}
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </td>
-                  <td>{volume.mostActiveRiding}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
+        {chartVolumeData.length > 0 ? (
+          <div className="dashboardChartContainer">
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart data={chartVolumeData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333333" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#a0a0a0" 
+                  tick={{ fill: '#a0a0a0', fontSize: 12 }} 
+                  tickMargin={10} 
+                  axisLine={false} 
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="#a0a0a0" 
+                  tick={{ fill: '#a0a0a0', fontSize: 12 }} 
+                  tickMargin={10} 
+                  axisLine={false} 
+                  tickLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip content={<VolumeTooltip />} cursor={{ stroke: '#333', strokeWidth: 1, strokeDasharray: '3 3' }} />
+                <Line 
+                  type="monotone" 
+                  dataKey="submissionCount" 
+                  stroke="#ff2a5f" 
+                  strokeWidth={3} 
+                  dot={{ fill: '#1a1a1a', stroke: '#ff2a5f', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: '#ff2a5f', stroke: '#fff', strokeWidth: 2 }} 
+                  animationDuration={1000}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p className="dashboardStatusMessage">No volume data to display.</p>
+        )}
       </section>
 
       <section className="dashboardSection" id="submissions">
         <div className="dashboardSectionHeader">
           <h2>Recent Submissions</h2>
-          <button
-            className="dashboardTextAction"
-            type="button"
-            onClick={() => navigate('/commissioner-submissions')}
-          >
+          <button className="dashboardTextAction" type="button" onClick={() => navigate('/commissioner-submissions')}>
             View All →
           </button>
         </div>
         <div className="dashboardSubmissionCards">
-          {recentSubmissionsStatus === 'loading' && (
-            <p className="dashboardSubmissionsMessage">Loading recent submissions…</p>
-          )}
-
-          {recentSubmissionsStatus === 'error' && (
-            <p className="dashboardSubmissionsMessage">Unable to load recent submissions.</p>
-          )}
-
-          {recentSubmissionsStatus === 'ready' && recentSubmissions.length === 0 && (
-            <p className="dashboardSubmissionsMessage">No submissions yet.</p>
-          )}
-
+          {recentSubmissionsStatus === 'loading' && <p className="dashboardSubmissionsMessage">Loading recent submissions…</p>}
+          {recentSubmissionsStatus === 'error' && <p className="dashboardSubmissionsMessage">Unable to load recent submissions.</p>}
+          {recentSubmissionsStatus === 'ready' && recentSubmissions.length === 0 && <p className="dashboardSubmissionsMessage">No submissions yet.</p>}
           {recentSubmissionsStatus === 'ready' && recentSubmissions.map((submission) => (
             <article className="dashboardSubmissionCard" key={submission.id}>
               <div className="dashboardSubmissionInfo">
-                <span className="dashboardSubmissionReference">
-                  {submission.public_reference_number}
-                </span>
-                <span className="dashboardSubmissionMeta">
-                  {toTitleCase(submission.status)}
-                </span>
+                <span className="dashboardSubmissionReference">{submission.public_reference_number}</span>
+                <span className="dashboardSubmissionMeta">{toTitleCase(submission.status)}</span>
               </div>
               <div className="dashboardSubmissionInfo">
-                <span className="dashboardSubmissionMeta">
-                  {shortUser(submission.user_id)}
-                </span>
-                <span className="dashboardSubmissionMeta">
-                  {formatDate(submission.created_at)}
-                </span>
+                <span className="dashboardSubmissionMeta">{shortUser(submission.user_id)}</span>
+                <span className="dashboardSubmissionMeta">{formatDate(submission.created_at)}</span>
               </div>
-              <button
-                className="dashboardActionButton"
-                type="button"
-                onClick={() => navigate(`/view/${submission.id}`)}
-              >
+              <button className="dashboardActionButton" type="button" onClick={() => navigate(`/view/${submission.id}`)}>
                 View Details
               </button>
             </article>
@@ -546,15 +507,23 @@ function CommissionerDashboardPage() {
       <section className="dashboardSection" id="actions">
         <h2>Quick Actions</h2>
         <div className="dashboardQuickActions">
-          <button className="dashboardActionButton" type="button">
+          <button 
+            className="dashboardActionButton" 
+            type="button" 
+            onClick={() => exportToCSV(dashboardProposals, 'all_submissions.csv')}
+          >
             Export CSV
           </button>
-          <button className="dashboardActionButton" type="button">
+          <button 
+            className="dashboardActionButton" 
+            type="button" 
+            onClick={() => exportToPDF(dashboardProposals, 'all_submissions.pdf')}
+          >
             Export PDF
           </button>
-          <button
-            className="dashboardActionButton"
-            type="button"
+          <button 
+            className="dashboardActionButton" 
+            type="button" 
             onClick={() => navigate('/commissioner-submissions')}
           >
             View All Submissions
