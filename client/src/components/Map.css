@@ -1,14 +1,97 @@
 .mapContainer {
-  height: 500px;
+  position: relative;
   width: 100%;
-  min-height: 320px;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #e5e7eb;
 }
 
 .mapContainerView {
-  cursor: grab;
+  height: clamp(380px, 58vh, 680px);
 }
 
 .mapContainerObjection,
 .mapContainerCounterproposal {
-  cursor: crosshair;
+  height: clamp(500px, 70vh, 760px);
+}
+
+.mapContainer .maplibregl-canvas:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: -3px;
+}
+
+.mapContainer .maplibregl-ctrl-group {
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.mapContainer .maplibregl-ctrl-group button {
+  cursor: pointer;
+}
+
+.mapContainer .maplibregl-ctrl-group button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #2563eb;
+  outline-offset: -3px;
+}
+
+.mapContainer .maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
+
+.mapContainer .maplibregl-ctrl-attrib a {
+  overflow-wrap: anywhere;
+}
+
+/* Prevent the TerraDraw and navigation controls from overflowing. */
+.mapContainer .maplibregl-ctrl-top-left,
+.mapContainer .maplibregl-ctrl-top-right {
+  max-width: calc(100% - 20px);
+}
+
+@media (max-width: 900px) {
+  .mapContainerView {
+      height: clamp(360px, 55vh, 600px);
+  }
+
+  .mapContainerObjection,
+  .mapContainerCounterproposal {
+      height: clamp(460px, 65vh, 680px);
+  }
+}
+
+@media (max-width: 600px) {
+  .mapContainer {
+      border-radius: 7px;
+  }
+
+  .mapContainerView {
+      height: 420px;
+  }
+
+  .mapContainerObjection,
+  .mapContainerCounterproposal {
+      height: 500px;
+  }
+
+  .mapContainer .maplibregl-ctrl-group {
+      border-radius: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .mapContainerView {
+      height: 380px;
+  }
+
+  .mapContainerObjection,
+  .mapContainerCounterproposal {
+      height: 460px;
+  }
 }

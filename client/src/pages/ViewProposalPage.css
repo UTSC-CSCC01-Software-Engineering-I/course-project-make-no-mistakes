@@ -1,5 +1,4 @@
 :root {
-  /* Change this value if your main navigation bar has a different height. */
   --nav-bar-height: 48px;
   --bg-color: #1a1a1a;
   --card-bg: #262626;
@@ -601,7 +600,6 @@ select {
   word-break: break-word;
 }
 
-/* Reduce vertical space on shorter desktop screens. */
 @media (max-height: 750px) and (min-width: 901px) {
   .horizontalProposalHeaderBox,
   .horizontalCommentHeaderBox {

@@ -1,11 +1,18 @@
 .submitPage {
     width: 100%;
     min-height: 100vh;
-    background-color: #1a1a1a;
     padding: 24px;
     box-sizing: border-box;
+
+    background-color: #1a1a1a;
+    color: #ffffff;
+
     text-align: left;
-    font-family: 'Montserrat', 'Poppins', 'Segoe UI', sans-serif;
+    font-family:
+        'Montserrat',
+        'Poppins',
+        'Segoe UI',
+        sans-serif;
 }
 
 .submitPageHeader {
@@ -13,51 +20,325 @@
 }
 
 .submitPageHeader h1 {
+    margin: 0 0 8px;
+
     color: #ffffff;
-    font-weight: 600;
     font-size: 30px;
-    margin: 0 0 8px 0;
+    font-weight: 600;
 }
 
 .submitPageSubtitle {
+    margin: 0;
+
     color: #a0a0a0;
     font-size: 16px;
-    margin: 0;
+    line-height: 1.5;
 }
 
 .submitContainer {
     display: grid;
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: minmax(0, 3fr) minmax(340px, 2fr);
     gap: 24px;
+
     width: 100%;
 }
+
+/*
+ * Map card
+ */
 
 .mapSection {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+
     border: 1px solid #333333;
     border-radius: 12px;
+
     background-color: #222222;
     overflow: hidden;
-    min-height: 500px;
 }
+
+/*
+ * Toolbar shown directly above the map.
+ */
+
+.mapSelectionToolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+
+    min-height: 92px;
+    padding: 18px 20px;
+    box-sizing: border-box;
+
+    border-bottom: 1px solid #333333;
+    background-color: #262626;
+}
+
+/*
+ * Province dropdown
+ */
+
+.provinceControl {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 260px;
+}
+
+.provinceControl label {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.provinceControl select {
+    width: 100%;
+    min-height: 44px;
+
+    border: 1px solid #444444;
+    border-radius: 10px;
+
+    background-color: #1a1a1a;
+    color: #ffffff;
+
+    padding: 10px 42px 10px 14px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    outline: none;
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background-color 0.2s;
+
+    /*
+     * Custom dropdown arrow.
+     */
+    background-image:
+        linear-gradient(
+            45deg,
+            transparent 50%,
+            #a0a0a0 50%
+        ),
+        linear-gradient(
+            135deg,
+            #a0a0a0 50%,
+            transparent 50%
+        );
+
+    background-position:
+        calc(100% - 18px) 18px,
+        calc(100% - 12px) 18px;
+
+    background-size:
+        6px 6px,
+        6px 6px;
+
+    background-repeat: no-repeat;
+}
+
+.provinceControl select:hover {
+    border-color: #666666;
+    background-color: #202020;
+}
+
+.provinceControl select:focus {
+    border-color: #ff2a5f;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 42, 95, 0.18);
+}
+
+.provinceControl select:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+
+.provinceControl option {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.provinceControl option:disabled {
+    color: #666666;
+}
+
+.selectionSummary {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+
+    min-height: 44px;
+}
+
+.selectionSummary > span {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 36px;
+    padding: 0 13px;
+
+    border: 1px solid rgba(255, 42, 95, 0.45);
+    border-radius: 999px;
+
+    background-color: rgba(255, 42, 95, 0.1);
+    color: #ff7697;
+
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.clearSelectionButton {
+    min-height: 38px;
+    padding: 8px 14px;
+
+    border: 1px solid #555555;
+    border-radius: 999px;
+
+    background-color: transparent;
+    color: #d0d0d0;
+
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        border-color 0.2s,
+        color 0.2s,
+        background-color 0.2s;
+}
+
+.clearSelectionButton:hover {
+    border-color: #ff2a5f;
+    background-color: rgba(255, 42, 95, 0.1);
+    color: #ffffff;
+}
+
+.clearSelectionButton:focus-visible {
+    outline: 3px solid rgba(255, 42, 95, 0.35);
+    outline-offset: 2px;
+}
+
+/*
+ * Selected riding cards below the map.
+ */
+
+.selectedRidingList {
+    display: grid;
+    gap: 10px;
+
+    padding: 16px 20px 20px;
+
+    border-top: 1px solid #333333;
+    background-color: #222222;
+}
+
+.selectedRidingItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #3c3c3c;
+    border-left: 4px solid #ff2a5f;
+    border-radius: 9px;
+
+    background-color: #1d1d1d;
+}
+
+.selectedRidingItem > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+}
+
+.selectedRidingItem strong {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.selectedRidingItem span {
+    color: #9b9b9b;
+    font-size: 12px;
+}
+
+.removeRidingButton {
+    flex: 0 0 auto;
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    border: 1px solid transparent;
+    border-radius: 50%;
+
+    background-color: transparent;
+    color: #a0a0a0;
+
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 22px;
+    line-height: 1;
+
+    transition:
+        color 0.2s,
+        border-color 0.2s,
+        background-color 0.2s;
+}
+
+.removeRidingButton:hover {
+    border-color: #ff2a5f;
+    background-color: rgba(255, 42, 95, 0.12);
+    color: #ffffff;
+}
+
+/*
+ * Older placeholder styles
+ */
 
 .mapPlaceholder {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex: 1;
-    background-color: #1a1a1a;
     gap: 12px;
+
     padding: 24px;
+
+    background-color: #1a1a1a;
     text-align: center;
 }
 
 .mapPlaceholderTitle {
     color: #ffffff;
-    font-weight: 600;
     font-size: 24px;
+    font-weight: 600;
 }
 
 .mapPlaceholderText {
@@ -65,26 +346,35 @@
     font-size: 14px;
 }
 
+/*
+ * Form card
+ */
+
 .formSection {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .formCard {
-    border: 1px solid #333333;
-    border-radius: 12px;
-    background-color: #262626;
     padding: 24px;
     box-sizing: border-box;
+
+    border: 1px solid #333333;
+    border-radius: 12px;
+
+    background-color: #262626;
 }
 
 .formCard h2 {
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 20px;
-    margin: 0 0 20px 0;
-    border-bottom: 1px solid #333333;
+    margin: 0 0 20px;
     padding-bottom: 12px;
+
+    border-bottom: 1px solid #333333;
+
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .submissionForm {
@@ -101,65 +391,203 @@
 
 .formGroup label {
     color: #ffffff;
-    font-weight: 500;
     font-size: 14px;
+    font-weight: 500;
 }
 
 .formGroup input,
 .formGroup textarea {
+    width: 100%;
+    box-sizing: border-box;
+
     border: 1px solid #333333;
     border-radius: 12px;
+
     background-color: #1a1a1a;
+    color: #ffffff;
+
     padding: 12px 16px;
+
     font-family: inherit;
     font-size: 14px;
-    color: #ffffff;
-    resize: vertical;
+
     outline: none;
-    transition: border-color 0.2s;
+    resize: vertical;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
     border-color: #ff2a5f;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 42, 95, 0.14);
 }
 
 .formGroup input:disabled {
     background-color: #222222;
-    opacity: 0.8;
-    cursor: not-allowed;
     color: #a0a0a0;
+
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/*
+ * Riding headers inside the form.
+ */
+
+.targetRidingHeaders {
+    display: grid;
+    gap: 8px;
+}
+
+.targetRidingHeader {
+    padding: 10px 12px;
+
+    border: 1px solid #3c3c3c;
+    border-left: 4px solid #ff2a5f;
+    border-radius: 8px;
+
+    background-color: #1d1d1d;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.emptySelectionMessage {
+    margin: 0;
+    padding: 12px 14px;
+
+    border: 1px dashed #4a4a4a;
+    border-radius: 9px;
+
+    background-color: #202020;
+    color: #999999;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.objectionCharacterCount {
+    align-self: flex-end;
+
+    color: #8d8d8d;
+    font-size: 12px;
+}
+
+.submissionError {
+    margin: 0;
+    padding: 11px 13px;
+
+    border: 1px solid rgba(255, 42, 95, 0.6);
+    border-radius: 9px;
+
+    background-color: rgba(255, 42, 95, 0.1);
+    color: #ff9ab1;
+
+    font-size: 13px;
+    line-height: 1.45;
 }
 
 .submitActionButton {
+    margin-top: 12px;
+    padding: 14px 24px;
+
     border: none;
     border-radius: 25px;
+
     background-color: #ff2a5f;
     color: #ffffff;
+
     cursor: pointer;
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
-    padding: 14px 24px;
-    margin-top: 12px;
-    transition: background-color 0.2s;
+
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
 }
 
-.submitActionButton:hover {
+.submitActionButton:hover:not(:disabled) {
     background-color: #e01a4f;
+}
+
+.submitActionButton:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.submitActionButton:focus-visible {
+    outline: 3px solid rgba(255, 42, 95, 0.4);
+    outline-offset: 3px;
 }
 
 .submitActionButton:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
 }
+
+/*
+ * Tablet
+ */
 
 @media (max-width: 900px) {
     .submitContainer {
         grid-template-columns: 1fr;
     }
-    
-    .mapSection {
-        min-height: 400px;
+
+    .mapSelectionToolbar {
+        align-items: center;
+    }
+
+    .provinceControl {
+        flex: 1;
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 600px) {
+    .submitPage {
+        padding: 16px;
+    }
+
+    .submitPageHeader h1 {
+        font-size: 25px;
+    }
+
+    .mapSelectionToolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+
+        padding: 16px;
+    }
+
+    .provinceControl {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .selectionSummary {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .selectionSummary > span {
+        white-space: normal;
+    }
+
+    .selectedRidingList {
+        padding: 14px 16px 16px;
+    }
+
+    .formCard {
+        padding: 20px 16px;
     }
 }

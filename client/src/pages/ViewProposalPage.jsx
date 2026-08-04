@@ -215,7 +215,7 @@ function ViewProposalPage() {
     useState('on')
 
   const [boundaryLayer, setBoundaryLayer] =
-    useState('none')
+    useState('federalDistricts')
 
   const [selectedRegion, setSelectedRegion] =
     useState(null)
