@@ -1017,6 +1017,17 @@ function ViewProposalPage() {
       </header>
 
       <div className="proposalContentBox">
+
+      <section
+        className="proposalRationalePanel"
+        aria-labelledby="proposal-rationale-heading"
+      >
+        <h2 id="proposal-rationale-heading">
+          Proposal Rationale
+        </h2>
+        <p>{proposalRationale}</p>
+      </section>
+
         <section
           className="mapBox"
           aria-label="Proposal map"
@@ -1057,15 +1068,6 @@ function ViewProposalPage() {
             </div>
           )}
 
-          <section
-            className="proposalRationalePanel"
-            aria-labelledby="proposal-rationale-heading"
-          >
-            <h2 id="proposal-rationale-heading">
-              Proposal Rationale
-            </h2>
-            <p>{proposalRationale}</p>
-          </section>
 
           <div className="mapLayerControls">
             <div className="mapLayerControl">
